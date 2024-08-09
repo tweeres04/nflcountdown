@@ -3,6 +3,14 @@ import schedule from '../../nfl_schedule.json'
 import { MetaFunction, useLoaderData } from '@remix-run/react'
 import { useEffect, useRef, useState } from 'react'
 import countdown from '../external/countdown'
+import { uniqBy, orderBy } from 'lodash-es'
+
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu'
 
 export function meta(): MetaFunction {
 	return [
@@ -16,7 +24,11 @@ export function meta(): MetaFunction {
 }
 
 export async function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
-	const teams = [...new Set(schedule.games.map((g) => g.homeTeam))]
+	let teams = uniqBy(
+		schedule.games.map((g) => g.homeTeam),
+		'id'
+	)
+	teams = orderBy(teams, 'fullName')
 
 	const team = teams.find(
 		(t) => t.abbreviation.toLowerCase() === teamAbbrev?.toLowerCase()
@@ -30,7 +42,7 @@ export async function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
 		(g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id
 	)
 
-	return json({ team, games })
+	return json({ teams, team, games })
 }
 
 function useUpdateTime() {
@@ -51,7 +63,7 @@ function useUpdateTime() {
 export default function Countdown() {
 	useUpdateTime()
 	const [showFullSchedule, setShowFullSchedule] = useState(false)
-	const { team, games } = useLoaderData<typeof loader>()
+	const { teams, team, games } = useLoaderData<typeof loader>()
 	const lowercaseAbbreviation = team.abbreviation.toLowerCase()
 	const gradientClass = `bg-gradient-to-b from-${lowercaseAbbreviation} to-${lowercaseAbbreviation}-secondary`
 	const nextGame = games[0]
@@ -61,9 +73,26 @@ export default function Countdown() {
 			className={`font-sans text-white min-h-[100vh] bg-fixed ${gradientClass}`}
 		>
 			<div className={`p-4 max-w-[500px] lg:max-w-[750px] mx-auto`}>
-				<h1 className="text-2xl">{team.fullName} Countdown</h1>
+				<div className="flex gap-10">
+					<h1 className="text-2xl grow">{team.fullName} Countdown</h1>
+					<DropdownMenu>
+						<DropdownMenuTrigger>Teams</DropdownMenuTrigger>
+						<DropdownMenuContent>
+							{teams.map((t) => (
+								<DropdownMenuItem asChild>
+									<a
+										href={`/${t.abbreviation.toLowerCase()}`}
+										className={`text-white bg-${lowercaseAbbreviation} hover:bg-${lowercaseAbbreviation} hover:text-white rounded-none`}
+									>
+										{t.fullName}
+									</a>
+								</DropdownMenuItem>
+							))}
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</div>
 				<img
-					src={team.currentLogo.replace('/{formatInstructions}', '')}
+					src={`/logos/${lowercaseAbbreviation}.svg`}
 					className="w-[256px] h-[256px] lg:w-[512px] lg:h-[512px] mx-auto"
 					alt={`${team.fullName} logo`}
 				/>
