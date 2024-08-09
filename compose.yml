@@ -1,0 +1,13 @@
+services:
+  nflcountdown:
+    build:
+      dockerfile: ./Dockerfile
+      context: .
+    restart: always
+    ports:
+      - 88:3000
+
+networks:
+  default:
+    external: true
+    name: proxy

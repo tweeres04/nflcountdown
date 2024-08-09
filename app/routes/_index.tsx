@@ -1,48 +1,20 @@
-import type { MetaFunction } from "@remix-run/node";
+import type { MetaFunction } from '@remix-run/node'
 
 export const meta: MetaFunction = () => {
-  return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
-  ];
-};
+	return [
+		{ title: 'When is the next NFL game? - NFL Countdown' },
+		{
+			name: 'description',
+			content:
+				'The fastest and prettiest way to check the next NFL game. Launches instantly from your home screen.',
+		},
+	]
+}
 
 export default function Index() {
-  return (
-    <div className="font-sans p-4">
-      <h1 className="text-3xl">Welcome to Remix</h1>
-      <ul className="list-disc mt-4 pl-6 space-y-2">
-        <li>
-          <a
-            className="text-blue-700 underline visited:text-purple-900"
-            target="_blank"
-            href="https://remix.run/start/quickstart"
-            rel="noreferrer"
-          >
-            5m Quick Start
-          </a>
-        </li>
-        <li>
-          <a
-            className="text-blue-700 underline visited:text-purple-900"
-            target="_blank"
-            href="https://remix.run/start/tutorial"
-            rel="noreferrer"
-          >
-            30m Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            className="text-blue-700 underline visited:text-purple-900"
-            target="_blank"
-            href="https://remix.run/docs"
-            rel="noreferrer"
-          >
-            Remix Docs
-          </a>
-        </li>
-      </ul>
-    </div>
-  );
+	return (
+		<div className="font-sans p-4 max-w-[500px] lg:max-w-[750px] mx-auto space-y-12">
+			<h1 className="text-3xl">NFL Countdown</h1>
+		</div>
+	)
 }
