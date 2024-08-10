@@ -5,13 +5,24 @@ import TeamsDropdown from '~/components/ui/teams-dropdown'
 import { useLoaderData } from '@remix-run/react'
 
 export const meta: MetaFunction = () => {
+	const title = 'When is the next NFL game? - NFL Countdown'
+	const description =
+		'The fastest and prettiest way to check the next NFL game. Launches instantly from your home screen.'
 	return [
-		{ title: 'When is the next NFL game? - NFL Countdown' },
+		{ title },
 		{
 			name: 'description',
-			content:
-				'The fastest and prettiest way to check the next NFL game. Launches instantly from your home screen.',
+			content: description,
 		},
+		{ name: 'og:title', content: title },
+		{ name: 'og:type', content: 'website' },
+		{ name: 'og:url', content: 'https://nflcountdown.tweeres.ca' },
+		{ name: 'og:image', content: 'https://nflcountdown.tweeres.ca/hero.png' },
+		{
+			name: 'og:description',
+			content: description,
+		},
+		{ name: 'og:site_name', content: 'NFL Countdown' },
 	]
 }
 
