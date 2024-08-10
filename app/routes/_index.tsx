@@ -17,7 +17,7 @@ export const meta: MetaFunction = () => {
 		{ name: 'og:title', content: title },
 		{ name: 'og:type', content: 'website' },
 		{ name: 'og:url', content: 'https://nflcountdown.tweeres.ca' },
-		{ name: 'og:image', content: 'https://nflcountdown.tweeres.ca/hero.png' },
+		{ name: 'og:image', content: 'https://nflcountdown.tweeres.ca/og.png' },
 		{
 			name: 'og:description',
 			content: description,
