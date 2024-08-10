@@ -24,6 +24,8 @@ const safelist = teams.flatMap((t) => {
 	]
 })
 
+safelist.push('bg-stone-900', 'hover:bg-stone-900')
+
 export default {
 	darkMode: ['class'],
 	content: ['./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}'],
