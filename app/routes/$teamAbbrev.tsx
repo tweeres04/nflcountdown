@@ -7,13 +7,15 @@ import { uniqBy, orderBy } from 'lodash-es'
 
 import TeamsDropdown from '~/components/ui/teams-dropdown'
 
-export function meta(): MetaFunction {
+export function meta({ data }: { data: typeof loader }): MetaFunction {
+	const { team } = data
+	const title = `When is the next ${team.fullName} game? - NFL Countdown`
+	const description = `The fastest and prettiest way to check the next ${team.fullName} game. Launches instantly from your home screen.`
 	return [
-		{ title: 'When is the next NFL game? - NFL Countdown' },
+		{ title },
 		{
 			name: 'description',
-			content:
-				'The fastest and prettiest way to check the next NFL game. Launches instantly from your home screen.',
+			content: description,
 		},
 	]
 }
