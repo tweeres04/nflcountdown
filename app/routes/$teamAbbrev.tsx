@@ -9,9 +9,10 @@ import TeamsDropdown from '~/components/ui/teams-dropdown'
 
 export const meta: MetaFunction = ({ data }) => {
 	const { team } = data as { team: (typeof schedule)['games'][0]['homeTeam'] }
+	const lowercaseAbbreviation = team.abbreviation.toLowerCase()
 	const title = `When is the next ${team.fullName} game? - NFL Countdown`
 	const description = `The fastest and prettiest way to check the next ${team.fullName} game. Launches instantly from your home screen.`
-	const logoUrl = `https://nflcountdown.tweeres.ca/logos/${team.abbreviation.toLowerCase()}.png`
+	const logoUrl = `https://nflcountdown.tweeres.ca/logos/${lowercaseAbbreviation}.png`
 	return [
 		{ title },
 		{
@@ -23,7 +24,10 @@ export const meta: MetaFunction = ({ data }) => {
 		{ name: 'og:url', content: 'https://nflcountdown.tweeres.ca' },
 		{
 			name: 'og:image',
-			content: logoUrl,
+			content:
+				lowercaseAbbreviation === 'kc'
+					? 'https://nflcountdown.tweeres.ca/og.png'
+					: logoUrl,
 		},
 		{
 			name: 'og:description',
