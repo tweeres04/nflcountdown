@@ -149,7 +149,7 @@ export default function Countdown() {
 					</svg>
 				</button>
 				{showFullSchedule ? (
-					<ul className="space-y-3 mt-8">
+					<ul className="space-y-5 mt-8">
 						{games.map((g) => (
 							<li key={g.id}>
 								<div className="font-bold text-lg">
