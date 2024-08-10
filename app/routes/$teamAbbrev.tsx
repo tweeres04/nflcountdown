@@ -127,12 +127,12 @@ export default function Countdown() {
 					)}
 				</div>
 				<button
-					className="mx-auto border border-white px-5 mt-8 flex items-center gap-1"
+					className="mx-auto border-2 rounded-sm border-white px-5 mt-8 flex items-center gap-1"
 					onClick={() => {
 						setShowFullSchedule((value) => !value)
 					}}
 				>
-					{showFullSchedule ? 'Hide full schedule' : 'Show full schedule'}{' '}
+					{showFullSchedule ? 'Hide schedule' : 'Show full schedule'}{' '}
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"
