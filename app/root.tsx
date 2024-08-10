@@ -44,6 +44,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				{children}
 				<ScrollRestoration />
 				<Scripts />
+				{/* Google tag (gtag.js) */}
+				{process.env.NODE_ENV === 'production' ? (
+					<>
+						<script
+							async
+							src="https://www.googletagmanager.com/gtag/js?id=G-KK8MSJMC9Z"
+						></script>
+						<script>
+							{`window.dataLayer = window.dataLayer || [];
+					function gtag(){dataLayer.push(arguments);}
+					gtag('js', new Date());
+
+					gtag('config', 'G-KK8MSJMC9Z');`}
+						</script>
+					</>
+				) : null}
 			</body>
 		</html>
 	)
