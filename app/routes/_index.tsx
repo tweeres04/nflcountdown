@@ -29,21 +29,39 @@ export default function Index() {
 	const { teams } = useLoaderData<typeof loader>()
 	return (
 		<>
-			<div className="flex flex-col h-screen md:h-auto">
+			<div className="flex flex-col min-h-screen md:h-auto">
 				<div className="p-4 max-w-[500px] lg:max-w-[750px] mx-auto space-y-12 min-h-[600px] grow">
 					<h1 className="text-3xl">NFL Countdown</h1>
-					<div className="space-y-5">
-						<h2 className="text-2xl">Get pumped for your team's next game!</h2>
-						<p>
-							A fast, pretty web app that counts down to the next NFL game.
-							Saves to your home screen for immediate access.
-						</p>
+					<div className="flex flex-col gap-10">
+						<div className="space-y-5">
+							<div className="space-y-3">
+								<h2 className="text-2xl">
+									Get pumped for your team's next game!
+								</h2>
+								<p>
+									A fast, pretty web app that counts down to the next NFL game.
+									Saves to your home screen for immediate access.
+								</p>
+							</div>
+							<TeamsDropdown teams={teams}>
+								<button className="w-full md:w-auto border-2 border-stone-900 px-3 py-2 rounded-sm focus:outline-none">
+									Pick your team
+								</button>
+							</TeamsDropdown>
+						</div>
+						<div>
+							<div className="space-y-1 max-w-[400px] mx-auto">
+								<img
+									src="/hero.png"
+									alt="Screenshot of Kansas City Chiefs countdown in action."
+									className="rounded-sm"
+								/>
+								<p className="text-sm">
+									Screenshot of Kansas City Chiefs countdown in action.
+								</p>
+							</div>
+						</div>
 					</div>
-					<TeamsDropdown teams={teams}>
-						<button className="w-full md:w-auto border-2 border-stone-900 px-3 py-2 rounded-sm focus:outline-none">
-							Pick your team
-						</button>
-					</TeamsDropdown>
 				</div>
 				<footer className="bg-stone-200">
 					<div className="p-4 max-w-[500px] lg:max-w-[750px] mx-auto text-sm">
