@@ -3,6 +3,7 @@ import { uniqBy, orderBy } from 'lodash-es'
 import schedule from '../../nfl_schedule.json'
 import TeamsDropdown from '~/components/ui/teams-dropdown'
 import { useLoaderData } from '@remix-run/react'
+import { Button } from '~/components/ui/button'
 
 export const meta: MetaFunction = () => {
 	const title = 'When is the next NFL game? - NFL Countdown'
@@ -55,9 +56,7 @@ export default function Index() {
 								</p>
 							</div>
 							<TeamsDropdown teams={teams}>
-								<button className="w-full md:w-auto border-2 border-stone-900 px-3 py-2 rounded-sm focus:outline-none">
-									Pick your team
-								</button>
+								<Button className="border-stone-900">Pick your team</Button>
 							</TeamsDropdown>
 						</div>
 						<div>

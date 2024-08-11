@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import IosShareIcon from './IosShareIcon'
+import { Button } from './ui/button'
 
 interface BeforeInstallPromptEvent extends Event {
 	prompt: () => void
@@ -78,14 +79,13 @@ export default function InstallNotification({
 				</p>
 				{deferredInstallPrompt ? (
 					<div className="text-center mt-2">
-						<button
-							className="py-2 px-3 border-2 border-white mx-auto rounded-sm"
+						<Button
 							onClick={() => {
 								deferredInstallPrompt.prompt()
 							}}
 						>
 							Add to home screen
-						</button>
+						</Button>
 					</div>
 				) : isIos ? (
 					<p className="text-center mt-3">

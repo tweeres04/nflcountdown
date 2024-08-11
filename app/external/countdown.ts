@@ -1137,7 +1137,7 @@ function getDelay(units) {
  * @param {number=} digits max number of decimal digits to output
  * @return {Timespan|number}
  */
-function countdown(start, end, units, max, digits) {
+function countdown(start, end?, units?, max?, digits?) {
 	var callback
 
 	// ensure some units or use defaults

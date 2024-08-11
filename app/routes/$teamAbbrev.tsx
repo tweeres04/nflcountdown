@@ -7,6 +7,8 @@ import { uniqBy, orderBy } from 'lodash-es'
 
 import TeamsDropdown from '~/components/ui/teams-dropdown'
 import InstallNotification from '~/components/install-notification'
+import IosShareIcon from '~/components/IosShareIcon'
+import { Button } from '~/components/ui/button'
 
 export const meta: MetaFunction = ({ data }) => {
 	const { team } = data as { team: (typeof schedule)['games'][0]['homeTeam'] }
@@ -83,6 +85,12 @@ export default function Countdown() {
 	const lowercaseAbbreviation = team.abbreviation.toLowerCase()
 	const nextGame = games[0]
 
+	const countdownString = nextGame.time
+		? `${countdown(new Date(nextGame.time)).toString()} till the ${
+				team.nickName
+		  } play next`
+		: 'Next game TBD'
+
 	return (
 		<>
 			<div
@@ -105,11 +113,7 @@ export default function Countdown() {
 				<div className="text-center space-y-2">
 					{nextGame.time ? (
 						<>
-							<div className="text-3xl">
-								{`${countdown(new Date(nextGame.time)).toString()} till the ${
-									team.nickName
-								} play next`}
-							</div>
+							<div className="text-3xl">{countdownString}</div>
 							<div>
 								<div>
 									{new Intl.DateTimeFormat('en-US', {
@@ -132,28 +136,46 @@ export default function Countdown() {
 						<div className="text-3xl">Game time TBD</div>
 					)}
 				</div>
-				<button
-					className="mx-auto border-2 rounded-sm border-white px-5 py-2 mt-8 flex items-center gap-1"
-					onClick={() => {
-						setShowFullSchedule((value) => !value)
-					}}
-				>
-					{showFullSchedule ? 'Hide schedule' : 'Show full schedule'}{' '}
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 24 24"
-						strokeWidth={1.5}
-						stroke="currentColor"
-						className="size-5"
+				<div className="mt-8 space-y-3">
+					{typeof navigator !== 'undefined' && navigator.share ? (
+						<Button
+							onClick={() => {
+								navigator
+									.share({
+										title: `${team.fullName} Countdown`,
+										text: countdownString,
+										url: `${document.location.href}?utm_source=nhlcountdown&utm_medium=share_button`,
+									})
+									.catch((err) => {
+										// Swallow so we don't send to sentry
+									})
+							}}
+						>
+							Share <IosShareIcon className="size-5" />
+						</Button>
+					) : null}
+					<Button
+						onClick={() => {
+							setShowFullSchedule((value) => !value)
+						}}
 					>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
-						/>
-					</svg>
-				</button>
+						{showFullSchedule ? 'Hide schedule' : 'Show full schedule'}{' '}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							strokeWidth={1.5}
+							stroke="currentColor"
+							className="size-5"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+							/>
+						</svg>
+					</Button>
+				</div>
 				{showFullSchedule ? (
 					<ul className="space-y-5 mt-8">
 						{games.map((g) => (
