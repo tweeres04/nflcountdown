@@ -4,6 +4,7 @@ services:
       dockerfile: ./Dockerfile
       context: .
     restart: always
+    env_file: '.env.production'
 
 networks:
   default:

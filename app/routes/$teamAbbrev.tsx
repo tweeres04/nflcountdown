@@ -9,6 +9,7 @@ import TeamsDropdown from '~/components/ui/teams-dropdown'
 import InstallNotification from '~/components/install-notification'
 import IosShareIcon from '~/components/IosShareIcon'
 import { Button } from '~/components/ui/button'
+import FeedbackButton from '~/components/feedback-button'
 
 export const meta: MetaFunction = ({ data }) => {
 	const { team } = data as { team: (typeof schedule)['games'][0]['homeTeam'] }
@@ -154,6 +155,7 @@ export default function Countdown() {
 							Share <IosShareIcon className="size-5" />
 						</Button>
 					) : null}
+					<FeedbackButton />
 					<Button
 						onClick={() => {
 							setShowFullSchedule((value) => !value)
