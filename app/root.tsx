@@ -8,11 +8,37 @@ import {
 } from '@remix-run/react'
 import './tailwind.css'
 import { cn } from './lib/utils'
+import { createContext, useEffect, useState } from 'react'
+
+export interface BeforeInstallPromptEvent extends Event {
+	prompt: () => void
+}
+
+export const DeferredInstallPromptContext = createContext<
+	BeforeInstallPromptEvent | undefined
+>(undefined)
+
+function useDeferredInstallPrompt() {
+	const [deferredPrompt, setDeferredPrompt] =
+		useState<BeforeInstallPromptEvent>()
+
+	useEffect(() => {
+		window.addEventListener('beforeinstallprompt', (e) => {
+			e.preventDefault()
+			setDeferredPrompt(e as BeforeInstallPromptEvent)
+		})
+	}, [])
+
+	return { deferredPrompt }
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	const { teamAbbrev } = useParams()
 	const lowercaseAbbreviation = teamAbbrev?.toLowerCase()
 	const gradientClass = `bg-fixed bg-gradient-to-b from-${lowercaseAbbreviation} to-${lowercaseAbbreviation}-secondary`
+
+	const { deferredPrompt } = useDeferredInstallPrompt()
+
 	return (
 		<html lang="en" className="text-[20px]">
 			<head>
@@ -41,7 +67,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			<body
 				className={cn('font-sans', teamAbbrev ? gradientClass : 'bg-stone-100')}
 			>
-				{children}
+				<DeferredInstallPromptContext.Provider value={deferredPrompt}>
+					{children}
+				</DeferredInstallPromptContext.Provider>
 				<ScrollRestoration />
 				<Scripts />
 				{/* Google tag (gtag.js) */}
