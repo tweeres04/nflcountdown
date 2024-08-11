@@ -61,13 +61,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
 							async
 							src="https://www.googletagmanager.com/gtag/js?id=G-KK8MSJMC9Z"
 						></script>
-						<script>
-							{`window.dataLayer = window.dataLayer || [];
-					function gtag(){dataLayer.push(arguments);}
-					gtag('js', new Date());
+						<script
+							dangerouslySetInnerHTML={{
+								__html: `window.dataLayer = window.dataLayer || [];
+									function gtag(){dataLayer.push(arguments);}
+									gtag('js', new Date());
 
-					gtag('config', 'G-KK8MSJMC9Z');`}
-						</script>
+									gtag('config', 'G-KK8MSJMC9Z');`,
+							}}
+						></script>
 					</>
 				) : null}
 			</body>
