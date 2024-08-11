@@ -1,7 +1,26 @@
-import { useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import IosShareIcon from './IosShareIcon'
 
-import { DeferredInstallPromptContext } from '~/root'
+interface BeforeInstallPromptEvent extends Event {
+	prompt: () => void
+}
+
+export const DeferredInstallPromptContext =
+	createContext<BeforeInstallPromptEvent | null>(null)
+
+export function useDeferredInstallPrompt() {
+	const [deferredPrompt, setDeferredPrompt] =
+		useState<BeforeInstallPromptEvent | null>(null)
+
+	useEffect(() => {
+		window.addEventListener('beforeinstallprompt', (e) => {
+			e.preventDefault()
+			setDeferredPrompt(e as BeforeInstallPromptEvent)
+		})
+	}, [])
+
+	return { deferredPrompt }
+}
 
 export default function InstallNotification({
 	fullTeamName,
@@ -13,8 +32,6 @@ export default function InstallNotification({
 	const [showInstallNotification, setShowInstallNotification] = useState(false)
 	const [isIos, setIsIos] = useState(false)
 	const deferredInstallPrompt = useContext(DeferredInstallPromptContext)
-
-	console.log({ deferredInstallPrompt })
 
 	useEffect(() => {
 		const isStandalone = window.matchMedia('(display-mode: standalone)').matches

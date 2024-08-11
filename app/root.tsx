@@ -8,29 +8,11 @@ import {
 } from '@remix-run/react'
 import './tailwind.css'
 import { cn } from './lib/utils'
-import { createContext, useEffect, useState } from 'react'
 
-export interface BeforeInstallPromptEvent extends Event {
-	prompt: () => void
-}
-
-export const DeferredInstallPromptContext = createContext<
-	BeforeInstallPromptEvent | undefined
->(undefined)
-
-function useDeferredInstallPrompt() {
-	const [deferredPrompt, setDeferredPrompt] =
-		useState<BeforeInstallPromptEvent>()
-
-	useEffect(() => {
-		window.addEventListener('beforeinstallprompt', (e) => {
-			e.preventDefault()
-			setDeferredPrompt(e as BeforeInstallPromptEvent)
-		})
-	}, [])
-
-	return { deferredPrompt }
-}
+import {
+	DeferredInstallPromptContext,
+	useDeferredInstallPrompt,
+} from './components/install-notification'
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	const { teamAbbrev } = useParams()
