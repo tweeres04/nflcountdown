@@ -27,7 +27,7 @@ export function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
 				sizes: 'any',
 			},
 		],
-		start_url: `/${lowercaseAbbreviation}`,
+		start_url: `/${lowercaseAbbreviation}/`,
 		display: 'standalone',
 		theme_color: team.primaryColor,
 		background_color: team.primaryColor,
