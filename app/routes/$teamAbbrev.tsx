@@ -20,6 +20,7 @@ export const meta: MetaFunction = ({ data }) => {
 			name: 'description',
 			content: description,
 		},
+		{ name: 'theme-color', content: team.primaryColor },
 		{ name: 'og:title', content: title },
 		{ name: 'og:type', content: 'website' },
 		{ name: 'og:url', content: 'https://nflcountdown.tweeres.ca' },
