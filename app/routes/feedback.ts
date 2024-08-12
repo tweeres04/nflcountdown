@@ -15,13 +15,23 @@ const mg = mailgun.client({
 export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData()
 	const entries = [...formData.entries()]
-	const emailBody = entries.map(([k, v]) => `${k}: ${v}`).join('\n\n')
+	entries.push(['referer', request.headers.get('referer') ?? 'Not found'])
+	const emailBody = `
+		<ul style="list-style: none; padding-left: 0;">
+			${entries
+				.map(
+					([k, v]) =>
+						`<li><strong>${k}</strong>: <pre style="font-family: sans-serif;">${v}</pre></li>`
+				)
+				.join('')}
+		</ul>
+	`
 
 	mg.messages.create('tweeres.ca', {
 		from: 'NFL Countdown feedback <feedback@nflcountdown.tweeres.ca>',
 		to: 'tweeres04@gmail.com',
 		subject: 'NFL Countdown feedback',
-		text: emailBody,
+		html: emailBody,
 		'o:tag': ['nflcountdown_feedback'],
 	})
 
