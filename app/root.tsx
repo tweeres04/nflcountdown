@@ -28,9 +28,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link
 					rel="icon"
-					type="image/png"
+					type="image/svg+xml"
 					href={
-						teamAbbrev ? `/logos/${lowercaseAbbreviation}.svg` : '/football.png'
+						teamAbbrev ? `/logos/${lowercaseAbbreviation}.svg` : '/football.svg'
 					}
 				></link>
 				<link // png fallback for shit browsers
