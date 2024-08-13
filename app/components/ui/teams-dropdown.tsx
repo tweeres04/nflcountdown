@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import { ReactNode, useContext } from 'react'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -6,6 +6,7 @@ import {
 	DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 import games from '../../../nfl_schedule.json'
+import { LeagueContext } from '~/lib/league-context'
 
 type Props = {
 	teams: (typeof games)['games'][0]['homeTeam'][]
@@ -15,9 +16,15 @@ type Props = {
 
 export default function TeamsDropdown({
 	teams,
-	lowercaseAbbreviation = 'stone-900',
+	lowercaseAbbreviation,
 	children,
 }: Props) {
+	const LEAGUE = useContext(LeagueContext)
+	const color = lowercaseAbbreviation
+		? LEAGUE === 'MLB'
+			? `mlb-${lowercaseAbbreviation}`
+			: lowercaseAbbreviation
+		: 'stone-900'
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
@@ -26,7 +33,7 @@ export default function TeamsDropdown({
 					<DropdownMenuItem asChild>
 						<a
 							href={`/${t.abbreviation.toLowerCase()}`}
-							className={`text-white bg-${lowercaseAbbreviation} hover:bg-${lowercaseAbbreviation} hover:text-white rounded-none`}
+							className={`text-white bg-${color} hover:bg-${color} hover:text-white rounded-none`}
 						>
 							{t.fullName}
 						</a>

@@ -5,6 +5,18 @@ services:
       context: .
     restart: always
     env_file: '.env.production'
+    environment:
+      LEAGUE: NFL
+      GTAG_ID: G-KK8MSJMC9Z
+  mlbcountdown:
+    build:
+      dockerfile: ./Dockerfile
+      context: .
+    restart: always
+    env_file: '.env.production'
+    environment:
+      LEAGUE: MLB
+      GTAG_ID: G-Z5RM9E7MN3
 
 networks:
   default:
