@@ -15,7 +15,7 @@ import FeedbackButton from '~/components/feedback-button'
 import { mlbGameToGame, mlbTeamToTeam } from '~/lib/mlbGameToGame'
 import { LeagueContext } from '~/lib/league-context'
 import { cn } from '~/lib/utils'
-import { addHours, isAfter, isBefore } from 'date-fns'
+import { addHours, isAfter, subHours, isWithinInterval } from 'date-fns'
 
 export const meta: MetaFunction = ({ data }) => {
 	const { LEAGUE, team } = data as {
@@ -86,8 +86,8 @@ export async function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
 			if (!g.time) {
 				return true
 			}
-			const threeHrsFromNow = addHours(new Date(), 3) // Handle a game in progress
-			return isAfter(g.time, threeHrsFromNow)
+			const threeHrsAgo = subHours(new Date(), 3) // Handle a game in progress
+			return isAfter(g.time, threeHrsAgo)
 		})
 
 	return json({ LEAGUE, teams, team, games })
@@ -121,7 +121,10 @@ export default function Countdown() {
 			: `/logos/${lowercaseAbbreviation}.svg`
 
 	const countdownString = nextGame.time
-		? isBefore(nextGame.time, addHours(new Date(), 3))
+		? isWithinInterval(new Date(), {
+				start: nextGame.time,
+				end: addHours(nextGame.time, 3),
+		  })
 			? 'Game in progress!'
 			: `${countdown(new Date(nextGame.time)).toString()} till the ${
 					team.nickName
