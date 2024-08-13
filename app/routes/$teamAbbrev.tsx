@@ -28,6 +28,7 @@ export const meta: MetaFunction = ({ data }) => {
 	const logoUrl = `https://${LEAGUE.toLowerCase()}countdown.tweeres.ca/logos/${
 		LEAGUE === 'NFL' ? '' : `${LEAGUE.toLowerCase()}/`
 	}${lowercaseAbbreviation}.png`
+	const ogImage = LEAGUE === 'MLB' ? 'mlb-og.png' : 'og.png'
 	return [
 		{ title },
 		{
@@ -45,7 +46,7 @@ export const meta: MetaFunction = ({ data }) => {
 			name: 'og:image',
 			content:
 				lowercaseAbbreviation === 'kc'
-					? `https://${LEAGUE.toLowerCase()}countdown.tweeres.ca/og.png`
+					? `https://${LEAGUE.toLowerCase()}countdown.tweeres.ca/${ogImage}`
 					: logoUrl,
 		},
 		{

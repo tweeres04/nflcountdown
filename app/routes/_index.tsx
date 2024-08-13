@@ -14,6 +14,7 @@ export const meta: MetaFunction = ({ data }) => {
 
 	const title = `When is the next ${LEAGUE} game? - ${LEAGUE} Countdown`
 	const description = `The fastest and prettiest way to check the next ${LEAGUE} game. Launches instantly from your home screen.`
+	const ogImage = LEAGUE === 'MLB' ? 'mlb-og.png' : 'og.png'
 	return [
 		{ title },
 		{
@@ -28,7 +29,7 @@ export const meta: MetaFunction = ({ data }) => {
 		},
 		{
 			name: 'og:image',
-			content: `https://${LEAGUE.toLowerCase()}countdown.tweeres.ca/og.png`,
+			content: `https://${LEAGUE.toLowerCase()}countdown.tweeres.ca/${ogImage}`,
 		},
 		{
 			name: 'og:description',
