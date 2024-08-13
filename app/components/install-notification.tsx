@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import IosShareIcon from './IosShareIcon'
 import { Button } from './ui/button'
+import { LeagueContext } from '~/lib/league-context'
 
 interface BeforeInstallPromptEvent extends Event {
 	prompt: () => void
@@ -33,6 +34,9 @@ export default function InstallNotification({
 	const [showInstallNotification, setShowInstallNotification] = useState(false)
 	const [isIos, setIsIos] = useState(false)
 	const deferredInstallPrompt = useContext(DeferredInstallPromptContext)
+	const LEAGUE = useContext(LeagueContext)
+	const color =
+		LEAGUE === 'MLB' ? `mlb-${lowercaseAbbreviation}` : lowercaseAbbreviation
 
 	useEffect(() => {
 		const isStandalone = window.matchMedia('(display-mode: standalone)').matches
@@ -51,7 +55,7 @@ export default function InstallNotification({
 	return showInstallNotification ? (
 		<div className="fixed bottom-0 w-full">
 			<div
-				className={`relative p-4 text-white bg-${lowercaseAbbreviation} max-w-[500px] lg:max-w-[750px] mx-auto`}
+				className={`relative p-4 text-white bg-${color} max-w-[500px] lg:max-w-[750px] mx-auto`}
 			>
 				<button
 					className="absolute top-0 right-0 p-1"

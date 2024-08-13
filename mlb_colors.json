@@ -1,0 +1,272 @@
+[
+	{
+		"team": "Arizona Diamondbacks",
+		"abbreviation": "AZ",
+		"color_1": "#A71930",
+		"color_2": "#E3D4AD",
+		"color_3": "#000000",
+		"color_4": "#30CED8",
+		"color_5": "#FFFFFF"
+	},
+	{
+		"team": "Atlanta Braves",
+		"abbreviation": "ATL",
+		"color_1": "#CE1141",
+		"color_2": "#13274F",
+		"color_3": "#EAAA00",
+		"color_4": "#FFFFFF",
+		"color_5": null
+	},
+	{
+		"team": "Baltimore Orioles",
+		"abbreviation": "BAL",
+		"color_1": "#DF4601",
+		"color_2": "#000000",
+		"color_3": "#FFFFFF",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Boston Red Sox",
+		"abbreviation": "BOS",
+		"color_1": "#BD3039",
+		"color_2": "#0C2340",
+		"color_3": "#FFFFFF",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Chicago Cubs",
+		"abbreviation": "CHC",
+		"color_1": "#0E3386",
+		"color_2": "#CC3433",
+		"color_3": "#FFFFFF",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Chicago White Sox",
+		"abbreviation": "CWS",
+		"color_1": "#27251F",
+		"color_2": "#C4CED4",
+		"color_3": "#FFFFFF",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Cincinnati Reds",
+		"abbreviation": "CIN",
+		"color_1": "#C6011F",
+		"color_2": "#000000",
+		"color_3": "#FFFFFF",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Cleveland Guardians",
+		"abbreviation": "CLE",
+		"color_1": "#00385D",
+		"color_2": "#E50022",
+		"color_3": "#FFFFFF",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Colorado Rockies",
+		"abbreviation": "COL",
+		"color_1": "#333366",
+		"color_2": "#C4CED4",
+		"color_3": "#131413",
+		"color_4": "#FFFFFF",
+		"color_5": null
+	},
+	{
+		"team": "Detroit Tigers",
+		"abbreviation": "DET",
+		"color_1": "#0C2340",
+		"color_2": "#FA4616",
+		"color_3": "#FFFFFF",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Houston Astros",
+		"abbreviation": "HOU",
+		"color_1": "#002D62",
+		"color_2": "#EB6E1F",
+		"color_3": "#F4911E",
+		"color_4": "#FFFFFF",
+		"color_5": null
+	},
+	{
+		"team": "Kansas City Royals",
+		"abbreviation": "KC",
+		"color_1": "#004687",
+		"color_2": "#BD9B60",
+		"color_3": "#FFFFFF",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Los Angeles Angels",
+		"abbreviation": "LAA",
+		"color_1": "#003263",
+		"color_2": "#BA0021",
+		"color_3": "#862633",
+		"color_4": "#C4CED4",
+		"color_5": "#FFFFFF"
+	},
+	{
+		"team": "Los Angeles Dodgers",
+		"abbreviation": "LAD",
+		"color_1": "#005A9C",
+		"color_2": "#EF3E42",
+		"color_3": "#A5ACAF",
+		"color_4": "#FFFFFF",
+		"color_5": null
+	},
+	{
+		"team": "Miami Marlins",
+		"abbreviation": "MIA",
+		"color_1": "#00A3E0",
+		"color_2": "#EF3340",
+		"color_3": "#41748D",
+		"color_4": "#000000",
+		"color_5": "#FFFFFF"
+	},
+	{
+		"team": "Milwaukee Brewers",
+		"abbreviation": "MIL",
+		"color_1": "#12284B",
+		"color_2": "#FFC52F",
+		"color_3": "#FFFFFF",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Minnesota Twins",
+		"abbreviation": "MIN",
+		"color_1": "#002B5C",
+		"color_2": "#D31145",
+		"color_3": "#B9975B",
+		"color_4": "#FFFFFF",
+		"color_5": null
+	},
+	{
+		"team": "New York Mets",
+		"abbreviation": "NYM",
+		"color_1": "#002D72",
+		"color_2": "#FF5910",
+		"color_3": "#FFFFFF",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "New York Yankees",
+		"abbreviation": "NYY",
+		"color_1": "#003087",
+		"color_2": "#E4002C",
+		"color_3": "#0C2340",
+		"color_4": "#C4CED3",
+		"color_5": "#FFFFFF"
+	},
+	{
+		"team": "Oakland Athletics",
+		"abbreviation": "OAK",
+		"color_1": "#003831",
+		"color_2": "#EFB21E",
+		"color_3": "#A2AAAD",
+		"color_4": "#FFFFFF",
+		"color_5": null
+	},
+	{
+		"team": "Philadelphia Phillies",
+		"abbreviation": "PHI",
+		"color_1": "#E81828",
+		"color_2": "#002D72",
+		"color_3": "#FFFFFF",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Pittsburgh Pirates",
+		"abbreviation": "PIT",
+		"color_1": "#27251F",
+		"color_2": "#FDB827",
+		"color_3": "#FFFFFF",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "San Diego Padres",
+		"abbreviation": "SD",
+		"color_1": "#2F241D",
+		"color_2": "#FFC425",
+		"color_3": "#FFFFFF",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "San Francisco Giants",
+		"abbreviation": "SF",
+		"color_1": "#FD5A1E",
+		"color_2": "#27251F",
+		"color_3": "#EFD19F",
+		"color_4": "#AE8F6F",
+		"color_5": "#FFFFFF"
+	},
+	{
+		"team": "Seattle Mariners",
+		"abbreviation": "SEA",
+		"color_1": "#0C2C56",
+		"color_2": "#005C5C",
+		"color_3": "#C4CED4",
+		"color_4": "#D50032",
+		"color_5": "#FFFFFF"
+	},
+	{
+		"team": "St. Louis Cardinals",
+		"abbreviation": "STL",
+		"color_1": "#C41E3A",
+		"color_2": "#0C2340",
+		"color_3": "#FEDB00",
+		"color_4": "#FFFFFF",
+		"color_5": null
+	},
+	{
+		"team": "Tampa Bay Rays",
+		"abbreviation": "TB",
+		"color_1": "#092C5C",
+		"color_2": "#8FBCE6",
+		"color_3": "#F5D130",
+		"color_4": "#FFFFFF",
+		"color_5": null
+	},
+	{
+		"team": "Texas Rangers",
+		"abbreviation": "TEX",
+		"color_1": "#003278",
+		"color_2": "#C0111F",
+		"color_3": "#FFFFFF",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Toronto Blue Jays",
+		"abbreviation": "TOR",
+		"color_1": "#134A8E",
+		"color_2": "#1D2D5C",
+		"color_3": "#E8291C",
+		"color_4": "#FFFFFF",
+		"color_5": null
+	},
+	{
+		"team": "Washington Nationals",
+		"abbreviation": "WSH",
+		"color_1": "#AB0003",
+		"color_2": "#14225A",
+		"color_3": "#FFFFFF",
+		"color_4": null,
+		"color_5": null
+	}
+]

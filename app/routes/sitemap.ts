@@ -1,21 +1,27 @@
 import schedule from '../../nfl_schedule.json'
+import mlbTeams from '../../mlb_teams.json'
 import { uniqBy } from 'lodash-es'
+import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
 
 export async function loader() {
-	let teams = uniqBy(
-		schedule.games.map((g) => g.homeTeam),
-		'id'
-	)
+	const LEAGUE = process.env.LEAGUE ?? 'NFL'
+	let teams =
+		LEAGUE === 'MLB'
+			? mlbTeams.teams.map(mlbTeamToTeam)
+			: uniqBy(
+					schedule.games.map((g) => g.homeTeam),
+					'id'
+			  )
 
 	let body = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url>
-        <loc>https://nflcountdown.tweeres.ca</loc>
+        <loc>https://${LEAGUE.toLowerCase()}countdown.tweeres.ca</loc>
     </url>
 ${teams
 	.map((t) => {
 		return `    <url>
-        <loc>https://nflcountdown.tweeres.ca/${t.abbreviation.toLowerCase()}</loc>
+        <loc>https://${LEAGUE.toLowerCase()}countdown.tweeres.ca/${t.abbreviation.toLowerCase()}</loc>
     </url>`
 	})
 	.join('\n')}

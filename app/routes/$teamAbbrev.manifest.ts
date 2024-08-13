@@ -1,12 +1,18 @@
 import { json, LoaderFunctionArgs } from '@remix-run/node'
 import { uniqBy } from 'lodash-es'
 import schedule from '../../nfl_schedule.json'
+import mlbTeams from '../../mlb_teams.json'
+import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
 
 export function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
-	let teams = uniqBy(
-		schedule.games.map((g) => g.homeTeam),
-		'id'
-	)
+	const LEAGUE = process.env.LEAGUE
+	let teams =
+		LEAGUE === 'MLB'
+			? mlbTeams.teams.map(mlbTeamToTeam)
+			: uniqBy(
+					schedule.games.map((g) => g.homeTeam),
+					'id'
+			  )
 
 	const lowercaseAbbreviation = teamAbbrev?.toLowerCase()
 
@@ -23,7 +29,9 @@ export function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
 		short_name: team.nickName,
 		icons: [
 			{
-				src: `/logos/${lowercaseAbbreviation}.png`,
+				src: `/logos/${
+					LEAGUE === 'NFL' ? '' : 'mlb/'
+				}${lowercaseAbbreviation}.png`,
 				sizes: 'any',
 			},
 		],

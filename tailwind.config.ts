@@ -1,9 +1,10 @@
 import type { Config } from 'tailwindcss'
 import schedule from './nfl_schedule.json'
+import mlbColors from './mlb_colors.json'
 
 const teams = [...new Set(schedule.games.map((g) => g.homeTeam))]
 
-const colors = teams.reduce(
+let colors = teams.reduce(
 	(result, t) => ({
 		...result,
 		[t.abbreviation.toLowerCase()]: {
@@ -14,13 +15,28 @@ const colors = teams.reduce(
 	{}
 )
 
-const safelist = teams.flatMap((t) => {
-	const lowercaseAbbreviation = t.abbreviation.toLowerCase()
+const mlbColors_ = mlbColors.reduce(
+	(result, c) => ({
+		...result,
+		['mlb-' + c.abbreviation.toLowerCase()]: {
+			DEFAULT: c.color_1,
+			secondary: c.color_2,
+		},
+	}),
+	{}
+)
+
+colors = {
+	...colors,
+	...mlbColors_,
+}
+
+const safelist = Object.keys(colors).flatMap((abbrev) => {
 	return [
-		`from-${lowercaseAbbreviation}`,
-		`to-${lowercaseAbbreviation}-secondary`,
-		`bg-${lowercaseAbbreviation}`,
-		`bg-${lowercaseAbbreviation}-secondary`,
+		`from-${abbrev}`,
+		`to-${abbrev}-secondary`,
+		`bg-${abbrev}`,
+		`bg-${abbrev}-secondary`,
 	]
 })
 

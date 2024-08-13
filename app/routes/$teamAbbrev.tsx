@@ -1,7 +1,9 @@
 import { json, LoaderFunctionArgs } from '@remix-run/node'
 import schedule from '../../nfl_schedule.json'
+import mlbSchedule from '../../mlb_schedule.json'
+import mlbTeams from '../../mlb_teams.json'
 import { MetaFunction, useLoaderData } from '@remix-run/react'
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import countdown from '../external/countdown'
 import { uniqBy, orderBy } from 'lodash-es'
 
@@ -10,13 +12,19 @@ import InstallNotification from '~/components/install-notification'
 import IosShareIcon from '~/components/IosShareIcon'
 import { Button } from '~/components/ui/button'
 import FeedbackButton from '~/components/feedback-button'
+import { mlbGameToGame, mlbTeamToTeam } from '~/lib/mlbGameToGame'
+import { LeagueContext } from '~/lib/league-context'
+import { cn } from '~/lib/utils'
 
 export const meta: MetaFunction = ({ data }) => {
+	const LEAGUE = useContext(LeagueContext)
 	const { team } = data as { team: (typeof schedule)['games'][0]['homeTeam'] }
 	const lowercaseAbbreviation = team.abbreviation.toLowerCase()
-	const title = `When is the next ${team.fullName} game? - NFL Countdown`
+	const title = `When is the next ${team.fullName} game? - ${LEAGUE} Countdown`
 	const description = `The fastest and prettiest way to check the next ${team.fullName} game. Launches instantly from your home screen.`
-	const logoUrl = `https://nflcountdown.tweeres.ca/logos/${lowercaseAbbreviation}.png`
+	const logoUrl = `https://${LEAGUE.toLowerCase()}countdown.tweeres.ca/logos/${
+		LEAGUE === 'NFL' ? '' : `${LEAGUE.toLowerCase()}/`
+	}${lowercaseAbbreviation}.png`
 	return [
 		{ title },
 		{
@@ -26,42 +34,64 @@ export const meta: MetaFunction = ({ data }) => {
 		{ name: 'theme-color', content: team.primaryColor },
 		{ name: 'og:title', content: title },
 		{ name: 'og:type', content: 'website' },
-		{ name: 'og:url', content: 'https://nflcountdown.tweeres.ca' },
+		{
+			name: 'og:url',
+			content: `https://${LEAGUE.toLowerCase()}countdown.tweeres.ca`,
+		},
 		{
 			name: 'og:image',
 			content:
 				lowercaseAbbreviation === 'kc'
-					? 'https://nflcountdown.tweeres.ca/og.png'
+					? `https://${LEAGUE.toLowerCase()}countdown.tweeres.ca/og.png`
 					: logoUrl,
 		},
 		{
 			name: 'og:description',
 			content: description,
 		},
-		{ name: 'og:site_name', content: 'NFL Countdown' },
+		{ name: 'og:site_name', content: `${LEAGUE} Countdown` },
 	]
 }
 
 export async function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
-	let teams = uniqBy(
-		schedule.games.map((g) => g.homeTeam),
-		'id'
-	)
-	teams = orderBy(teams, 'fullName')
+	if (process.env.LEAGUE === 'MLB') {
+		let teams = mlbTeams.teams.map(mlbTeamToTeam)
+		teams = orderBy(teams, 'fullName')
+		const team = teams.find(
+			(t) => t.abbreviation.toLowerCase() === teamAbbrev?.toLowerCase()
+		)
 
-	const team = teams.find(
-		(t) => t.abbreviation.toLowerCase() === teamAbbrev?.toLowerCase()
-	)
+		if (!team) {
+			throw new Response(null, { status: 404 })
+		}
 
-	if (!team) {
-		throw new Response(null, { status: 404 })
+		const games = mlbSchedule.dates
+			.flatMap((d) => d.games)
+			.map(mlbGameToGame)
+			.filter((g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id)
+
+		return json({ team, teams, games })
+	} else {
+		let teams = uniqBy(
+			schedule.games.map((g) => g.homeTeam),
+			'id'
+		)
+		teams = orderBy(teams, 'fullName')
+
+		const team = teams.find(
+			(t) => t.abbreviation.toLowerCase() === teamAbbrev?.toLowerCase()
+		)
+
+		if (!team) {
+			throw new Response(null, { status: 404 })
+		}
+
+		const games = schedule.games.filter(
+			(g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id
+		)
+
+		return json({ teams, team, games })
 	}
-
-	const games = schedule.games.filter(
-		(g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id
-	)
-
-	return json({ teams, team, games })
 }
 
 function useUpdateTime() {
@@ -80,11 +110,16 @@ function useUpdateTime() {
 }
 
 export default function Countdown() {
+	const LEAGUE = useContext(LeagueContext)
 	useUpdateTime()
 	const [showFullSchedule, setShowFullSchedule] = useState(false)
 	const { teams, team, games } = useLoaderData<typeof loader>()
 	const lowercaseAbbreviation = team.abbreviation.toLowerCase()
 	const nextGame = games[0]
+	const logo =
+		LEAGUE === 'MLB'
+			? `/logos/mlb/${lowercaseAbbreviation}.svg`
+			: `/logos/${lowercaseAbbreviation}.svg`
 
 	const countdownString = nextGame.time
 		? `${countdown(new Date(nextGame.time)).toString()} till the ${
@@ -100,6 +135,7 @@ export default function Countdown() {
 				<div className="flex gap-10">
 					<h1 className="text-2xl grow">{team.fullName} Countdown</h1>
 					<TeamsDropdown
+						LEAGUE={LEAGUE}
 						teams={teams}
 						lowercaseAbbreviation={lowercaseAbbreviation}
 					>
@@ -107,8 +143,11 @@ export default function Countdown() {
 					</TeamsDropdown>
 				</div>
 				<img
-					src={`/logos/${lowercaseAbbreviation}.svg`}
-					className="w-[256px] h-[256px] lg:w-[512px] lg:h-[512px] mx-auto"
+					src={logo}
+					className={cn(
+						'w-[256px] h-[256px] lg:w-[512px] lg:h-[512px] mx-auto',
+						{ 'py-4 lg:py-16': LEAGUE === 'MLB' }
+					)}
 					alt={`${team.fullName} logo`}
 				/>
 				<div className="text-center space-y-2">
@@ -145,7 +184,9 @@ export default function Countdown() {
 									.share({
 										title: `${team.fullName} Countdown`,
 										text: countdownString,
-										url: `${document.location.href}?utm_source=nhlcountdown&utm_medium=share_button`,
+										url: `${document.location.href}?utm_source=${
+											LEAGUE === 'MLB' ? 'mlbcountdown' : 'nflcountdown'
+										}&utm_medium=share_button`,
 									})
 									.catch((err) => {
 										// Swallow so we don't send to sentry
