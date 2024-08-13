@@ -17,8 +17,10 @@ import { LeagueContext } from '~/lib/league-context'
 import { cn } from '~/lib/utils'
 
 export const meta: MetaFunction = ({ data }) => {
-	const LEAGUE = useContext(LeagueContext)
-	const { team } = data as { team: (typeof schedule)['games'][0]['homeTeam'] }
+	const { LEAGUE, team } = data as {
+		LEAGUE: string
+		team: (typeof schedule)['games'][0]['homeTeam']
+	}
 	const lowercaseAbbreviation = team.abbreviation.toLowerCase()
 	const title = `When is the next ${team.fullName} game? - ${LEAGUE} Countdown`
 	const description = `The fastest and prettiest way to check the next ${team.fullName} game. Launches instantly from your home screen.`
@@ -54,7 +56,8 @@ export const meta: MetaFunction = ({ data }) => {
 }
 
 export async function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
-	if (process.env.LEAGUE === 'MLB') {
+	const LEAGUE = process.env.LEAGUE ?? 'NFL'
+	if (LEAGUE === 'MLB') {
 		let teams = mlbTeams.teams.map(mlbTeamToTeam)
 		teams = orderBy(teams, 'fullName')
 		const team = teams.find(
@@ -70,7 +73,7 @@ export async function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
 			.map(mlbGameToGame)
 			.filter((g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id)
 
-		return json({ team, teams, games })
+		return json({ LEAGUE, team, teams, games })
 	} else {
 		let teams = uniqBy(
 			schedule.games.map((g) => g.homeTeam),
@@ -90,7 +93,7 @@ export async function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
 			(g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id
 		)
 
-		return json({ teams, team, games })
+		return json({ LEAGUE, teams, team, games })
 	}
 }
 

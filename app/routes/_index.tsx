@@ -9,8 +9,8 @@ import { LeagueContext } from '~/lib/league-context'
 import mlbTeams from '../../mlb_teams.json'
 import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
 
-export const meta: MetaFunction = () => {
-	const LEAGUE = useContext(LeagueContext)
+export const meta: MetaFunction = ({ data }) => {
+	const LEAGUE = data.LEAGUE
 
 	const title = `When is the next ${LEAGUE} game? - ${LEAGUE} Countdown`
 	const description = `The fastest and prettiest way to check the next ${LEAGUE} game. Launches instantly from your home screen.`
@@ -39,8 +39,9 @@ export const meta: MetaFunction = () => {
 }
 
 export async function loader() {
+	const LEAGUE = process.env.LEAGUE ?? 'NFL'
 	let teams =
-		process.env.LEAGUE === 'MLB'
+		LEAGUE === 'MLB'
 			? mlbTeams.teams.map(mlbTeamToTeam)
 			: uniqBy(
 					schedule.games.map((g) => g.homeTeam),
@@ -48,12 +49,11 @@ export async function loader() {
 			  )
 	teams = orderBy(teams, 'fullName')
 
-	return json({ teams })
+	return json({ LEAGUE, teams })
 }
 
 export default function Index() {
-	const LEAGUE = useContext(LeagueContext)
-	const { teams } = useLoaderData<typeof loader>()
+	const { LEAGUE, teams } = useLoaderData<typeof loader>()
 	return (
 		<>
 			<div className="flex flex-col min-h-screen md:h-auto">
