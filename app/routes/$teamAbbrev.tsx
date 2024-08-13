@@ -15,6 +15,7 @@ import FeedbackButton from '~/components/feedback-button'
 import { mlbGameToGame, mlbTeamToTeam } from '~/lib/mlbGameToGame'
 import { LeagueContext } from '~/lib/league-context'
 import { cn } from '~/lib/utils'
+import { addHours, isAfter, isBefore } from 'date-fns'
 
 export const meta: MetaFunction = ({ data }) => {
 	const { LEAGUE, team } = data as {
@@ -78,7 +79,15 @@ export async function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
 		LEAGUE === 'MLB'
 			? mlbSchedule.dates.flatMap((d) => d.games).map(mlbGameToGame)
 			: schedule.games
-	).filter((g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id)
+	)
+		.filter((g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id)
+		.filter((g) => {
+			if (!g.time) {
+				return true
+			}
+			const threeHrsFromNow = addHours(new Date(), 3) // Handle a game in progress
+			return isAfter(g.time, threeHrsFromNow)
+		})
 
 	return json({ LEAGUE, teams, team, games })
 }
@@ -111,9 +120,11 @@ export default function Countdown() {
 			: `/logos/${lowercaseAbbreviation}.svg`
 
 	const countdownString = nextGame.time
-		? `${countdown(new Date(nextGame.time)).toString()} till the ${
-				team.nickName
-		  } play next`
+		? isBefore(nextGame.time, addHours(new Date(), 3))
+			? 'Game in progress!'
+			: `${countdown(new Date(nextGame.time)).toString()} till the ${
+					team.nickName
+			  } play next`
 		: 'Next game TBD'
 
 	return (
