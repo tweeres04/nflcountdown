@@ -146,7 +146,7 @@ export default function Countdown() {
 					src={logo}
 					className={cn(
 						'w-[256px] h-[256px] lg:w-[512px] lg:h-[512px] mx-auto',
-						{ 'py-4 lg:py-16': LEAGUE === 'MLB' }
+						{ 'py-8 lg:py-16': LEAGUE === 'MLB' }
 					)}
 					alt={`${team.fullName} logo`}
 				/>

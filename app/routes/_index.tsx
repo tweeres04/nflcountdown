@@ -77,12 +77,16 @@ export default function Index() {
 						<div>
 							<div className="space-y-1 max-w-[400px] mx-auto">
 								<img
-									src="/hero.png"
-									alt="Screenshot of Kansas City Chiefs countdown in action."
+									src={LEAGUE === 'MLB' ? '/mlb-hero.png' : '/hero.png'}
+									alt={`Screenshot of ${
+										LEAGUE === 'MLB' ? 'Texas Rangers' : 'Kansas City Chiefs'
+									} countdown in action.`}
 									className="rounded-sm"
 								/>
 								<p className="text-sm">
-									Screenshot of Kansas City Chiefs countdown in action.
+									Screenshot of{' '}
+									{LEAGUE === 'MLB' ? 'Texas Rangers' : 'Kansas City Chiefs'}{' '}
+									countdown in action.
 								</p>
 							</div>
 						</div>
