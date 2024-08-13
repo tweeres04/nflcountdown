@@ -57,44 +57,30 @@ export const meta: MetaFunction = ({ data }) => {
 
 export async function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
 	const LEAGUE = process.env.LEAGUE ?? 'NFL'
-	if (LEAGUE === 'MLB') {
-		let teams = mlbTeams.teams.map(mlbTeamToTeam)
-		teams = orderBy(teams, 'fullName')
-		const team = teams.find(
-			(t) => t.abbreviation.toLowerCase() === teamAbbrev?.toLowerCase()
-		)
+	let teams =
+		LEAGUE === 'MLB'
+			? mlbTeams.teams.map(mlbTeamToTeam)
+			: uniqBy(
+					schedule.games.map((g) => g.homeTeam),
+					'id'
+			  )
+	teams = orderBy(teams, 'fullName')
 
-		if (!team) {
-			throw new Response(null, { status: 404 })
-		}
+	const team = teams.find(
+		(t) => t.abbreviation.toLowerCase() === teamAbbrev?.toLowerCase()
+	)
 
-		const games = mlbSchedule.dates
-			.flatMap((d) => d.games)
-			.map(mlbGameToGame)
-			.filter((g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id)
-
-		return json({ LEAGUE, team, teams, games })
-	} else {
-		let teams = uniqBy(
-			schedule.games.map((g) => g.homeTeam),
-			'id'
-		)
-		teams = orderBy(teams, 'fullName')
-
-		const team = teams.find(
-			(t) => t.abbreviation.toLowerCase() === teamAbbrev?.toLowerCase()
-		)
-
-		if (!team) {
-			throw new Response(null, { status: 404 })
-		}
-
-		const games = schedule.games.filter(
-			(g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id
-		)
-
-		return json({ LEAGUE, teams, team, games })
+	if (!team) {
+		throw new Response(null, { status: 404 })
 	}
+
+	const games = (
+		LEAGUE === 'MLB'
+			? mlbSchedule.dates.flatMap((d) => d.games).map(mlbGameToGame)
+			: schedule.games
+	).filter((g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id)
+
+	return json({ LEAGUE, teams, team, games })
 }
 
 function useUpdateTime() {
