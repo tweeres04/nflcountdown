@@ -21,9 +21,9 @@ export default function TeamsDropdown({
 }: Props) {
 	const LEAGUE = useContext(LeagueContext)
 	const color = lowercaseAbbreviation
-		? LEAGUE === 'MLB'
-			? `mlb-${lowercaseAbbreviation}`
-			: lowercaseAbbreviation
+		? LEAGUE === 'NFL'
+			? lowercaseAbbreviation
+			: `${LEAGUE.toLowerCase()}-${lowercaseAbbreviation}`
 		: 'stone-900'
 	return (
 		<DropdownMenu>

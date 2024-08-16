@@ -1,6 +1,7 @@
 #!/bin/bash
 
-BASE_DIR="public/logos/"
+# must have trailing slash
+BASE_DIR="public/logos/nba/"
 
 # Convert SVG to PNG with a size of 512x512 pixels
 for file in ${BASE_DIR}*.svg; do

@@ -17,6 +17,15 @@ services:
     environment:
       LEAGUE: MLB
       GTAG_ID: G-Z5RM9E7MN3
+  nbacountdown:
+    build:
+      dockerfile: ./Dockerfile
+      context: .
+    restart: always
+    env_file: '.env.production'
+    environment:
+      LEAGUE: NBA
+      GTAG_ID: G-ZN8T6TJEGC
 
 networks:
   default:

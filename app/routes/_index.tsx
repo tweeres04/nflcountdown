@@ -4,17 +4,17 @@ import schedule from '../../nfl_schedule.json'
 import TeamsDropdown from '~/components/ui/teams-dropdown'
 import { useLoaderData } from '@remix-run/react'
 import { Button } from '~/components/ui/button'
-import { useContext } from 'react'
-import { LeagueContext } from '~/lib/league-context'
 import mlbTeams from '../../mlb_teams.json'
 import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
+import { nbaTeams, nbaTeamToTeam } from '~/lib/nbaGameToGame'
 
 export const meta: MetaFunction = ({ data }) => {
 	const LEAGUE = data.LEAGUE
+	const lowercaseLeague = LEAGUE.toLowerCase()
 
 	const title = `When is the next ${LEAGUE} game? - ${LEAGUE} Countdown`
 	const description = `The fastest and prettiest way to check the next ${LEAGUE} game. Launches instantly from your home screen.`
-	const ogImage = LEAGUE === 'MLB' ? 'mlb-og.png' : 'og.png'
+	const ogImage = LEAGUE === 'NFL' ? 'og.png' : `${lowercaseLeague}-og.png`
 	return [
 		{ title },
 		{
@@ -25,11 +25,11 @@ export const meta: MetaFunction = ({ data }) => {
 		{ name: 'og:type', content: 'website' },
 		{
 			name: 'og:url',
-			content: `https://${LEAGUE.toLowerCase()}countdown.tweeres.ca`,
+			content: `https://${lowercaseLeague}countdown.tweeres.ca`,
 		},
 		{
 			name: 'og:image',
-			content: `https://${LEAGUE.toLowerCase()}countdown.tweeres.ca/${ogImage}`,
+			content: `https://${lowercaseLeague}countdown.tweeres.ca/${ogImage}`,
 		},
 		{
 			name: 'og:description',
@@ -44,6 +44,8 @@ export async function loader() {
 	let teams =
 		LEAGUE === 'MLB'
 			? mlbTeams.teams.map(mlbTeamToTeam)
+			: LEAGUE === 'NBA'
+			? nbaTeams.map(nbaTeamToTeam)
 			: uniqBy(
 					schedule.games.map((g) => g.homeTeam),
 					'id'
@@ -78,15 +80,27 @@ export default function Index() {
 						<div>
 							<div className="space-y-1 max-w-[400px] mx-auto">
 								<img
-									src={LEAGUE === 'MLB' ? '/mlb-hero.png' : '/hero.png'}
+									src={
+										LEAGUE === 'NFL'
+											? '/hero.png'
+											: `/${LEAGUE.toLowerCase()}-hero.png`
+									}
 									alt={`Screenshot of ${
-										LEAGUE === 'MLB' ? 'Texas Rangers' : 'Kansas City Chiefs'
+										LEAGUE === 'MLB'
+											? 'Texas Rangers'
+											: LEAGUE === 'NBA'
+											? 'Boston Celtics'
+											: 'Kansas City Chiefs'
 									} countdown in action.`}
 									className="rounded-sm"
 								/>
 								<p className="text-sm">
 									Screenshot of{' '}
-									{LEAGUE === 'MLB' ? 'Texas Rangers' : 'Kansas City Chiefs'}{' '}
+									{LEAGUE === 'MLB'
+										? 'Texas Rangers'
+										: LEAGUE === 'NBA'
+										? 'Boston Celtics'
+										: 'Kansas City Chiefs'}{' '}
 									countdown in action.
 								</p>
 							</div>
@@ -105,6 +119,13 @@ export default function Index() {
 									title="baseball icons"
 								>
 									Baseball icons created by Freepik - Flaticon
+								</a>
+							) : LEAGUE === 'NBA' ? (
+								<a
+									href="https://www.flaticon.com/free-icons/basketball"
+									title="basketball icons"
+								>
+									Basketball icons created by Freepik - Flaticon
 								</a>
 							) : (
 								<a

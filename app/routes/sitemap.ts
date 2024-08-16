@@ -2,12 +2,15 @@ import schedule from '../../nfl_schedule.json'
 import mlbTeams from '../../mlb_teams.json'
 import { uniqBy } from 'lodash-es'
 import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
+import { nbaTeams, nbaTeamToTeam } from '~/lib/nbaGameToGame'
 
 export async function loader() {
 	const LEAGUE = process.env.LEAGUE ?? 'NFL'
 	let teams =
 		LEAGUE === 'MLB'
 			? mlbTeams.teams.map(mlbTeamToTeam)
+			: LEAGUE === 'NBA'
+			? nbaTeams.map(nbaTeamToTeam)
 			: uniqBy(
 					schedule.games.map((g) => g.homeTeam),
 					'id'

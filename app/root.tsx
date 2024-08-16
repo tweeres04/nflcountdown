@@ -31,16 +31,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
 	const { LEAGUE, GTAG_ID } = useLoaderData<typeof loader>()
 	const { teamAbbrev } = useParams()
 	const lowercaseAbbreviation = teamAbbrev?.toLowerCase()
+	const lowercaseLeague = LEAGUE.toLowerCase()
 	const color =
-		LEAGUE === 'MLB' ? `mlb-${lowercaseAbbreviation}` : lowercaseAbbreviation
+		LEAGUE === 'NFL'
+			? lowercaseAbbreviation
+			: `${lowercaseLeague}-${lowercaseAbbreviation}`
 	const gradientClass = `bg-fixed bg-gradient-to-b from-${color} to-${color}-secondary`
 	const logo = (filetype: string) =>
 		teamAbbrev
 			? `/logos/${
-					LEAGUE === 'NFL' ? '' : 'mlb/'
+					LEAGUE === 'NFL' ? '' : `${lowercaseLeague}/`
 			  }${lowercaseAbbreviation}.${filetype}`
 			: LEAGUE === 'MLB'
 			? `/baseball.${filetype}`
+			: LEAGUE === 'NBA'
+			? `basketball.${filetype}`
 			: `/football.${filetype}`
 
 	const { deferredPrompt } = useDeferredInstallPrompt()

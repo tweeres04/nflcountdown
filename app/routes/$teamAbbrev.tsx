@@ -2,6 +2,7 @@ import { json, LoaderFunctionArgs } from '@remix-run/node'
 import schedule from '../../nfl_schedule.json'
 import mlbSchedule from '../../mlb_schedule.json'
 import mlbTeams from '../../mlb_teams.json'
+import nbaSchedule from '../../nba_schedule.json'
 import { MetaFunction, useLoaderData } from '@remix-run/react'
 import { useContext, useEffect, useRef, useState } from 'react'
 import countdown from '../external/countdown'
@@ -16,11 +17,13 @@ import { mlbGameToGame, mlbTeamToTeam } from '~/lib/mlbGameToGame'
 import { LeagueContext } from '~/lib/league-context'
 import { cn } from '~/lib/utils'
 import { addHours, isAfter, subHours, isWithinInterval } from 'date-fns'
+import { Team } from '~/lib/types'
+import { nbaGameToGame, nbaTeams, nbaTeamToTeam } from '~/lib/nbaGameToGame'
 
 export const meta: MetaFunction = ({ data }) => {
 	const { LEAGUE, team } = data as {
 		LEAGUE: string
-		team: (typeof schedule)['games'][0]['homeTeam']
+		team: Team
 	}
 	const lowercaseAbbreviation = team.abbreviation.toLowerCase()
 	const title = `When is the next ${team.fullName} game? - ${LEAGUE} Countdown`
@@ -56,6 +59,8 @@ export async function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
 	let teams =
 		LEAGUE === 'MLB'
 			? mlbTeams.teams.map(mlbTeamToTeam)
+			: LEAGUE === 'NBA'
+			? nbaTeams.map(nbaTeamToTeam)
 			: uniqBy(
 					schedule.games.map((g) => g.homeTeam),
 					'id'
@@ -73,6 +78,11 @@ export async function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
 	const games = (
 		LEAGUE === 'MLB'
 			? mlbSchedule.dates.flatMap((d) => d.games).map(mlbGameToGame)
+			: LEAGUE === 'NBA'
+			? nbaSchedule.leagueSchedule.gameDates
+					.flatMap((gd) => gd.games)
+					.filter((g) => g.homeTeam.teamId > 0)
+					.map(nbaGameToGame)
 			: schedule.games
 	)
 		.filter((g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id)
@@ -110,9 +120,9 @@ export default function Countdown() {
 	const lowercaseAbbreviation = team.abbreviation.toLowerCase()
 	const nextGame = games[0]
 	const logo =
-		LEAGUE === 'MLB'
-			? `/logos/mlb/${lowercaseAbbreviation}.svg`
-			: `/logos/${lowercaseAbbreviation}.svg`
+		LEAGUE === 'NFL'
+			? `/logos/${lowercaseAbbreviation}.svg`
+			: `/logos/${LEAGUE.toLowerCase()}/${lowercaseAbbreviation}.svg`
 
 	const countdownString = nextGame.time
 		? isWithinInterval(new Date(), {
@@ -182,9 +192,9 @@ export default function Countdown() {
 									.share({
 										title: `${team.fullName} Countdown`,
 										text: countdownString,
-										url: `${document.location.href}?utm_source=${
-											LEAGUE === 'MLB' ? 'mlbcountdown' : 'nflcountdown'
-										}&utm_medium=share_button`,
+										url: `${
+											document.location.href
+										}?utm_source=${LEAGUE.toLowerCase()}countdown&utm_medium=share_button`,
 									})
 									.catch((err) => {
 										// Swallow so we don't send to sentry

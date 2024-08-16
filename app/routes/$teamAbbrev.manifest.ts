@@ -2,6 +2,7 @@ import { json, LoaderFunctionArgs } from '@remix-run/node'
 import { uniqBy } from 'lodash-es'
 import schedule from '../../nfl_schedule.json'
 import mlbTeams from '../../mlb_teams.json'
+import { nbaTeams, nbaTeamToTeam } from '~/lib/nbaGameToGame'
 import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
 
 export function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
@@ -9,6 +10,8 @@ export function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
 	let teams =
 		LEAGUE === 'MLB'
 			? mlbTeams.teams.map(mlbTeamToTeam)
+			: LEAGUE === 'NBA'
+			? nbaTeams.map(nbaTeamToTeam)
 			: uniqBy(
 					schedule.games.map((g) => g.homeTeam),
 					'id'
@@ -30,7 +33,7 @@ export function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
 		icons: [
 			{
 				src: `/logos/${
-					LEAGUE === 'NFL' ? '' : 'mlb/'
+					LEAGUE === 'NFL' ? '' : `${LEAGUE?.toLowerCase()}/`
 				}${lowercaseAbbreviation}.png`,
 				sizes: 'any',
 			},

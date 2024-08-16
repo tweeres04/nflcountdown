@@ -2,26 +2,10 @@ import mlbSchedule from '../../mlb_schedule.json'
 import mlbTeams from '../../mlb_teams.json'
 import mlbColors from '../../mlb_colors.json'
 
+import { Game, Team } from './types'
+
 type MlbGame = (typeof mlbSchedule)['dates'][0]['games'][0]
 type MlbTeam = (typeof mlbTeams)['teams'][0]
-
-type IsoDateString = string
-
-type Team = {
-	id: number
-	nickName: string
-	fullName: string
-	abbreviation: string
-	primaryColor: string
-	secondaryColor: string
-}
-
-type Game = {
-	id: string
-	time: IsoDateString
-	homeTeam: Team
-	awayTeam: Team
-}
 
 export function mlbTeamToTeam({
 	id,

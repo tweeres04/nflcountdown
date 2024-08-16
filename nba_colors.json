@@ -1,0 +1,272 @@
+[
+	{
+		"team": "Atlanta Hawks",
+		"abbreviation": "ATL",
+		"color_1": "#E03A3E",
+		"color_2": "#C1D32F",
+		"color_3": "#26282A",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Boston Celtics",
+		"abbreviation": "BOS",
+		"color_1": "#007A33",
+		"color_2": "#BA9653",
+		"color_3": "#963821",
+		"color_4": "#FFFFFF",
+		"color_5": "#000000"
+	},
+	{
+		"team": "Brooklyn Nets",
+		"abbreviation": "BKN",
+		"color_1": "#000000",
+		"color_2": "#FFFFFF",
+		"color_3": null,
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Charlotte Hornets",
+		"abbreviation": "CHA",
+		"color_1": "#1D1160",
+		"color_2": "#00788C",
+		"color_3": "#A1A1A4",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Chicago Bulls",
+		"abbreviation": "CHI",
+		"color_1": "#CE1141",
+		"color_2": "#000000",
+		"color_3": null,
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Cleveland Cavaliers",
+		"abbreviation": "CLE",
+		"color_1": "#860038",
+		"color_2": "#041E42",
+		"color_3": "#FDBB30",
+		"color_4": "#000000",
+		"color_5": null
+	},
+	{
+		"team": "Dallas Mavericks",
+		"abbreviation": "DAL",
+		"color_1": "#00538C",
+		"color_2": "#002B5E",
+		"color_3": "#B8C4CA",
+		"color_4": "#000000",
+		"color_5": null
+	},
+	{
+		"team": "Denver Nuggets",
+		"abbreviation": "DEN",
+		"color_1": "#0E2240",
+		"color_2": "#FEC524",
+		"color_3": "#8B2131",
+		"color_4": "#1D428A",
+		"color_5": null
+	},
+	{
+		"team": "Detroit Pistons",
+		"abbreviation": "DET",
+		"color_1": "#C8102E",
+		"color_2": "#1D42BA",
+		"color_3": "#BEC0C2",
+		"color_4": "#002D62",
+		"color_5": null
+	},
+	{
+		"team": "Golden State Warriors",
+		"abbreviation": "GSW",
+		"color_1": "#1D428A",
+		"color_2": "#FFC72C",
+		"color_3": null,
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Houston Rockets",
+		"abbreviation": "HOU",
+		"color_1": "#CE1141",
+		"color_2": "#000000",
+		"color_3": "#C4CED4",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Indiana Pacers",
+		"abbreviation": "IND",
+		"color_1": "#002D62",
+		"color_2": "#FDBB30",
+		"color_3": "#BEC0C2",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Los Angeles Clippers",
+		"abbreviation": "LAC",
+		"color_1": "#C8102E",
+		"color_2": "#1D428A",
+		"color_3": "#BEC0C2",
+		"color_4": "#000000",
+		"color_5": null
+	},
+	{
+		"team": "Los Angeles Lakers",
+		"abbreviation": "LAL",
+		"color_1": "#552583",
+		"color_2": "#FDB927",
+		"color_3": "#000000",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Memphis Grizzlies",
+		"abbreviation": "MEM",
+		"color_1": "#5D76A9",
+		"color_2": "#12173F",
+		"color_3": "#F5B112",
+		"color_4": "#707271",
+		"color_5": null
+	},
+	{
+		"team": "Miami Heat",
+		"abbreviation": "MIA",
+		"color_1": "#98002E",
+		"color_2": "#F9A01B",
+		"color_3": "#000000",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Milwaukee Bucks",
+		"abbreviation": "MIL",
+		"color_1": "#00471B",
+		"color_2": "#EEE1C6",
+		"color_3": "#0077C0",
+		"color_4": "#000000",
+		"color_5": null
+	},
+	{
+		"team": "Minnesota Timberwolves",
+		"abbreviation": "MIN",
+		"color_1": "#0C2340",
+		"color_2": "#236192",
+		"color_3": "#9EA2A2",
+		"color_4": "#78BE20",
+		"color_5": null
+	},
+	{
+		"team": "New Orleans Pelicans",
+		"abbreviation": "NOP",
+		"color_1": "#0C2340",
+		"color_2": "#C8102E",
+		"color_3": "#85714D",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "New York Knicks",
+		"abbreviation": "NYK",
+		"color_1": "#006BB6",
+		"color_2": "#F58426",
+		"color_3": "#BEC0C2",
+		"color_4": "#000000",
+		"color_5": null
+	},
+	{
+		"team": "Oklahoma City Thunder",
+		"abbreviation": "OKC",
+		"color_1": "#007AC1",
+		"color_2": "#EF3B24",
+		"color_3": "#002D62",
+		"color_4": "#FDBB30",
+		"color_5": null
+	},
+	{
+		"team": "Orlando Magic",
+		"abbreviation": "ORL",
+		"color_1": "#0077C0",
+		"color_2": "#C4CED4",
+		"color_3": "#000000",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Philadelphia 76ers",
+		"abbreviation": "PHI",
+		"color_1": "#006BB6",
+		"color_2": "#ED174C",
+		"color_3": "#002B5C",
+		"color_4": "#C4CED4",
+		"color_5": null
+	},
+	{
+		"team": "Phoenix Suns",
+		"abbreviation": "PHX",
+		"color_1": "#1D1160",
+		"color_2": "#E56020",
+		"color_3": "#000000",
+		"color_4": "#63727A",
+		"color_5": "#F9AD1B"
+	},
+	{
+		"team": "Portland Trail Blazers",
+		"abbreviation": "POR",
+		"color_1": "#E03A3E",
+		"color_2": "#000000",
+		"color_3": null,
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Sacramento Kings",
+		"abbreviation": "SAC",
+		"color_1": "#5A2D81",
+		"color_2": "#63727A",
+		"color_3": "#000000",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "San Antonio Spurs",
+		"abbreviation": "SAS",
+		"color_1": "#C4CED4",
+		"color_2": "#000000",
+		"color_3": null,
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Toronto Raptors",
+		"abbreviation": "TOR",
+		"color_1": "#CE1141",
+		"color_2": "#000000",
+		"color_3": "#A1A1A4",
+		"color_4": "#B4975A",
+		"color_5": null
+	},
+	{
+		"team": "Utah Jazz",
+		"abbreviation": "UTA",
+		"color_1": "#002B5C",
+		"color_2": "#00471B",
+		"color_3": "#F9A01B",
+		"color_4": null,
+		"color_5": null
+	},
+	{
+		"team": "Washington Wizards",
+		"abbreviation": "WAS",
+		"color_1": "#002B5C",
+		"color_2": "#E31837",
+		"color_3": "#C4CED4",
+		"color_4": null,
+		"color_5": null
+	}
+]

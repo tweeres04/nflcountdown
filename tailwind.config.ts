@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss'
 import schedule from './nfl_schedule.json'
 import mlbColors from './mlb_colors.json'
+import nbaColors from './nba_colors.json'
 
 const teams = [...new Set(schedule.games.map((g) => g.homeTeam))]
 
@@ -25,10 +26,21 @@ const mlbColors_ = mlbColors.reduce(
 	}),
 	{}
 )
+const nbaColors_ = nbaColors.reduce(
+	(result, c) => ({
+		...result,
+		['nba-' + c.abbreviation.toLowerCase()]: {
+			DEFAULT: c.color_1,
+			secondary: c.color_2,
+		},
+	}),
+	{}
+)
 
 colors = {
 	...colors,
 	...mlbColors_,
+	...nbaColors_,
 }
 
 const safelist = Object.keys(colors).flatMap((abbrev) => {

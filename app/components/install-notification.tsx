@@ -36,7 +36,9 @@ export default function InstallNotification({
 	const deferredInstallPrompt = useContext(DeferredInstallPromptContext)
 	const LEAGUE = useContext(LeagueContext)
 	const color =
-		LEAGUE === 'MLB' ? `mlb-${lowercaseAbbreviation}` : lowercaseAbbreviation
+		LEAGUE === 'NFL'
+			? lowercaseAbbreviation
+			: `${LEAGUE.toLowerCase()}-${lowercaseAbbreviation}`
 
 	useEffect(() => {
 		const isStandalone = window.matchMedia('(display-mode: standalone)').matches
