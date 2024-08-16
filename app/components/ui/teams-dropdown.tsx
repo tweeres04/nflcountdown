@@ -5,11 +5,11 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
-import games from '../../../nfl_schedule.json'
+import { Team } from '~/lib/types'
 import { LeagueContext } from '~/lib/league-context'
 
 type Props = {
-	teams: (typeof games)['games'][0]['homeTeam'][]
+	teams: Team[]
 	lowercaseAbbreviation?: string
 	children: ReactNode
 }
