@@ -4,7 +4,7 @@ export async function loader() {
 	const body = `User-Agent: *
 Disallow:
 
-Sitemap: https://${LEAGUE}countdown.tweeres.ca/sitemap`
+Sitemap: https://${LEAGUE}countdown.tweeres.com/sitemap`
 
 	return new Response(body, {
 		headers: {

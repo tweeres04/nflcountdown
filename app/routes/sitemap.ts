@@ -19,12 +19,12 @@ export async function loader() {
 	let body = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url>
-        <loc>https://${LEAGUE.toLowerCase()}countdown.tweeres.ca</loc>
+        <loc>https://${LEAGUE.toLowerCase()}countdown.tweeres.com</loc>
     </url>
 ${teams
 	.map((t) => {
 		return `    <url>
-        <loc>https://${LEAGUE.toLowerCase()}countdown.tweeres.ca/${t.abbreviation.toLowerCase()}</loc>
+        <loc>https://${LEAGUE.toLowerCase()}countdown.tweeres.com/${t.abbreviation.toLowerCase()}</loc>
     </url>`
 	})
 	.join('\n')}

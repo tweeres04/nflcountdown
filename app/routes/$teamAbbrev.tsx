@@ -28,7 +28,7 @@ export const meta: MetaFunction = ({ data }) => {
 	const lowercaseAbbreviation = team.abbreviation.toLowerCase()
 	const title = `When is the next ${team.fullName} game? - ${LEAGUE} Countdown`
 	const description = `The fastest and prettiest way to check the next ${team.fullName} game. Launches instantly from your home screen.`
-	const ogImage = `https://${LEAGUE.toLowerCase()}countdown.tweeres.ca/og/${LEAGUE.toLowerCase()}/${lowercaseAbbreviation}.png`
+	const ogImage = `https://${LEAGUE.toLowerCase()}countdown.tweeres.com/og/${LEAGUE.toLowerCase()}/${lowercaseAbbreviation}.png`
 	return [
 		{ title },
 		{
@@ -40,7 +40,7 @@ export const meta: MetaFunction = ({ data }) => {
 		{ name: 'og:type', content: 'website' },
 		{
 			name: 'og:url',
-			content: `https://${LEAGUE.toLowerCase()}countdown.tweeres.ca`,
+			content: `https://${LEAGUE.toLowerCase()}countdown.tweeres.com`,
 		},
 		{
 			name: 'og:image',

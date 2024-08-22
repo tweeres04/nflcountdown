@@ -25,11 +25,11 @@ export const meta: MetaFunction = ({ data }) => {
 		{ name: 'og:type', content: 'website' },
 		{
 			name: 'og:url',
-			content: `https://${lowercaseLeague}countdown.tweeres.ca`,
+			content: `https://${lowercaseLeague}countdown.tweeres.com`,
 		},
 		{
 			name: 'og:image',
-			content: `https://${lowercaseLeague}countdown.tweeres.ca/${ogImage}`,
+			content: `https://${lowercaseLeague}countdown.tweeres.com/${ogImage}`,
 		},
 		{
 			name: 'og:description',
