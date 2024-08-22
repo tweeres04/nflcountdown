@@ -17,9 +17,15 @@ import {
 } from './components/install-notification'
 
 import { LeagueContext } from './lib/league-context'
+import { LoaderFunctionArgs } from '@remix-run/node'
 
-export function loader() {
+export function loader({ request }: LoaderFunctionArgs) {
 	const LEAGUE = process.env.LEAGUE ?? 'NFL'
+	const url = new URL(request.url)
+	if (url.hostname.endsWith('.ca')) {
+		url.hostname = `${LEAGUE.toLowerCase()}countdown.tweeres.com`
+		return Response.redirect(url.toString(), 308)
+	}
 	const GTAG_ID = process.env.GTAG_ID
 	return json({
 		LEAGUE,
