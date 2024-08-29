@@ -15,6 +15,7 @@ export const meta: MetaFunction = ({ data }) => {
 	const title = `When is the next ${LEAGUE} game? - ${LEAGUE} Countdown`
 	const description = `The fastest and prettiest way to check the next ${LEAGUE} game. Launches instantly from your home screen.`
 	const ogImage = LEAGUE === 'NFL' ? 'og.png' : `${lowercaseLeague}-og.png`
+	const url = `https://${lowercaseLeague}countdown.tweeres.com`
 	return [
 		{ title },
 		{
@@ -25,7 +26,7 @@ export const meta: MetaFunction = ({ data }) => {
 		{ name: 'og:type', content: 'website' },
 		{
 			name: 'og:url',
-			content: `https://${lowercaseLeague}countdown.tweeres.com`,
+			content: url,
 		},
 		{
 			name: 'og:image',
@@ -36,6 +37,11 @@ export const meta: MetaFunction = ({ data }) => {
 			content: description,
 		},
 		{ name: 'og:site_name', content: `${LEAGUE} Countdown` },
+		{
+			tagName: 'link',
+			rel: 'canonical',
+			href: url,
+		},
 	]
 }
 
