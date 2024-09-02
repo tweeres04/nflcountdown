@@ -20,6 +20,15 @@ import { addHours, isAfter, subHours, isWithinInterval } from 'date-fns'
 import { Team } from '~/lib/types'
 import { nbaGameToGame, nbaTeams, nbaTeamToTeam } from '~/lib/nbaGameToGame'
 
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu'
+
 export const meta: MetaFunction = ({ data }) => {
 	const { LEAGUE, team } = data as {
 		LEAGUE: string
@@ -153,7 +162,23 @@ export default function Countdown() {
 						teams={teams}
 						lowercaseAbbreviation={lowercaseAbbreviation}
 					>
-						<button className="px-3 py-2">Teams</button>
+						<button className="px-3 py-2 flex gap-1">
+							<span className="hidden lg:inline">Teams</span>{' '}
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								strokeWidth={1.5}
+								stroke="currentColor"
+								className="size-6"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+								/>
+							</svg>
+						</button>
 					</TeamsDropdown>
 				</div>
 				<img
