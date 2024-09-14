@@ -17,6 +17,7 @@ export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData()
 	const entries = [...formData.entries()]
 	entries.push(['referer', request.headers.get('referer') ?? 'Not found'])
+	const userEmail = formData.get('email') ?? undefined
 	const emailBody = `
 		<ul style="list-style: none; padding-left: 0;">
 			${entries
@@ -34,6 +35,7 @@ export async function action({ request }: ActionFunctionArgs) {
 		subject: `${LEAGUE} Countdown feedback`,
 		html: emailBody,
 		'o:tag': [`${LEAGUE.toLowerCase()}countdown_feedback`],
+		'h:Reply-To': userEmail,
 	})
 
 	const referer = request.headers.get('referer')
