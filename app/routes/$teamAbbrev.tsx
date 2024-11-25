@@ -139,7 +139,7 @@ export default function Countdown() {
 			? `/logos/${lowercaseAbbreviation}.svg`
 			: `/logos/${LEAGUE.toLowerCase()}/${lowercaseAbbreviation}.svg`
 
-	const countdownString = nextGame.time
+	const countdownString = nextGame?.time
 		? isWithinInterval(new Date(), {
 				start: nextGame.time,
 				end: addHours(nextGame.time, 3),
@@ -190,7 +190,7 @@ export default function Countdown() {
 					alt={`${team.fullName} logo`}
 				/>
 				<div className="text-center space-y-2">
-					{nextGame.time ? (
+					{nextGame?.time ? (
 						<>
 							<div className="text-3xl">{countdownString}</div>
 							<div>
@@ -212,7 +212,7 @@ export default function Countdown() {
 							</div>
 						</>
 					) : (
-						<div className="text-3xl">Game time TBD</div>
+						<div className="text-3xl">Next game TBD</div>
 					)}
 				</div>
 				<div className="mt-8 space-y-3">

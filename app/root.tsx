@@ -34,10 +34,10 @@ export function loader({ request }: LoaderFunctionArgs) {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-	const { LEAGUE, GTAG_ID } = useLoaderData<typeof loader>()
+	const { LEAGUE, GTAG_ID } = useLoaderData<typeof loader>() ?? {} // empty object in case we're in an error page
 	const { teamAbbrev } = useParams()
 	const lowercaseAbbreviation = teamAbbrev?.toLowerCase()
-	const lowercaseLeague = LEAGUE.toLowerCase()
+	const lowercaseLeague = LEAGUE?.toLowerCase()
 	const color =
 		LEAGUE === 'NFL'
 			? lowercaseAbbreviation
