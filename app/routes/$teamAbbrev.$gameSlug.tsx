@@ -1,5 +1,5 @@
 import { json, LoaderFunctionArgs } from '@remix-run/node'
-import { MetaFunction, useLoaderData } from '@remix-run/react'
+import { Link, MetaFunction, useLoaderData } from '@remix-run/react'
 import schedule from '../../nfl_schedule.json'
 import mlbSchedule from '../../mlb_schedule.json'
 import mlbTeams from '../../mlb_teams.json'
@@ -16,7 +16,7 @@ import FeedbackButton from '~/components/feedback-button'
 import { mlbGameToGame, mlbTeamToTeam } from '~/lib/mlbGameToGame'
 import { LeagueContext } from '~/lib/league-context'
 import { cn } from '~/lib/utils'
-import { addHours, isWithinInterval } from 'date-fns'
+import { addHours, isWithinInterval, subHours, isAfter } from 'date-fns'
 import { Team } from '~/lib/types'
 import { nbaGameToGame, nbaTeams, nbaTeamToTeam } from '~/lib/nbaGameToGame'
 import { getGameSlug } from '~/lib/getGameSlug'
@@ -112,19 +112,27 @@ export async function loader({
 					.filter((g) => g.homeTeam.teamId > 0)
 					.map(nbaGameToGame)
 			: schedule.games
-	).filter((g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id)
+	)
+		.filter((g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id)
+		.filter((g) => {
+			if (!g.time) {
+				return true
+			}
+			const threeHrsAgo = subHours(new Date(), 3) // Handle a game in progress
+			return isAfter(g.time, threeHrsAgo)
+		})
 
-	const game = games.find((g) => {
+	const currentGame = games.find((g) => {
 		if (!g.time) return false
 		const expectedSlug = getGameSlug(g, team.abbreviation)
 		return expectedSlug === gameSlug
 	})
 
-	if (!game) {
+	if (!currentGame) {
 		throw new Response(null, { status: 404 })
 	}
 
-	return json({ LEAGUE, teams, team, game })
+	return json({ LEAGUE, teams, team, game: currentGame, games })
 }
 
 function useUpdateTime() {
@@ -145,7 +153,8 @@ function useUpdateTime() {
 export default function GameCountdown() {
 	const LEAGUE = useContext(LeagueContext)
 	useUpdateTime()
-	const { teams, team, game } = useLoaderData<typeof loader>()
+	const { teams, team, game, games } = useLoaderData<typeof loader>()
+	const [showFullSchedule, setShowFullSchedule] = useState(false)
 	const lowercaseAbbreviation = team.abbreviation.toLowerCase()
 	const logo =
 		LEAGUE === 'NFL'
@@ -246,7 +255,68 @@ export default function GameCountdown() {
 						</Button>
 					) : null}
 					<FeedbackButton />
+					<Button
+						onClick={() => {
+							setShowFullSchedule((value) => !value)
+						}}
+					>
+						{showFullSchedule ? 'Hide schedule' : 'Show full schedule'}{' '}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							strokeWidth={1.5}
+							stroke="currentColor"
+							className="size-5"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+							/>
+						</svg>
+					</Button>
 				</div>
+
+				{showFullSchedule ? (
+					<ul className="space-y-5 mt-8">
+						{games.map((g) => {
+							const gameSlug = getGameSlug(g, team.abbreviation)
+
+							const linkContent = (
+								<>
+									<div className="font-bold text-lg">
+										{g.time
+											? new Intl.DateTimeFormat('en-US', {
+													dateStyle: 'full',
+													timeStyle: 'short',
+											  }).format(new Date(g.time))
+											: 'TBD'}
+									</div>
+									{g.homeTeam.abbreviation === team.abbreviation ? 'vs' : 'at'}{' '}
+									{g.homeTeam.abbreviation !== team.abbreviation
+										? g.homeTeam.fullName
+										: g.awayTeam.fullName}
+								</>
+							)
+
+							return (
+								<li key={g.id}>
+									{gameSlug ? (
+										<Link
+											to={`/${team.abbreviation}/${gameSlug}`}
+											className="hover:text-white/80"
+										>
+											{linkContent}
+										</Link>
+									) : (
+										linkContent
+									)}
+								</li>
+							)
+						})}
+					</ul>
+				) : null}
 			</div>
 			<InstallNotification
 				lowercaseAbbreviation={lowercaseAbbreviation}
