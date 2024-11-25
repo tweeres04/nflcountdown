@@ -3,7 +3,7 @@ import schedule from '../../nfl_schedule.json'
 import mlbSchedule from '../../mlb_schedule.json'
 import mlbTeams from '../../mlb_teams.json'
 import nbaSchedule from '../../nba_schedule.json'
-import { MetaFunction, useLoaderData } from '@remix-run/react'
+import { MetaFunction, useLoaderData, Link } from '@remix-run/react'
 import { useContext, useEffect, useRef, useState } from 'react'
 import countdown from '../external/countdown'
 import { uniqBy, orderBy } from 'lodash-es'
@@ -19,15 +19,7 @@ import { cn } from '~/lib/utils'
 import { addHours, isAfter, subHours, isWithinInterval } from 'date-fns'
 import { Team } from '~/lib/types'
 import { nbaGameToGame, nbaTeams, nbaTeamToTeam } from '~/lib/nbaGameToGame'
-
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu'
+import { getGameSlug } from '~/lib/getGameSlug'
 
 export const meta: MetaFunction = ({ data }) => {
 	const { LEAGUE, team } = data as {
@@ -260,22 +252,42 @@ export default function Countdown() {
 				</div>
 				{showFullSchedule ? (
 					<ul className="space-y-5 mt-8">
-						{games.map((g) => (
-							<li key={g.id}>
-								<div className="font-bold text-lg">
-									{g.time
-										? new Intl.DateTimeFormat('en-US', {
-												dateStyle: 'full',
-												timeStyle: 'short',
-										  }).format(new Date(g.time))
-										: 'TBD'}
-								</div>{' '}
-								{g.homeTeam.abbreviation === team.abbreviation ? 'vs' : 'at'}{' '}
-								{g.homeTeam.abbreviation !== team.abbreviation
-									? g.homeTeam.fullName
-									: g.awayTeam.fullName}
-							</li>
-						))}
+						{games.map((g) => {
+							const opponent =
+								g.homeTeam.abbreviation !== team.abbreviation
+									? g.homeTeam.abbreviation
+									: g.awayTeam.abbreviation
+							const gameSlug = getGameSlug(g, team.abbreviation)
+
+							const linkContent = (
+								<>
+									<div className="font-bold text-lg">
+										{g.time
+											? new Intl.DateTimeFormat('en-US', {
+													dateStyle: 'full',
+													timeStyle: 'short',
+											  }).format(new Date(g.time))
+											: 'TBD'}
+									</div>
+									{g.homeTeam.abbreviation === team.abbreviation ? 'vs' : 'at'}{' '}
+									{g.homeTeam.abbreviation !== team.abbreviation
+										? g.homeTeam.fullName
+										: g.awayTeam.fullName}
+								</>
+							)
+
+							return (
+								<li key={g.id}>
+									{gameSlug ? (
+										<Link to={gameSlug} className="hover:text-white/80">
+											{linkContent}
+										</Link>
+									) : (
+										linkContent
+									)}
+								</li>
+							)
+						})}
 					</ul>
 				) : null}
 			</div>
