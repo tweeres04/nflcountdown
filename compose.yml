@@ -8,6 +8,7 @@ services:
     environment:
       LEAGUE: NFL
       GTAG_ID: G-KK8MSJMC9Z
+      TZ: 'America/New_York'
   mlbcountdown:
     build:
       dockerfile: ./Dockerfile
@@ -17,6 +18,7 @@ services:
     environment:
       LEAGUE: MLB
       GTAG_ID: G-Z5RM9E7MN3
+      TZ: 'America/New_York'
   nbacountdown:
     build:
       dockerfile: ./Dockerfile
@@ -26,6 +28,7 @@ services:
     environment:
       LEAGUE: NBA
       GTAG_ID: G-ZN8T6TJEGC
+      TZ: 'America/New_York'
 
 networks:
   default:
