@@ -122,11 +122,19 @@ export async function loader({
 			return isAfter(g.time, threeHrsAgo)
 		})
 
+	console.log(
+		'game slugs',
+		games.map((g) => getGameSlug(g, team.abbreviation))
+	)
+	console.log('gameSlug', gameSlug)
+
 	const currentGame = games.find((g) => {
 		if (!g.time) return false
 		const expectedSlug = getGameSlug(g, team.abbreviation)
 		return expectedSlug === gameSlug
 	})
+
+	console.log('currentGame', currentGame)
 
 	if (!currentGame) {
 		throw new Response(null, { status: 404 })
