@@ -1,5 +1,5 @@
 export type Team = {
-	id: number
+	id: number | string
 	nickName: string
 	fullName: string
 	abbreviation: string
@@ -11,7 +11,7 @@ type IsoDateString = string
 
 export type Game = {
 	id: string
-	time: IsoDateString
+	time: IsoDateString | null
 	homeTeam: Team
 	awayTeam: Team
 }
