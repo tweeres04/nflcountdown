@@ -133,7 +133,7 @@ export default function Countdown({
 					{gameInfo}
 				</div>
 
-				<div className="mt-8 space-y-3">
+				<div className="mt-8 space-y-3 [&_button]:min-w-[250px]">
 					{typeof navigator !== 'undefined' && navigator.share && (
 						<Button
 							onClick={() => {
