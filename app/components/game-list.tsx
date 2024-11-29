@@ -10,7 +10,7 @@ interface GameListProps {
 export default function GameList({ games, team }: GameListProps) {
 	return (
 		<ul className="space-y-5 mt-8">
-			{games.map((g) => {
+			{games.map((g, i) => {
 				const gameSlug = getGameSlug(g, team.abbreviation)
 
 				const linkContent = (
@@ -34,7 +34,11 @@ export default function GameList({ games, team }: GameListProps) {
 					<li key={g.id}>
 						{gameSlug ? (
 							<Link
-								to={`/${team.abbreviation.toLowerCase()}/${gameSlug}`}
+								to={
+									i === 0
+										? `/${team.abbreviation.toLowerCase()}` // Show the next game view if it's the next game
+										: `/${team.abbreviation.toLowerCase()}/${gameSlug}`
+								}
 								className="hover:text-white/80"
 							>
 								{linkContent}
