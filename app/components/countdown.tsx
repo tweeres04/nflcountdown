@@ -8,7 +8,7 @@ import IosShareIcon from './IosShareIcon'
 import { cn } from '~/lib/utils'
 import { LeagueContext } from '~/lib/league-context'
 import GameList from './game-list'
-import { addHours, isWithinInterval } from 'date-fns'
+import { addHours, isPast, isWithinInterval } from 'date-fns'
 import countdown from '../external/countdown'
 
 interface CountdownProps {
@@ -47,10 +47,12 @@ export default function Countdown({
 	useUpdateTime()
 
 	const countdownString = game?.time
-		? isWithinInterval(new Date(), {
-				start: game.time,
-				end: addHours(game.time, 3),
-		  })
+		? isPast(addHours(game.time, 3))
+			? 'Game completed'
+			: isWithinInterval(new Date(), {
+					start: game.time,
+					end: addHours(game.time, 3),
+			  })
 			? 'Game in progress!'
 			: `${countdown(new Date(game.time)).toString()} till ${
 					isTeamPage

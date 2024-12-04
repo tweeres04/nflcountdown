@@ -2,7 +2,7 @@ import { json, LoaderFunctionArgs } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import countdown from '../external/countdown'
 
-import { addHours, isWithinInterval } from 'date-fns'
+import { addHours, isFuture, isPast, isWithinInterval } from 'date-fns'
 import Countdown from '~/components/countdown'
 import { getTeamAndGames } from '~/lib/getTeamAndGames'
 import { generateMeta } from '~/lib/generateMeta'
@@ -16,7 +16,9 @@ export async function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
 
 export default function TeamCountdown() {
 	const { teams, team, games } = useLoaderData<typeof loader>()
-	const nextGame = games[0]
+	const nextGame = games.filter(
+		(g) => g.time && isFuture(addHours(g.time, 3))
+	)[0]
 
 	return (
 		<Countdown

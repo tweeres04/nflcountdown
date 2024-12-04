@@ -8,9 +8,12 @@ interface GameListProps {
 }
 
 export default function GameList({ games, team }: GameListProps) {
+	const futureGames = games.filter(
+		(g) => g.time && new Date(g.time) > new Date()
+	)
 	return (
 		<ul className="space-y-5 mt-8">
-			{games.map((g, i) => {
+			{futureGames.map((g, i) => {
 				const gameSlug = getGameSlug(g, team.abbreviation)
 
 				const linkContent = (

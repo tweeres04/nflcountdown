@@ -1,10 +1,6 @@
 import { json, LoaderFunctionArgs } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import { useContext } from 'react'
-import countdown from '../external/countdown'
 
-import { LeagueContext } from '~/lib/league-context'
-import { addHours, isWithinInterval } from 'date-fns'
 import { getGameSlug } from '~/lib/getGameSlug'
 import Countdown from '~/components/countdown'
 import { getTeamAndGames } from '~/lib/getTeamAndGames'
@@ -33,6 +29,11 @@ export async function loader({
 export default function GameCountdown() {
 	const { teams, team, game, games } = useLoaderData<typeof loader>()
 
+	const opposingTeam =
+		game.homeTeam.abbreviation !== team.abbreviation
+			? game.homeTeam
+			: game.awayTeam
+
 	return (
 		<Countdown
 			team={team}
@@ -41,10 +42,7 @@ export default function GameCountdown() {
 			game={game}
 			pageTitle={
 				<>
-					{team.fullName} vs{' '}
-					{game.homeTeam.abbreviation !== team.abbreviation
-						? game.homeTeam.fullName
-						: game.awayTeam.fullName}
+					{team.fullName} vs {opposingTeam.fullName}
 				</>
 			}
 		/>

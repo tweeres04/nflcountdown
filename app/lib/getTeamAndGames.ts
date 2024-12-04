@@ -37,15 +37,7 @@ export function getTeamAndGames(teamAbbrev: string | undefined) {
 					.filter((g) => g.homeTeam.teamId > 0)
 					.map(nbaGameToGame)
 			: schedule.games
-	)
-		.filter((g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id)
-		.filter((g) => {
-			if (!g.time) {
-				return true
-			}
-			const threeHrsAgo = subHours(new Date(), 3)
-			return isAfter(g.time, threeHrsAgo)
-		})
+	).filter((g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id)
 
 	return { LEAGUE, teams, team, games }
 }

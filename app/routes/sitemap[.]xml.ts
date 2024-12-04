@@ -51,7 +51,7 @@ ${teams
 
 		// Individual game pages
 		teamGames.forEach((g) => {
-			const gameSlug = getGameSlug(g, t.abbreviation) // type error because of nfl team ids being a string
+			const gameSlug = getGameSlug(g, t.abbreviation)
 			if (!gameSlug) return
 
 			urls.push(`    <url>
