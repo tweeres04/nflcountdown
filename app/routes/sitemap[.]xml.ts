@@ -35,6 +35,13 @@ export async function loader() {
 	<url>
         <loc>https://${LEAGUE.toLowerCase()}countdown.tweeres.com</loc>
     </url>
+	${
+		LEAGUE === 'NFL'
+			? `<url>
+		<loc>https://${LEAGUE.toLowerCase()}countdown.tweeres.com/season</loc>
+	</url>`
+			: ''
+	}
 ${teams
 	.map((t) => {
 		const teamAbbrev = t.abbreviation.toLowerCase()

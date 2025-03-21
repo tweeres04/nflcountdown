@@ -35,6 +35,11 @@ export default function TeamsDropdown({
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
 			<DropdownMenuContent className={contentClasses}>
+				{LEAGUE === 'NFL' ? (
+					<DropdownMenuItem asChild>
+						<a href="/season">2025 NFL Season</a>
+					</DropdownMenuItem>
+				) : null}
 				<DropdownMenuSub>
 					<DropdownMenuSubTrigger
 						className={`data-[state=open]:bg-${color} focus:bg-${color}`}

@@ -66,10 +66,10 @@ export default function Countdown({
 		: 'Game time TBD'
 
 	const [showFullSchedule, setShowFullSchedule] = useState(false)
-	const lowercaseAbbreviation = team.abbreviation.toLowerCase()
+	const lowercaseAbbreviation = team?.abbreviation?.toLowerCase()
 	const logo =
 		LEAGUE === 'NFL'
-			? `/logos/${lowercaseAbbreviation}.svg`
+			? `/logos/${lowercaseAbbreviation ?? 'nfl'}.svg`
 			: `/logos/${LEAGUE.toLowerCase()}/${lowercaseAbbreviation}.svg`
 
 	const gameInfo = game?.time ? (
@@ -83,12 +83,14 @@ export default function Countdown({
 					minute: 'numeric',
 				}).format(new Date(game.time))}
 			</div>
-			<div className="text-sm">
-				vs{' '}
-				{game.homeTeam.abbreviation !== team.abbreviation
-					? game.homeTeam.fullName
-					: game.awayTeam.fullName}
-			</div>
+			{game.awayTeam ? (
+				<div className="text-sm">
+					vs{' '}
+					{game.homeTeam?.abbreviation !== team?.abbreviation
+						? game.homeTeam.fullName
+						: game.awayTeam?.fullName}
+				</div>
+			) : null}
 		</div>
 	) : null
 
@@ -127,7 +129,7 @@ export default function Countdown({
 						'w-[256px] h-[256px] lg:w-[512px] lg:h-[512px] mx-auto',
 						{ 'py-8 lg:py-16': LEAGUE === 'MLB' }
 					)}
-					alt={`${team.fullName} logo`}
+					alt={team ? `${team.fullName} logo` : 'NFL logo'}
 				/>
 
 				<div className="text-center space-y-2">
@@ -141,7 +143,7 @@ export default function Countdown({
 							onClick={() => {
 								navigator
 									.share({
-										title: `${team.fullName} Countdown`,
+										title: `${team?.fullName ?? 'NFL Season'} Countdown`,
 										text: countdownString,
 										url: `${
 											document.location.href
@@ -154,31 +156,35 @@ export default function Countdown({
 						</Button>
 					)}
 					<FeedbackButton />
-					<Button onClick={() => setShowFullSchedule((v) => !v)}>
-						{showFullSchedule ? 'Hide schedule' : 'Show full schedule'}
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							strokeWidth={1.5}
-							stroke="currentColor"
-							className="size-5"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
-							/>
-						</svg>
-					</Button>
+					{games?.length > 0 ? (
+						<Button onClick={() => setShowFullSchedule((v) => !v)}>
+							{showFullSchedule ? 'Hide schedule' : 'Show full schedule'}
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								strokeWidth={1.5}
+								stroke="currentColor"
+								className="size-5"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+								/>
+							</svg>
+						</Button>
+					) : null}
 				</div>
 
 				{showFullSchedule && <GameList games={games} team={team} />}
 			</div>
-			<InstallNotification
-				lowercaseAbbreviation={lowercaseAbbreviation}
-				fullTeamName={team.fullName}
-			/>
+			{team ? (
+				<InstallNotification
+					lowercaseAbbreviation={lowercaseAbbreviation}
+					fullTeamName={team.fullName}
+				/>
+			) : null}
 		</>
 	)
 }

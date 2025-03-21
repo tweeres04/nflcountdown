@@ -6,6 +6,7 @@ import {
 	Scripts,
 	ScrollRestoration,
 	useLoaderData,
+	useLocation,
 	useParams,
 } from '@remix-run/react'
 import './tailwind.css'
@@ -56,6 +57,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 	const { deferredPrompt } = useDeferredInstallPrompt()
 
+	const location = useLocation()
+
 	return (
 		<html lang="en" className="text-[20px]">
 			<head>
@@ -74,7 +77,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Links />
 			</head>
 			<body
-				className={cn('font-sans', teamAbbrev ? gradientClass : 'bg-stone-100')}
+				className={cn(
+					'font-sans',
+					teamAbbrev
+						? gradientClass
+						: location.pathname === '/season'
+						? 'bg-stone-900'
+						: 'bg-stone-100'
+				)}
 			>
 				<DeferredInstallPromptContext.Provider value={deferredPrompt}>
 					<LeagueContext.Provider value={LEAGUE}>
