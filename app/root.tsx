@@ -109,6 +109,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 									gtag('config', '${GTAG_ID}');`,
 							}}
 						></script>
+						{/* Simple Analytics */}
+						<script
+							data-collect-dnt="true"
+							async
+							src="https://scripts.simpleanalyticscdn.com/latest.js"
+						></script>
 					</>
 				) : null}
 			</body>
