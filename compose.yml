@@ -8,6 +8,7 @@ services:
     environment:
       LEAGUE: NFL
       GTAG_ID: G-KK8MSJMC9Z
+      AHREFS_KEY: OR25pSoDpycSw5Y6N2q99Q
       TZ: 'America/New_York'
   mlbcountdown:
     build:
@@ -18,6 +19,7 @@ services:
     environment:
       LEAGUE: MLB
       GTAG_ID: G-Z5RM9E7MN3
+      AHREFS_KEY: OR25pSoDpycSw5Y6N2q99Q
       TZ: 'America/New_York'
   nbacountdown:
     build:
@@ -28,6 +30,7 @@ services:
     environment:
       LEAGUE: NBA
       GTAG_ID: G-ZN8T6TJEGC
+      AHREFS_KEY: OR25pSoDpycSw5Y6N2q99Q
       TZ: 'America/New_York'
 
 networks:

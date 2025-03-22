@@ -28,14 +28,16 @@ export function loader({ request }: LoaderFunctionArgs) {
 		return Response.redirect(url.toString(), 308)
 	}
 	const GTAG_ID = process.env.GTAG_ID
+	const AHREFS_KEY = process.env.AHREFS_KEY
 	return json({
 		LEAGUE,
 		GTAG_ID,
+		AHREFS_KEY,
 	})
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-	const { LEAGUE, GTAG_ID } = useLoaderData<typeof loader>() ?? {} // empty object in case we're in an error page
+	const { LEAGUE, GTAG_ID, AHREFS_KEY } = useLoaderData<typeof loader>() ?? {} // empty object in case we're in an error page
 	const { teamAbbrev } = useParams()
 	const lowercaseAbbreviation = teamAbbrev?.toLowerCase()
 	const lowercaseLeague = LEAGUE?.toLowerCase()
@@ -114,6 +116,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 							data-collect-dnt="true"
 							async
 							src="https://scripts.simpleanalyticscdn.com/latest.js"
+						></script>
+						<script
+							src="https://analytics.ahrefs.com/analytics.js"
+							data-key={AHREFS_KEY}
+							async
 						></script>
 					</>
 				) : null}
