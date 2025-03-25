@@ -1,0 +1,14 @@
+{
+	"name": "NFL Season Countdown",
+	"short_name": "NFL Season",
+	"icons": [
+		{
+			"src": "/logos/nfl.png",
+			"sizes": "any"
+		}
+	],
+	"start_url": "/season/",
+	"display": "standalone",
+	"theme_color": "#000000",
+	"background_color": "#000000"
+}

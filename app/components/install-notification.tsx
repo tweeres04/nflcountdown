@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import IosShareIcon from './IosShareIcon'
 import { Button } from './ui/button'
-import { LeagueContext } from '~/lib/league-context'
+import { cn } from '~/lib/utils'
 
 interface BeforeInstallPromptEvent extends Event {
 	prompt: () => void
@@ -25,20 +25,15 @@ export function useDeferredInstallPrompt() {
 }
 
 export default function InstallNotification({
-	fullTeamName,
-	lowercaseAbbreviation,
+	countdownName,
+	className,
 }: {
-	fullTeamName: string
-	lowercaseAbbreviation: string
+	countdownName: string
+	className: string
 }) {
 	const [showInstallNotification, setShowInstallNotification] = useState(false)
 	const [isIos, setIsIos] = useState(false)
 	const deferredInstallPrompt = useContext(DeferredInstallPromptContext)
-	const LEAGUE = useContext(LeagueContext)
-	const color =
-		LEAGUE === 'NFL'
-			? lowercaseAbbreviation
-			: `${LEAGUE.toLowerCase()}-${lowercaseAbbreviation}`
 
 	useEffect(() => {
 		const isStandalone = window.matchMedia('(display-mode: standalone)').matches
@@ -57,7 +52,10 @@ export default function InstallNotification({
 	return showInstallNotification ? (
 		<div className="fixed bottom-0 w-full">
 			<div
-				className={`relative p-4 text-white bg-${color} max-w-[500px] lg:max-w-[750px] mx-auto`}
+				className={cn(
+					`relative p-4 text-white max-w-[500px] lg:max-w-[750px] mx-auto`,
+					className
+				)}
 			>
 				<button
 					className="absolute top-0 right-0 p-1"
@@ -81,7 +79,7 @@ export default function InstallNotification({
 					</svg>
 				</button>
 				<p className="has-text-centered">
-					Install {fullTeamName} Countdown to your home screen for quick access
+					Install {countdownName} Countdown to your home screen for quick access
 				</p>
 				{deferredInstallPrompt ? (
 					<div className="text-center mt-2">

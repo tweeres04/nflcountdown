@@ -179,12 +179,16 @@ export default function Countdown({
 
 				{showFullSchedule && <GameList games={games} team={team} />}
 			</div>
-			{team ? (
-				<InstallNotification
-					lowercaseAbbreviation={lowercaseAbbreviation}
-					fullTeamName={team.fullName}
-				/>
-			) : null}
+			<InstallNotification
+				className={
+					lowercaseAbbreviation
+						? LEAGUE === 'NFL'
+							? lowercaseAbbreviation
+							: `${LEAGUE.toLowerCase()}-${lowercaseAbbreviation}`
+						: 'bg-[#013369]'
+				}
+				countdownName={team?.fullName ?? 'NFL Season'}
+			/>
 		</>
 	)
 }

@@ -75,6 +75,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				{teamAbbrev ? (
 					<link rel="manifest" href={`/${teamAbbrev.toLowerCase()}/manifest`} />
 				) : null}
+				{location.pathname === '/season' ? (
+					<link rel="manifest" href="/season/manifest.json" />
+				) : null}
 				<Meta />
 				<Links />
 			</head>

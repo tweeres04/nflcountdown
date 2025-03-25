@@ -82,6 +82,6 @@ module.exports = {
 		},
 	],
 	rules: {
-		'no-mixed-spaces-and-tabs': false,
+		'no-mixed-spaces-and-tabs': 0,
 	},
 }
