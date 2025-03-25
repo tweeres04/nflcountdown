@@ -61,6 +61,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 	const location = useLocation()
 
+	const isSeasonCountdown = location.pathname.match(/\/season\/?/)
+
 	return (
 		<html lang="en" className="text-[20px]">
 			<head>
@@ -75,7 +77,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				{teamAbbrev ? (
 					<link rel="manifest" href={`/${teamAbbrev.toLowerCase()}/manifest`} />
 				) : null}
-				{location.pathname === '/season' ? (
+				{isSeasonCountdown ? (
 					<link rel="manifest" href="/season/manifest.json" />
 				) : null}
 				<Meta />
@@ -86,7 +88,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 					'font-sans',
 					teamAbbrev
 						? gradientClass
-						: location.pathname === '/season'
+						: isSeasonCountdown
 						? 'bg-stone-900'
 						: 'bg-stone-100'
 				)}
