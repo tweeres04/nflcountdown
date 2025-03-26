@@ -5,7 +5,7 @@ import Countdown from '~/components/countdown'
 import { getTeamAndGames } from '~/lib/getTeamAndGames'
 
 export function meta() {
-	const title = 'How Many Days Till NFL? Live NFL Season Countdown'
+	const title = 'How Many Days Till NFL Kickoff? Live NFL Season Countdown'
 	const description =
 		'Find out exactly how many days until NFL season starts. Live countdown showing the precise days, hours, and minutes until NFL football returns in 2025.'
 
