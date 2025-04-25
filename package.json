@@ -10,7 +10,8 @@
 		"start": "remix-serve ./build/server/index.js",
 		"deploy": "./deploy.sh",
 		"typecheck": "tsc",
-		"countdown_screenshots": "npx tsx scripts/takeCountdownScreenshots.ts"
+		"countdown_screenshots": "npx tsx scripts/takeCountdownScreenshots.ts",
+		"get_schedule:nba": "npx tsx cron/getNbaSchedule.ts"
 	},
 	"dependencies": {
 		"@radix-ui/react-dialog": "^1.1.1",

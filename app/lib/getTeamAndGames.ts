@@ -1,11 +1,10 @@
 import schedule from '../../nfl_schedule.json'
 import mlbSchedule from '../../mlb_schedule.json'
 import mlbTeams from '../../mlb_teams.json'
-import nbaSchedule from '../../nba_schedule.json'
+import nbaSchedule from '../../data/nba_schedule.json'
 import { uniqBy, orderBy } from 'lodash-es'
 import { mlbGameToGame, mlbTeamToTeam } from './mlbGameToGame'
 import { nbaGameToGame, nbaTeams, nbaTeamToTeam } from './nbaGameToGame'
-import { isAfter, subHours } from 'date-fns'
 
 export function getTeamAndGames(teamAbbrev: string | undefined) {
 	const LEAGUE = process.env.LEAGUE ?? 'NFL'

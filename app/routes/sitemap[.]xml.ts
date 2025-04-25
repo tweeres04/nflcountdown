@@ -1,6 +1,6 @@
 import schedule from '../../nfl_schedule.json'
 import mlbSchedule from '../../mlb_schedule.json'
-import nbaSchedule from '../../nba_schedule.json'
+import nbaSchedule from '../../data/nba_schedule.json'
 import mlbTeams from '../../mlb_teams.json'
 import { uniqBy } from 'lodash-es'
 import { mlbGameToGame, mlbTeamToTeam } from '~/lib/mlbGameToGame'
