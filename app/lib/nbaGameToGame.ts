@@ -1,4 +1,4 @@
-import nbaSchedule from '../../nba_schedule.json'
+import nbaSchedule from '../../data/nba_schedule.json'
 import nbaColors from '../../nba_colors.json'
 import { Team, Game } from './types'
 import { uniqBy } from 'lodash-es'

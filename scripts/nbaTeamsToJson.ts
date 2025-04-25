@@ -1,6 +1,6 @@
 // for perplexity to generate color codes
 
-import nbaSchedule from '../nba_schedule.json'
+import nbaSchedule from 'data/nba_schedule.json'
 
 const nbaGames = nbaSchedule.leagueSchedule.gameDates.flatMap((gd) => gd.games)
 
