@@ -6,7 +6,7 @@ WORKDIR /app
 COPY ./package.json .
 RUN npm install
 
-COPY --exclude=cron . .
+COPY . .
 
 RUN npm run build
 
