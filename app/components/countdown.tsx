@@ -183,8 +183,8 @@ export default function Countdown({
 				className={
 					lowercaseAbbreviation
 						? LEAGUE === 'NFL'
-							? lowercaseAbbreviation
-							: `${LEAGUE.toLowerCase()}-${lowercaseAbbreviation}`
+							? `bg-${lowercaseAbbreviation}`
+							: `bg-${LEAGUE.toLowerCase()}-${lowercaseAbbreviation}`
 						: 'bg-[#013369]'
 				}
 				countdownName={team?.fullName ?? 'NFL Season'}
