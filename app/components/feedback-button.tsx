@@ -55,7 +55,7 @@ export default function FeedbackButton() {
 					className="space-y-3"
 				>
 					<div>
-						<Label htmlFor="email">Email</Label>
+						<Label htmlFor="email">Email (so I can respond to ya)</Label>
 						<Input name="email" id="email" type="email" required />
 					</div>
 					<div>
