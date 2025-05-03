@@ -7,8 +7,6 @@ import Mailgun from 'mailgun.js'
 
 const nbaTeamAbbreviations = nbaColors.map((team) => team.abbreviation)
 
-console.log(`NODE_ENV: ${process.env.NODE_ENV}`) // Debugging NODE_ENV
-
 // Get the directory name in ES module scope
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
