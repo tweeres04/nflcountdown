@@ -73,7 +73,7 @@ export async function loader() {
 		throw new Response(null, { status: 404 })
 	}
 
-	const { teams } = getTeamAndGames('KC') // Todo: Shouldn't need to pass a team here
+	const { teams } = await getTeamAndGames('KC') // Todo: Shouldn't need to pass a team here
 
 	return json({
 		LEAGUE,

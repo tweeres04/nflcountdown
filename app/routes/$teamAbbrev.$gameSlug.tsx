@@ -11,7 +11,7 @@ export { generateMeta as meta }
 export async function loader({
 	params: { teamAbbrev, gameSlug },
 }: LoaderFunctionArgs) {
-	const { LEAGUE, teams, team, games } = getTeamAndGames(teamAbbrev)
+	const { LEAGUE, teams, team, games } = await getTeamAndGames(teamAbbrev)
 
 	const currentGame = games.find((g) => {
 		if (!g.time) return false

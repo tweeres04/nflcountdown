@@ -1,12 +1,12 @@
+import { readFile } from 'node:fs/promises'
 import schedule from '../../nfl_schedule.json'
 import mlbSchedule from '../../mlb_schedule.json'
 import mlbTeams from '../../mlb_teams.json'
-import nbaSchedule from '../../data/nba_schedule.json'
 import { uniqBy, orderBy } from 'lodash-es'
 import { mlbGameToGame, mlbTeamToTeam } from './mlbGameToGame'
 import { nbaGameToGame, nbaTeams, nbaTeamToTeam } from './nbaGameToGame'
 
-export function getTeamAndGames(teamAbbrev: string | undefined) {
+export async function getTeamAndGames(teamAbbrev: string | undefined) {
 	const LEAGUE = process.env.LEAGUE ?? 'NFL'
 	let teams =
 		LEAGUE === 'MLB'
@@ -25,6 +25,12 @@ export function getTeamAndGames(teamAbbrev: string | undefined) {
 
 	if (!team) {
 		throw new Response(null, { status: 404 })
+	}
+
+	let nbaSchedule
+	if (LEAGUE === 'NBA') {
+		nbaSchedule = await readFile('data/nba_schedule.json', 'utf-8')
+		nbaSchedule = JSON.parse(nbaSchedule)
 	}
 
 	const games = (
