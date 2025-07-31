@@ -40,6 +40,7 @@ export async function getTeamAndGames(teamAbbrev: string | undefined) {
 			? nbaSchedule.leagueSchedule.gameDates
 					.flatMap((gd) => gd.games)
 					.filter((g) => g.homeTeam.teamId > 0)
+					.filter((g) => g.gameLabel !== 'Preseason')
 					.map(nbaGameToGame)
 			: schedule.games
 	).filter((g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id)
