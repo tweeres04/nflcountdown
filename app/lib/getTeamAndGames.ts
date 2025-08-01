@@ -32,6 +32,11 @@ export async function getTeamAndGames(teamAbbrev: string | undefined) {
 		nbaSchedule = await readFile('data/nba_schedule.json', 'utf-8')
 		nbaSchedule = JSON.parse(nbaSchedule)
 	}
+	let nflSchedule
+	if (LEAGUE === 'NFL') {
+		nflSchedule = await readFile('data/nfl_schedule.json', 'utf-8')
+		nflSchedule = JSON.parse(nflSchedule)
+	}
 
 	const games = (
 		LEAGUE === 'MLB'
@@ -42,7 +47,7 @@ export async function getTeamAndGames(teamAbbrev: string | undefined) {
 					.filter((g) => g.homeTeam.teamId > 0)
 					.filter((g) => g.gameLabel !== 'Preseason')
 					.map(nbaGameToGame)
-			: schedule.games
+			: nflSchedule.games
 	).filter((g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id)
 
 	return { LEAGUE, teams, team, games }
