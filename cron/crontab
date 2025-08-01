@@ -1,1 +1,2 @@
-0 3 * * * cd /app && npm run start > /proc/1/fd/1 2> /proc/1/fd/2
+0 3 * * * cd /app && npm run get-nba-schedule > /proc/1/fd/1 2> /proc/1/fd/2
+0 3 * * * cd /app && npm run get-nfl-schedule > /proc/1/fd/1 2> /proc/1/fd/2

@@ -1,3 +1,9 @@
+# NFL API details
+
+We can fetch https://api.nfl.com/identity/v3/token to get a token. The browser somehow generates a `clientKey` and `clientSecret` but I haven't figured out how that's generated yet.
+
+The previous request for "flags" doesn't seem to include it. I wonder if it's injected with server rendering, or possibly just generated client side? I don't think it needs to be super secure since it's a public site.
+
 # Welcome to Remix!
 
 - 📖 [Remix docs](https://remix.run/docs)

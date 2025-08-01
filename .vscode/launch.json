@@ -16,6 +16,13 @@
 			"request": "launch",
 			"command": "npx tsx cron/getNbaSchedule.ts",
 			"cwd": "${workspaceFolder}"
+		},
+		{
+			"name": "Debug getNflSchedule Script",
+			"type": "node-terminal",
+			"request": "launch",
+			"command": "npx tsx cron/getNflSchedule.ts",
+			"cwd": "${workspaceFolder}"
 		}
 	]
 }
