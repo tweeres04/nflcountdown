@@ -1,5 +1,12 @@
 FROM node:lts-alpine
 
+# Install Chromium for Puppeteer
+RUN apk add --no-cache chromium
+
+# Use system Chromium
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+	PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
 WORKDIR /app
 
 COPY ./cron/package.json .
