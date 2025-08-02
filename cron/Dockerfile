@@ -9,11 +9,12 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 
 WORKDIR /app
 
-COPY ./cron/package.json .
-RUN npm install
+COPY ./cron/package.json ./cron/package-lock.json ./
+RUN npm ci
 
 COPY ./cron/crontab /etc/crontabs/root
 COPY ./nba_colors.json /
 COPY ./cron/getNbaSchedule.ts .
+COPY ./cron/getNflSchedule.ts .
 
 CMD ["crond", "-f", "-d", "8"]
