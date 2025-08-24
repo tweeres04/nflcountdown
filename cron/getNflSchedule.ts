@@ -2,7 +2,12 @@ import puppeteer from 'puppeteer'
 import { writeFile } from 'node:fs/promises'
 
 async function getNflSchedule() {
-	const browser = await puppeteer.launch()
+	const browser = await puppeteer.launch({
+		args:
+			process.env.NODE_ENV === 'production'
+				? ['--no-sandbox', '--disable-setuid-sandbox']
+				: undefined,
+	})
 	const page = await browser.newPage()
 
 	const accessTokenPromise = new Promise((resolve) => {
