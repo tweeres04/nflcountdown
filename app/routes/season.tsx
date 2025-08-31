@@ -1,6 +1,13 @@
 import { json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import { addDays, getYear, nextMonday, startOfMonth, isFuture } from 'date-fns'
+import {
+	addDays,
+	getYear,
+	nextMonday,
+	startOfMonth,
+	isFuture,
+	isMonday,
+} from 'date-fns'
 import Countdown from '~/components/countdown'
 import { getTeamAndGames } from '~/lib/getTeamAndGames'
 
@@ -45,10 +52,12 @@ function getNextSeasonStartDate() {
 	const today = new Date()
 	const currentYear = getYear(today)
 
+	const firstDayOfSeptember = new Date(currentYear, 8, 1)
+
 	// First Monday of September in currentYear
-	const firstMondayOfSeptember = nextMonday(
-		startOfMonth(new Date(currentYear, 8, 1))
-	)
+	const firstMondayOfSeptember = isMonday(firstDayOfSeptember)
+		? firstDayOfSeptember
+		: nextMonday(startOfMonth(firstDayOfSeptember))
 
 	// Weekend following the first Monday (Thursday)
 	const seasonStartDate = addDays(firstMondayOfSeptember, 3)
