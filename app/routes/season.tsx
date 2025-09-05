@@ -13,8 +13,7 @@ import { getTeamAndGames } from '~/lib/getTeamAndGames'
 
 export function meta() {
 	const title = 'How Many Days Till NFL Kickoff? Live NFL Season Countdown'
-	const description =
-		'Find out exactly how many days until NFL season starts. Live countdown showing the precise days, hours, and minutes until NFL football returns in 2025.'
+	const description = `Find out exactly how many days until NFL season starts. Live countdown showing the precise days, hours, and minutes until NFL football returns in ${getNextSeasonStartDate().getFullYear()}.`
 
 	return [
 		{ title },
@@ -54,24 +53,25 @@ function getNextSeasonStartDate() {
 
 	const firstDayOfSeptember = new Date(currentYear, 8, 1)
 
-	// First Monday of September in currentYear
+	// First Monday of September in currentYear (Labor day in USA)
 	const firstMondayOfSeptember = isMonday(firstDayOfSeptember)
 		? firstDayOfSeptember
 		: nextMonday(startOfMonth(firstDayOfSeptember))
 
 	// Weekend following the first Monday (Thursday)
-	const seasonStartDate = addDays(firstMondayOfSeptember, 3)
-	// Set time to 8:15 PM EDT (UTC-4)
-	seasonStartDate.setUTCHours(20 + 4, 15, 0, 0) // Adding 4 hours to convert from EDT to UTC
+	let seasonStartDate = addDays(firstMondayOfSeptember, 3)
 
 	// If this date has already passed, use next year
 	if (!isFuture(seasonStartDate)) {
-		const nextYearFirstMondayOfSeptember = nextMonday(
-			startOfMonth(new Date(currentYear + 1, 8, 1))
-		)
-		return addDays(nextYearFirstMondayOfSeptember, 3)
+		const firstDayOfSeptemberNextYear = new Date(currentYear + 1, 8, 1)
+		seasonStartDate = isMonday(firstDayOfSeptemberNextYear)
+			? firstDayOfSeptemberNextYear
+			: nextMonday(startOfMonth(firstDayOfSeptemberNextYear))
+		seasonStartDate = addDays(seasonStartDate, 3)
 	}
 
+	// Set time to 8:15 PM EDT (UTC-4)
+	seasonStartDate.setUTCHours(20 + 4, 15, 0, 0) // Adding 4 hours to convert from EDT to UTC
 	return seasonStartDate
 }
 
