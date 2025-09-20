@@ -37,7 +37,7 @@ export default function TeamsDropdown({
 			<DropdownMenuContent className={contentClasses}>
 				{LEAGUE === 'NFL' ? (
 					<DropdownMenuItem asChild>
-						<a href="/season">2025 NFL Season</a>
+						<a href="/season">2026 NFL Season</a>
 					</DropdownMenuItem>
 				) : null}
 				<DropdownMenuSub>
