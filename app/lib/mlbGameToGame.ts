@@ -33,20 +33,18 @@ export function mlbGameToGame({
 		home: { team: mlbHomeTeam },
 		away: { team: mlbAwayTeam },
 	},
+	status: { startTimeTBD },
 }: MlbGame): Game {
-	const mlbHomeTeam_ = mlbTeams.teams.find(
-		(t) => t.id === mlbHomeTeam.id
-	) as MlbTeam
-	const homeTeam = mlbTeamToTeam(mlbHomeTeam_)
-	const mlbAwayTeam_ = mlbTeams.teams.find(
-		(t) => t.id === mlbAwayTeam.id
-	) as MlbTeam
-	const awayTeam = mlbTeamToTeam(mlbAwayTeam_)
+	const mlbHomeTeam_ = mlbTeams.teams.find((t) => t.id === mlbHomeTeam.id)
+	const homeTeam = mlbHomeTeam_ ? mlbTeamToTeam(mlbHomeTeam_) : null
+	const mlbAwayTeam_ = mlbTeams.teams.find((t) => t.id === mlbAwayTeam.id)
+	const awayTeam = mlbAwayTeam_ ? mlbTeamToTeam(mlbAwayTeam_) : null
 
 	return {
 		id: gameGuid,
 		time: gameDate,
 		homeTeam,
 		awayTeam,
+		startTimeTbd: startTimeTBD,
 	}
 }

@@ -12,6 +12,7 @@ type IsoDateString = string
 export type Game = {
 	id: string
 	time: IsoDateString | null
-	homeTeam: Team
-	awayTeam: Team
+	homeTeam: Team | null
+	awayTeam: Team | null
+	startTimeTbd: boolean | undefined
 }

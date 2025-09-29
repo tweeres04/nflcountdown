@@ -48,7 +48,7 @@ export async function getTeamAndGames(teamAbbrev: string | undefined) {
 					.filter((g) => g.gameLabel !== 'Preseason')
 					.map(nbaGameToGame)
 			: nflSchedule.games
-	).filter((g) => g.homeTeam.id === team.id || g.awayTeam.id === team.id)
+	).filter((g) => g.homeTeam?.id === team.id || g.awayTeam?.id === team.id)
 
 	return { LEAGUE, teams, team, games }
 }

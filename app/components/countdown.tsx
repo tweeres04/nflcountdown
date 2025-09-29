@@ -79,8 +79,8 @@ export default function Countdown({
 					month: 'short',
 					weekday: 'short',
 					day: 'numeric',
-					hour: 'numeric',
-					minute: 'numeric',
+					hour: game.startTimeTbd ? undefined : 'numeric',
+					minute: game.startTimeTbd ? undefined : 'numeric',
 				}).format(new Date(game.time))}
 			</div>
 			{game.awayTeam ? (
