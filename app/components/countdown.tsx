@@ -82,6 +82,7 @@ export default function Countdown({
 					hour: game.startTimeTbd ? undefined : 'numeric',
 					minute: game.startTimeTbd ? undefined : 'numeric',
 				}).format(new Date(game.time))}
+				{game.startTimeTbd ? ', Time TBD' : ''}
 			</div>
 			{game.awayTeam ? (
 				<div className="text-sm">
