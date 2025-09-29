@@ -32,6 +32,11 @@ export async function getTeamAndGames(teamAbbrev: string | undefined) {
 		nbaSchedule = await readFile('data/nba_schedule.json', 'utf-8')
 		nbaSchedule = JSON.parse(nbaSchedule)
 	}
+	let mlbSchedule
+	if (LEAGUE === 'MLB') {
+		mlbSchedule = await readFile('data/mlb_schedule.json', 'utf-8')
+		mlbSchedule = JSON.parse(mlbSchedule)
+	}
 	let nflSchedule
 	if (LEAGUE === 'NFL') {
 		nflSchedule = await readFile('data/nfl_schedule.json', 'utf-8')

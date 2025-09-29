@@ -16,5 +16,6 @@ COPY ./cron/crontab /etc/crontabs/root
 COPY ./nba_colors.json /
 COPY ./cron/getNbaSchedule.ts .
 COPY ./cron/getNflSchedule.ts .
+COPY ./cron/getMlbSchedule.ts .
 
 CMD ["crond", "-f", "-d", "8"]

@@ -6,7 +6,8 @@
 	},
 	"scripts": {
 		"get-nba-schedule": "tsx getNbaSchedule.ts",
-		"get-nfl-schedule": "tsx getNflSchedule.ts"
+		"get-nfl-schedule": "tsx getNflSchedule.ts",
+		"get-mlb-schedule": "tsx getMlbSchedule.ts"
 	},
 	"type": "module"
 }
