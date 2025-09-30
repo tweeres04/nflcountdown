@@ -11,10 +11,15 @@ export default function GameList({ games, team }: GameListProps) {
 	const futureGames = games.filter(
 		(g) => g.time && new Date(g.time) > new Date()
 	)
+
 	return (
 		<ul className="space-y-5 mt-8">
 			{futureGames.map((g, i) => {
 				const gameSlug = getGameSlug(g, team.abbreviation)
+				const opponent =
+					g.homeTeam?.abbreviation === team.abbreviation
+						? g.awayTeam
+						: g.homeTeam
 
 				const linkContent = (
 					<>
@@ -26,10 +31,12 @@ export default function GameList({ games, team }: GameListProps) {
 								  }).format(new Date(g.time))
 								: 'TBD'}
 						</div>
-						{g.homeTeam.abbreviation === team.abbreviation ? 'vs' : 'at'}{' '}
-						{g.homeTeam.abbreviation !== team.abbreviation
-							? g.homeTeam.fullName
-							: g.awayTeam.fullName}
+						{opponent ? (
+							<>
+								{g.homeTeam?.abbreviation === team.abbreviation ? 'vs' : 'at'}{' '}
+								{opponent.fullName}
+							</>
+						) : null}
 					</>
 				)
 

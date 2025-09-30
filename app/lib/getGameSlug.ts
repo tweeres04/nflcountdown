@@ -8,8 +8,10 @@ export function getGameSlug(game: Game, teamAbbrev: string) {
 	const day = date.getDate()
 	const year = date.getFullYear()
 	const opponent =
-		game.homeTeam.abbreviation !== teamAbbrev
-			? game.homeTeam.abbreviation
-			: game.awayTeam.abbreviation
-	return `${month}-${day}-${year}-${opponent.toLowerCase()}`
+		game.homeTeam?.abbreviation !== teamAbbrev
+			? game.homeTeam?.abbreviation
+			: game.awayTeam?.abbreviation
+	return opponent
+		? `${month}-${day}-${year}-${opponent.toLowerCase()}`
+		: `${month}-${day}-${year}`
 }

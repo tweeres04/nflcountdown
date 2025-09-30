@@ -30,9 +30,9 @@ export default function GameCountdown() {
 	const { teams, team, game, games } = useLoaderData<typeof loader>()
 
 	const opposingTeam =
-		game.homeTeam.abbreviation !== team.abbreviation
-			? game.homeTeam
-			: game.awayTeam
+		game.homeTeam?.abbreviation === team.abbreviation
+			? game.awayTeam
+			: game.homeTeam
 
 	return (
 		<Countdown
@@ -42,7 +42,7 @@ export default function GameCountdown() {
 			game={game}
 			pageTitle={
 				<>
-					{team.fullName} vs {opposingTeam.fullName}
+					{team.fullName} vs {opposingTeam?.fullName ?? 'TBD'}
 				</>
 			}
 		/>

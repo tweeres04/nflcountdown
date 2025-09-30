@@ -16,9 +16,9 @@ export const generateMeta: MetaFunction = ({ data, params }) => {
 
 	if (game) {
 		const opponent =
-			game.homeTeam.abbreviation !== team.abbreviation
-				? game.homeTeam.fullName
-				: game.awayTeam.fullName
+			(game.homeTeam?.abbreviation === team.abbreviation
+				? game.awayTeam?.fullName
+				: game.homeTeam?.fullName) ?? 'TBD'
 
 		const gameDateFormatted = game.time
 			? new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(
