@@ -35,17 +35,17 @@ function useUpdateTime() {
 	}, [])
 }
 
-export default function Countdown({
-	team,
-	teams,
-	games,
-	pageTitle,
+export function countdownString({
 	game,
-	isTeamPage = false,
-}: CountdownProps) {
-	const LEAGUE = useContext(LeagueContext)
-	useUpdateTime()
-
+	team,
+	isTeamPage,
+	LEAGUE,
+}: {
+	game: Game
+	team: Team
+	isTeamPage: boolean
+	LEAGUE: string
+}) {
 	const countdownString = game?.time
 		? isPast(addHours(game.time, 3))
 			? 'Game completed'
@@ -64,6 +64,21 @@ export default function Countdown({
 						: 'tipoff'
 			  }`
 		: 'Game time TBD'
+	return countdownString
+}
+
+export default function Countdown({
+	team,
+	teams,
+	games,
+	pageTitle,
+	game,
+	isTeamPage = false,
+}: CountdownProps) {
+	const LEAGUE = useContext(LeagueContext)
+	useUpdateTime()
+
+	const countdownString_ = countdownString({ game, isTeamPage, LEAGUE, team })
 
 	const [showFullSchedule, setShowFullSchedule] = useState(false)
 	const lowercaseAbbreviation = team?.abbreviation?.toLowerCase()
@@ -134,7 +149,7 @@ export default function Countdown({
 				/>
 
 				<div className="text-center space-y-2">
-					<div className="text-3xl">{countdownString}</div>
+					<div className="text-3xl">{countdownString_}</div>
 					{gameInfo}
 				</div>
 
@@ -145,7 +160,7 @@ export default function Countdown({
 								navigator
 									.share({
 										title: `${team?.fullName ?? 'NFL Season'} Countdown`,
-										text: countdownString,
+										text: countdownString_,
 										url: `${
 											document.location.href
 										}?utm_source=${LEAGUE.toLowerCase()}countdown&utm_medium=share_button`,

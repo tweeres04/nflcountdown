@@ -37,7 +37,7 @@ export const generateMeta: MetaFunction = ({ data, params }) => {
 		description = `The fastest and prettiest way to check the next ${team.fullName} game. Launches instantly from your home screen.`
 	}
 
-	const ogImage = `https://${LEAGUE.toLowerCase()}countdown.tweeres.com/og/${LEAGUE.toLowerCase()}/${lowercaseAbbreviation}.png`
+	const ogImage = `https://${LEAGUE.toLowerCase()}countdown.tweeres.com/og/${lowercaseAbbreviation}`
 	const url = `https://${LEAGUE.toLowerCase()}countdown.tweeres.com/${lowercaseAbbreviation}${
 		game ? `/${params.gameSlug}` : ''
 	}`

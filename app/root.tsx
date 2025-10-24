@@ -36,16 +36,23 @@ export function loader({ request }: LoaderFunctionArgs) {
 	})
 }
 
+export function gradientClass(
+	lowercaseLeague: string,
+	lowercaseAbbreviation: string
+) {
+	const color =
+		lowercaseLeague === 'nfl'
+			? lowercaseAbbreviation
+			: `${lowercaseLeague}-${lowercaseAbbreviation}`
+	return `bg-fixed bg-gradient-to-b from-${color} to-${color}-secondary`
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
 	const { LEAGUE, GTAG_ID, AHREFS_KEY } = useLoaderData<typeof loader>() ?? {} // empty object in case we're in an error page
 	const { teamAbbrev } = useParams()
 	const lowercaseAbbreviation = teamAbbrev?.toLowerCase()
 	const lowercaseLeague = LEAGUE?.toLowerCase()
-	const color =
-		LEAGUE === 'NFL'
-			? lowercaseAbbreviation
-			: `${lowercaseLeague}-${lowercaseAbbreviation}`
-	const gradientClass = `bg-fixed bg-gradient-to-b from-${color} to-${color}-secondary`
+	const gradientClass_ = gradientClass(lowercaseLeague, lowercaseAbbreviation)
 	const logo = (filetype: string) =>
 		teamAbbrev
 			? `/logos/${
@@ -87,7 +94,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				className={cn(
 					'font-sans',
 					teamAbbrev
-						? gradientClass
+						? gradientClass_
 						: isSeasonCountdown
 						? 'bg-stone-900'
 						: 'bg-stone-100'
