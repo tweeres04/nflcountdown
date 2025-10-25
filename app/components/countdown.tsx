@@ -142,7 +142,7 @@ export default function Countdown({
 				<img
 					src={logo}
 					className={cn(
-						'w-[256px] h-[256px] lg:w-[512px] lg:h-[512px] mx-auto',
+						'w-[256px] h-[256px] md:w-[384px] md:h-[384px] mx-auto',
 						{ 'py-8 lg:py-16': LEAGUE === 'MLB' }
 					)}
 					alt={team ? `${team.fullName} logo` : 'NFL logo'}
