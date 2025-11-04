@@ -18,8 +18,8 @@ async function fetchAndSaveMlbSchedule() {
 		const url = new URL(MLB_SCHEDULE_URL)
 
 		url.searchParams.append('sportId', '1')
-		url.searchParams.append('startDate', '2025-01-01')
-		url.searchParams.append('endDate', '2025-12-31')
+		url.searchParams.append('startDate', '2026-01-01')
+		url.searchParams.append('endDate', '2026-12-31')
 		url.searchParams.append('timeZone', 'UTC')
 		url.searchParams.append('gameType', 'R')
 		url.searchParams.append('gameType', 'F')
