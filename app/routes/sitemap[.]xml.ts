@@ -46,7 +46,7 @@ ${teams
 	.map((t) => {
 		const teamAbbrev = t.abbreviation.toLowerCase()
 		const teamGames = games.filter(
-			(g) => g.homeTeam.id === t.id || g.awayTeam.id === t.id
+			(g) => g.homeTeam?.id === t.id || g.awayTeam?.id === t.id
 		)
 
 		// Team index page
