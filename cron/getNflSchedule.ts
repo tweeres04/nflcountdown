@@ -1,7 +1,44 @@
 import puppeteer from 'puppeteer'
 import { writeFile } from 'node:fs/promises'
+import path, { dirname } from 'path'
+import { fileURLToPath } from 'url'
 
-async function getNflSchedule() {
+// Type definitions for NFL API response
+interface Team {
+	id: string
+	fullName: string
+	abbreviation: string
+}
+
+interface Game {
+	id: string
+	homeTeam: Team
+	awayTeam: Team
+	date: string
+	time: string
+	season: string
+	seasonType: string
+	gameType: string
+	status: string
+}
+
+interface Pagination {
+	limit: number
+	token: string
+}
+
+interface NflApiResponse {
+	games: Game[]
+	pagination?: Pagination
+}
+
+type SeasonType = 'REG' | 'POST'
+
+// Get the directory name in ES module scope
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
+async function getAccessToken(): Promise<string> {
 	const browser = await puppeteer.launch({
 		args:
 			process.env.NODE_ENV === 'production'
@@ -10,7 +47,7 @@ async function getNflSchedule() {
 	})
 	const page = await browser.newPage()
 
-	const accessTokenPromise = new Promise((resolve) => {
+	const accessTokenPromise = new Promise<string>((resolve) => {
 		page.on('requestfinished', async (request) => {
 			if (request.url().includes('api.nfl.com')) {
 				if (
@@ -35,11 +72,16 @@ async function getNflSchedule() {
 
 	await browser.close()
 
-	const accessToken = await accessTokenPromise
+	return accessTokenPromise
+}
 
+async function fetchGames(
+	seasonType: SeasonType,
+	accessToken: string
+): Promise<NflApiResponse> {
 	const url = new URL('https://api.nfl.com/experience/v1/games')
 	url.searchParams.set('season', '2025')
-	url.searchParams.set('seasonType', 'REG')
+	url.searchParams.set('seasonType', seasonType)
 	url.searchParams.set('limit', '10000')
 
 	const response = await fetch(url, {
@@ -48,12 +90,42 @@ async function getNflSchedule() {
 		},
 	})
 
-	const data = await response.json()
+	if (!response.ok) {
+		throw new Error(`API request failed: ${response.status}`)
+	}
 
-	const outputFile = 'data/nfl_schedule.json'
-	await writeFile(outputFile, JSON.stringify(data))
+	return response.json()
+}
+
+async function getNflSchedule() {
+	const accessToken = await getAccessToken()
+
+	const [regularSeasonData, postseasonData] = await Promise.all([
+		fetchGames('REG', accessToken),
+		fetchGames('POST', accessToken).catch((err) => {
+			console.log('Failed to fetch postseason games:', err.message)
+			return { games: [] }
+		}),
+	])
+
+	const mergedData = {
+		...regularSeasonData,
+		games: [
+			...(regularSeasonData?.games || []),
+			...(postseasonData?.games || []),
+		],
+	}
+
+	const outputFile =
+		process.env.NODE_ENV === 'production'
+			? path.join(__dirname, 'data', 'nfl_schedule.json')
+			: path.join(__dirname, '..', 'data', 'nfl_schedule.json')
+	await writeFile(outputFile, JSON.stringify(mergedData))
 
 	console.log(`NFL schedule saved to ${outputFile}`)
+	console.log(`Regular season games: ${regularSeasonData?.games?.length || 0}`)
+	console.log(`Postseason games: ${postseasonData?.games?.length || 0}`)
+	console.log(`Total games: ${mergedData.games.length}`)
 }
 
 try {
