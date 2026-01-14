@@ -1,4 +1,4 @@
-import { json, LoaderFunctionArgs } from '@remix-run/node'
+import { defer, LoaderFunctionArgs } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 
 import { addHours, isFuture } from 'date-fns'
@@ -17,23 +17,22 @@ export async function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
 		(g: Game) => g.time && isFuture(addHours(g.time, 3))
 	)
 
-	// Generate AI preview for the next game
-	let gamePreview: string | null = null
-	try {
-		if (
-			process.env.GOOGLE_AI_API_KEY &&
-			nextGame &&
-			nextGame.homeTeam &&
-			nextGame.awayTeam
-		) {
-			gamePreview = await getCachedGamePreview(nextGame.id, nextGame, team)
-		}
-	} catch (error) {
-		console.error('Failed to generate game preview:', error)
-		// Continue without preview
-	}
+	// Deferred AI preview generation
+	const gamePreviewPromise =
+		process.env.GOOGLE_AI_API_KEY &&
+		nextGame &&
+		nextGame.homeTeam &&
+		nextGame.awayTeam
+			? getCachedGamePreview(nextGame, team)
+			: Promise.resolve(null)
 
-	return json({ LEAGUE, teams, team, games, gamePreview })
+	return defer({
+		LEAGUE,
+		teams,
+		team,
+		games,
+		gamePreview: gamePreviewPromise,
+	})
 }
 
 export default function TeamCountdown() {

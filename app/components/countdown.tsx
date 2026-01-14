@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, useRef } from 'react'
+import { useContext, useState, useEffect, useRef, Suspense } from 'react'
 import { Game, Team } from '~/lib/types'
 import TeamsDropdown from './ui/teams-dropdown'
 import { Button } from './ui/button'
@@ -14,6 +14,23 @@ import Markdown from 'react-markdown'
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
 import { Eye } from 'lucide-react'
 import { Badge } from './ui/badge'
+import { Await } from '@remix-run/react'
+
+// Simple inline loading skeleton for Dialog
+// I should probably refactor this to use <ul> and <li>
+const GamePreviewLoading = () => (
+	<div className="space-y-2">
+		{[1, 2, 3].map((i) => (
+			<div key={i} className="flex items-start gap-2">
+				<span className="text-white/30">•</span>
+				<div className="flex-1">
+					<div className="h-3 bg-white/20 rounded w-full mb-1 animate-pulse" />
+					<div className="h-3 bg-white/10 rounded w-3/4 animate-pulse" />
+				</div>
+			</div>
+		))}
+	</div>
+)
 
 interface CountdownProps {
 	team: Team
@@ -21,7 +38,7 @@ interface CountdownProps {
 	games: Game[]
 	pageTitle: React.ReactNode
 	game: Game
-	gamePreview?: string | null
+	gamePreview?: Promise<string | null>
 	isTeamPage?: boolean
 }
 
@@ -206,7 +223,17 @@ export default function Countdown({
 										: 'bg-[#013369]'
 								)}
 							>
-								<Markdown>{gamePreview}</Markdown>
+								<Suspense fallback={<GamePreviewLoading />}>
+									<Await resolve={gamePreview}>
+										{(preview) =>
+											preview ? (
+												<Markdown>{preview}</Markdown>
+											) : (
+												<p>Game preview unavailable</p>
+											)
+										}
+									</Await>
+								</Suspense>
 							</DialogContent>
 						</Dialog>
 					)}

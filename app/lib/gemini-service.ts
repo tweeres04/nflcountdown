@@ -45,7 +45,6 @@ Game Date: ${gameDate}`
 }
 
 export async function getCachedGamePreview(
-	gameId: string,
 	game: Game,
 	team: Team
 ): Promise<string | null> {
@@ -65,7 +64,7 @@ export async function getCachedGamePreview(
 	}
 
 	// Check cache first (24 hour cache)
-	const cached = previewCache.get(gameId)
+	const cached = previewCache.get(game.id)
 	if (cached && now - cached.timestamp < CACHE_TTL) {
 		return cached.preview
 	}
@@ -74,7 +73,7 @@ export async function getCachedGamePreview(
 	const preview = await generateGamePreview(game, team)
 
 	// Cache the result
-	previewCache.set(gameId, { preview, timestamp: now })
+	previewCache.set(game.id, { preview, timestamp: now })
 
 	return preview
 }
