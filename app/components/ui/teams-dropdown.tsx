@@ -49,7 +49,7 @@ export default function TeamsDropdown({
 					<DropdownMenuSubContent className={contentClasses}>
 						{['NFL', 'MLB', 'NBA', 'NHL'].map((league) =>
 							LEAGUE !== league ? (
-								<DropdownMenuItem asChild>
+								<DropdownMenuItem asChild key={league}>
 									<a
 										href={`https://${league.toLowerCase()}countdown.tweeres.com`}
 									>
@@ -61,7 +61,7 @@ export default function TeamsDropdown({
 					</DropdownMenuSubContent>
 				</DropdownMenuSub>
 				{teams.map((t) => (
-					<DropdownMenuItem asChild>
+					<DropdownMenuItem asChild key={t.abbreviation}>
 						<a href={`/${t.abbreviation.toLowerCase()}`}>{t.fullName}</a>
 					</DropdownMenuItem>
 				))}
