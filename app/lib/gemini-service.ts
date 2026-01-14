@@ -14,9 +14,9 @@ const previewCache = new Map<
 >()
 
 export async function generateGamePreview(
+	league: string,
 	game: Game,
-	team: Team,
-	league = 'NFL'
+	team: Team
 ): Promise<string | null> {
 	const opponentTeam =
 		game.homeTeam?.abbreviation === team.abbreviation
@@ -49,6 +49,7 @@ Game Date: ${gameDate}`
 }
 
 export async function getCachedGamePreview(
+	league: string,
 	game: Game,
 	team: Team
 ): Promise<string | null> {
@@ -74,7 +75,7 @@ export async function getCachedGamePreview(
 	}
 
 	// Generate new preview
-	const preview = await generateGamePreview(game, team)
+	const preview = await generateGamePreview(league, game, team)
 
 	// Cache the result
 	previewCache.set(game.id, { preview, timestamp: now })

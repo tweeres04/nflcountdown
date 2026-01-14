@@ -30,7 +30,7 @@ export async function loader({
 		process.env.GOOGLE_AI_API_KEY &&
 		currentGame.homeTeam &&
 		currentGame.awayTeam
-			? generateGamePreview(currentGame, team)
+			? generateGamePreview(LEAGUE, currentGame, team)
 			: Promise.resolve(null)
 
 	return defer({

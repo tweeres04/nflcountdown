@@ -23,7 +23,7 @@ export async function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
 		nextGame &&
 		nextGame.homeTeam &&
 		nextGame.awayTeam
-			? getCachedGamePreview(nextGame, team)
+			? getCachedGamePreview(LEAGUE, nextGame, team)
 			: Promise.resolve(null)
 
 	return defer({
