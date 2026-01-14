@@ -11,7 +11,7 @@ import GameList from './game-list'
 import { addHours, isPast, isWithinInterval } from 'date-fns'
 import countdown from '../external/countdown'
 import Markdown from 'react-markdown'
-import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from './ui/dialog'
 import { Eye } from 'lucide-react'
 import { Badge } from './ui/badge'
 import { Await } from '@remix-run/react'
@@ -100,6 +100,11 @@ export default function Countdown({
 	const LEAGUE = useContext(LeagueContext)
 	useUpdateTime()
 
+	const [hasShareAPI, setHasShareAPI] = useState(true)
+	useEffect(() => {
+		setHasShareAPI(Boolean(navigator?.share))
+	}, [])
+
 	const countdownString_ = countdownString({ game, isTeamPage, LEAGUE, team })
 
 	const [showFullSchedule, setShowFullSchedule] = useState(false)
@@ -175,8 +180,8 @@ export default function Countdown({
 					{gameInfo}
 				</div>
 
-				<div className="mt-8 space-y-3 [&_button]:min-w-[250px]">
-					{typeof navigator !== 'undefined' && navigator.share && (
+				<div className="mt-8 space-y-3 [&_button]:min-w-[275px]">
+					{hasShareAPI && (
 						<Button
 							onClick={() => {
 								navigator
@@ -222,6 +227,7 @@ export default function Countdown({
 										: 'bg-[#013369]'
 								)}
 							>
+								<DialogTitle>Game preview</DialogTitle>
 								<Suspense fallback={<GamePreviewLoading />}>
 									<Await resolve={gamePreview}>
 										{(preview) =>
