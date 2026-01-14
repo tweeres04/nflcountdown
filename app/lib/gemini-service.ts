@@ -1,10 +1,6 @@
 import { GoogleGenAI } from '@google/genai'
 import { Game, Team } from './types'
 
-if (!process.env.GOOGLE_AI_API_KEY) {
-	throw 'No GOOGLE_AI_API_KEY'
-}
-
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_AI_API_KEY })
 
 // Simple in-memory cache to avoid repeated API calls

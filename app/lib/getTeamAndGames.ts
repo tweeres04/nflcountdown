@@ -1,6 +1,5 @@
 import { readFile } from 'node:fs/promises'
 import schedule from '../../nfl_schedule.json'
-import mlbSchedule from '../../mlb_schedule.json'
 import mlbTeams from '../../mlb_teams.json'
 import { uniqBy, orderBy } from 'lodash-es'
 import { mlbGameToGame, mlbTeamToTeam } from './mlbGameToGame'

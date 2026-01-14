@@ -17,7 +17,6 @@ import { Badge } from './ui/badge'
 import { Await } from '@remix-run/react'
 
 // Simple inline loading skeleton for Dialog
-// I should probably refactor this to use <ul> and <li>
 const GamePreviewLoading = () => (
 	<div className="space-y-2">
 		{[1, 2, 3].map((i) => (

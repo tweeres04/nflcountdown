@@ -5,7 +5,7 @@ import { getGameSlug } from '~/lib/getGameSlug'
 import Countdown from '~/components/countdown'
 import { getTeamAndGames } from '~/lib/getTeamAndGames'
 import { generateMeta } from '~/lib/generateMeta'
-import { generateGamePreview } from '~/lib/gemini-service'
+import { getCachedGamePreview } from '~/lib/gemini-service'
 import { Game } from '~/lib/types'
 
 export { generateMeta as meta }
@@ -30,7 +30,7 @@ export async function loader({
 		process.env.GOOGLE_AI_API_KEY &&
 		currentGame.homeTeam &&
 		currentGame.awayTeam
-			? generateGamePreview(LEAGUE, currentGame, team)
+			? getCachedGamePreview(LEAGUE, currentGame, team)
 			: Promise.resolve(null)
 
 	return defer({
