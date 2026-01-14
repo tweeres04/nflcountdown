@@ -10,6 +10,10 @@ import { LeagueContext } from '~/lib/league-context'
 import GameList from './game-list'
 import { addHours, isPast, isWithinInterval } from 'date-fns'
 import countdown from '../external/countdown'
+import Markdown from 'react-markdown'
+import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
+import { Eye } from 'lucide-react'
+import { Badge } from './ui/badge'
 
 interface CountdownProps {
 	team: Team
@@ -17,6 +21,7 @@ interface CountdownProps {
 	games: Game[]
 	pageTitle: React.ReactNode
 	game: Game
+	gamePreview?: string | null
 	isTeamPage?: boolean
 }
 
@@ -73,6 +78,7 @@ export default function Countdown({
 	games,
 	pageTitle,
 	game,
+	gamePreview,
 	isTeamPage = false,
 }: CountdownProps) {
 	const LEAGUE = useContext(LeagueContext)
@@ -99,12 +105,12 @@ export default function Countdown({
 				}).format(new Date(game.time))}
 				{game.startTimeTbd ? ', Time TBD' : ''}
 			</div>
-			{game.awayTeam ? (
+			{game.awayTeam && game.homeTeam ? (
 				<div className="text-sm">
 					vs{' '}
-					{game.homeTeam?.abbreviation !== team?.abbreviation
+					{game.homeTeam.abbreviation !== team?.abbreviation
 						? game.homeTeam.fullName
-						: game.awayTeam?.fullName}
+						: game.awayTeam.fullName}
 				</div>
 			) : null}
 		</div>
@@ -172,6 +178,38 @@ export default function Countdown({
 						</Button>
 					)}
 					<FeedbackButton />
+					{gamePreview && (
+						<Dialog>
+							<DialogTrigger asChild>
+								<Button>
+									Game preview <Eye className="size-5" />{' '}
+									<Badge
+										className={cn(
+											lowercaseAbbreviation
+												? LEAGUE === 'NFL'
+													? `bg-${lowercaseAbbreviation} hover:bg-${lowercaseAbbreviation}-secondary`
+													: `bg-${LEAGUE.toLowerCase()}-${lowercaseAbbreviation} hover:bg-${LEAGUE.toLowerCase()}-${lowercaseAbbreviation}-secondary`
+												: undefined
+										)}
+									>
+										New
+									</Badge>
+								</Button>
+							</DialogTrigger>
+							<DialogContent
+								className={cn(
+									'p-4 text-white [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-3 border-0 rounded-lg',
+									lowercaseAbbreviation
+										? LEAGUE === 'NFL'
+											? `bg-${lowercaseAbbreviation}`
+											: `bg-${LEAGUE.toLowerCase()}-${lowercaseAbbreviation}`
+										: 'bg-[#013369]'
+								)}
+							>
+								<Markdown>{gamePreview}</Markdown>
+							</DialogContent>
+						</Dialog>
+					)}
 					{games?.length > 0 ? (
 						<Button onClick={() => setShowFullSchedule((v) => !v)}>
 							{showFullSchedule ? 'Hide schedule' : 'Show full schedule'}

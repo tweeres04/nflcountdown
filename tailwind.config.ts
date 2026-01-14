@@ -48,7 +48,9 @@ const safelist = Object.keys(colors).flatMap((abbrev) => {
 		`from-${abbrev}`,
 		`to-${abbrev}-secondary`,
 		`bg-${abbrev}`,
+		`hover:bg-${abbrev}`,
 		`bg-${abbrev}-secondary`,
+		`hover:bg-${abbrev}-secondary`,
 	]
 })
 
