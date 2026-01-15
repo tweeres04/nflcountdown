@@ -33,6 +33,15 @@ mixpanel.init(window.mixpanelToken, {
 	debug: process.env.NODE_ENV === 'development',
 	track_pageview: true,
 	persistence: 'localStorage',
-	autocapture: true,
+	autocapture: {
+		pageview: 'full-url',
+		click: false,
+		dead_click: true,
+		input: true,
+		rage_click: true,
+		scroll: true,
+		submit: true,
+		capture_text_content: false,
+	},
 	record_sessions_percent: 100,
 })
