@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import IosShareIcon from './IosShareIcon'
 import { Button } from './ui/button'
 import { cn } from '~/lib/utils'
+import mixpanel from 'mixpanel-browser'
 
 interface BeforeInstallPromptEvent extends Event {
 	prompt: () => void
@@ -61,6 +62,7 @@ export default function InstallNotification({
 					className="absolute top-0 right-0 p-1"
 					onClick={() => {
 						setShowInstallNotification(false)
+						mixpanel.track('click close install notification')
 					}}
 				>
 					<svg // x-mark icon
@@ -85,6 +87,7 @@ export default function InstallNotification({
 					<div className="text-center mt-2">
 						<Button
 							onClick={() => {
+								mixpanel.track('click add to home screen button')
 								deferredInstallPrompt.prompt()
 							}}
 						>

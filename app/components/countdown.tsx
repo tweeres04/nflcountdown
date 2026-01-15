@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from './ui/dialog'
 import { Eye } from 'lucide-react'
 import { Badge } from './ui/badge'
 import { Await } from '@remix-run/react'
+import mixpanel from 'mixpanel-browser'
 
 // Simple inline loading skeleton for Dialog
 const GamePreviewLoading = () => (
@@ -198,6 +199,7 @@ export default function Countdown({
 										}?utm_source=${LEAGUE.toLowerCase()}countdown&utm_medium=share_button`,
 									})
 									.catch(() => {})
+								mixpanel.track('click share button')
 							}}
 						>
 							Share <IosShareIcon className="size-5" />
@@ -207,7 +209,11 @@ export default function Countdown({
 					{gamePreview && (
 						<Dialog>
 							<DialogTrigger asChild>
-								<Button>
+								<Button
+									onClick={() => {
+										mixpanel.track('Click game preview button')
+									}}
+								>
 									Game preview <Eye className="size-5" />{' '}
 									<Badge
 										className={cn(
@@ -248,7 +254,16 @@ export default function Countdown({
 						</Dialog>
 					)}
 					{games?.length > 0 ? (
-						<Button onClick={() => setShowFullSchedule((v) => !v)}>
+						<Button
+							onClick={() => {
+								mixpanel.track(
+									showFullSchedule
+										? 'click hide full schedule'
+										: 'click show full schedule'
+								)
+								setShowFullSchedule((v) => !v)
+							}}
+						>
 							{showFullSchedule ? 'Hide schedule' : 'Show full schedule'}
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
