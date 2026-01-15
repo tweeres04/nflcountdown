@@ -100,8 +100,10 @@ export default function Countdown({
 	const LEAGUE = useContext(LeagueContext)
 	useUpdateTime()
 
+	const [isClient, setIsClient] = useState(false)
 	const [hasShareAPI, setHasShareAPI] = useState(true)
 	useEffect(() => {
+		setIsClient(true)
 		setHasShareAPI(Boolean(navigator?.share))
 	}, [])
 
@@ -114,26 +116,25 @@ export default function Countdown({
 			? `/logos/${lowercaseAbbreviation ?? 'nfl'}.svg`
 			: `/logos/${LEAGUE.toLowerCase()}/${lowercaseAbbreviation}.svg`
 
-	const gameInfo = game?.time ? (
+	const gameDateInfo = game?.time ? (
 		<div>
-			<div>
-				{new Intl.DateTimeFormat('en-US', {
-					month: 'short',
-					weekday: 'short',
-					day: 'numeric',
-					hour: game.startTimeTbd ? undefined : 'numeric',
-					minute: game.startTimeTbd ? undefined : 'numeric',
-				}).format(new Date(game.time))}
-				{game.startTimeTbd ? ', Time TBD' : ''}
-			</div>
-			{game.awayTeam && game.homeTeam ? (
-				<div className="text-sm">
-					vs{' '}
-					{game.homeTeam.abbreviation !== team?.abbreviation
-						? game.homeTeam.fullName
-						: game.awayTeam.fullName}
-				</div>
-			) : null}
+			{new Intl.DateTimeFormat('en-US', {
+				month: 'short',
+				weekday: 'short',
+				day: 'numeric',
+				hour: game.startTimeTbd ? undefined : 'numeric',
+				minute: game.startTimeTbd ? undefined : 'numeric',
+			}).format(new Date(game.time))}
+			{game.startTimeTbd ? ', Time TBD' : ''}
+		</div>
+	) : null
+
+	const gameMatchupInfo = game?.awayTeam && game?.homeTeam ? (
+		<div className="text-sm">
+			vs{' '}
+			{game.homeTeam.abbreviation !== team?.abbreviation
+				? game.homeTeam.fullName
+				: game.awayTeam.fullName}
 		</div>
 	) : null
 
@@ -177,7 +178,10 @@ export default function Countdown({
 
 				<div className="text-center space-y-2">
 					<div className="text-3xl">{countdownString_}</div>
-					{gameInfo}
+					<div>
+						{isClient && gameDateInfo}
+						{gameMatchupInfo}
+					</div>
 				</div>
 
 				<div className="mt-8 space-y-3 [&_button]:min-w-[275px]">
