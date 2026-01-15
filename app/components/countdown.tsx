@@ -129,14 +129,15 @@ export default function Countdown({
 		</div>
 	) : null
 
-	const gameMatchupInfo = game?.awayTeam && game?.homeTeam ? (
-		<div className="text-sm">
-			vs{' '}
-			{game.homeTeam.abbreviation !== team?.abbreviation
-				? game.homeTeam.fullName
-				: game.awayTeam.fullName}
-		</div>
-	) : null
+	const gameMatchupInfo =
+		game?.awayTeam && game?.homeTeam ? (
+			<div className="text-sm">
+				vs{' '}
+				{game.homeTeam.abbreviation !== team?.abbreviation
+					? game.homeTeam.fullName
+					: game.awayTeam.fullName}
+			</div>
+		) : null
 
 	return (
 		<>
@@ -177,7 +178,7 @@ export default function Countdown({
 				/>
 
 				<div className="text-center space-y-2">
-					<div className="text-3xl">{countdownString_}</div>
+					<div className="text-3xl">{isClient && countdownString_}</div>
 					<div>
 						{isClient && gameDateInfo}
 						{gameMatchupInfo}
