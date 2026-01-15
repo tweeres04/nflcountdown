@@ -29,10 +29,12 @@ export function loader({ request }: LoaderFunctionArgs) {
 	}
 	const GTAG_ID = process.env.GTAG_ID
 	const AHREFS_KEY = process.env.AHREFS_KEY
+	const MIXPANEL_TOKEN = process.env.MIXPANEL_TOKEN
 	return json({
 		LEAGUE,
 		GTAG_ID,
 		AHREFS_KEY,
+		MIXPANEL_TOKEN,
 	})
 }
 
@@ -48,7 +50,8 @@ export function gradientClass(
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-	const { LEAGUE, GTAG_ID, AHREFS_KEY } = useLoaderData<typeof loader>() ?? {} // empty object in case we're in an error page
+	const { LEAGUE, GTAG_ID, AHREFS_KEY, MIXPANEL_TOKEN } =
+		useLoaderData<typeof loader>() ?? {} // empty object in case we're in an error page
 	const { teamAbbrev } = useParams()
 	const lowercaseAbbreviation = teamAbbrev?.toLowerCase()
 	const lowercaseLeague = LEAGUE?.toLowerCase()
@@ -100,6 +103,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 						: 'bg-stone-100'
 				)}
 			>
+				<script
+					dangerouslySetInnerHTML={{
+						__html: `window.mixpanelToken = '${MIXPANEL_TOKEN}'`,
+					}}
+				></script>
 				<DeferredInstallPromptContext.Provider value={deferredPrompt}>
 					<LeagueContext.Provider value={LEAGUE}>
 						{children}
