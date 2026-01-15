@@ -100,10 +100,8 @@ export default function Countdown({
 	const LEAGUE = useContext(LeagueContext)
 	useUpdateTime()
 
-	const [isClient, setIsClient] = useState(false)
 	const [hasShareAPI, setHasShareAPI] = useState(true)
 	useEffect(() => {
-		setIsClient(true)
 		setHasShareAPI(Boolean(navigator?.share))
 	}, [])
 
@@ -117,7 +115,7 @@ export default function Countdown({
 			: `/logos/${LEAGUE.toLowerCase()}/${lowercaseAbbreviation}.svg`
 
 	const gameDateInfo = game?.time ? (
-		<div>
+		<div suppressHydrationWarning>
 			{new Intl.DateTimeFormat('en-US', {
 				month: 'short',
 				weekday: 'short',
@@ -131,7 +129,7 @@ export default function Countdown({
 
 	const gameMatchupInfo =
 		game?.awayTeam && game?.homeTeam ? (
-			<div className="text-sm">
+			<div className="text-sm" suppressHydrationWarning>
 				vs{' '}
 				{game.homeTeam.abbreviation !== team?.abbreviation
 					? game.homeTeam.fullName
@@ -178,9 +176,11 @@ export default function Countdown({
 				/>
 
 				<div className="text-center space-y-2">
-					<div className="text-3xl">{isClient && countdownString_}</div>
+					<div className="text-3xl" suppressHydrationWarning>
+						{countdownString_}
+					</div>
 					<div>
-						{isClient && gameDateInfo}
+						{gameDateInfo}
 						{gameMatchupInfo}
 					</div>
 				</div>
