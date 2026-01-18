@@ -11,8 +11,14 @@ import GameList from './game-list'
 import { addHours, isPast, isWithinInterval } from 'date-fns'
 import countdown from '../external/countdown'
 import Markdown from 'react-markdown'
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from './ui/dialog'
-import { Eye } from 'lucide-react'
+import {
+	Dialog,
+	DialogContent,
+	DialogFooter,
+	DialogTitle,
+	DialogTrigger,
+} from './ui/dialog'
+import { Eye, ThumbsDown, ThumbsUp } from 'lucide-react'
 import { Badge } from './ui/badge'
 import { Await } from '@remix-run/react'
 import mixpanel from 'mixpanel-browser'
@@ -100,6 +106,7 @@ export default function Countdown({
 }: CountdownProps) {
 	const LEAGUE = useContext(LeagueContext)
 	useUpdateTime()
+	const [feedbackGiven, setFeedbackGiven] = useState(false)
 
 	const [hasShareAPI, setHasShareAPI] = useState(true)
 	useEffect(() => {
@@ -186,7 +193,7 @@ export default function Countdown({
 					</div>
 				</div>
 
-				<div className="mt-8 space-y-3 [&_button]:min-w-[275px]">
+				<div className="mt-8 [&_button]:min-w-[275px] flex flex-col gap-3 items-center">
 					{hasShareAPI && (
 						<Button
 							onClick={() => {
@@ -260,7 +267,41 @@ export default function Countdown({
 									<Await resolve={gamePreview}>
 										{(preview) =>
 											preview ? (
-												<Markdown>{preview}</Markdown>
+												<>
+													<Markdown>{preview}</Markdown>
+													<DialogFooter>
+														{feedbackGiven ? (
+															<div>
+																<p className="text-center font-medium">
+																	Thanks for your feedback!
+																</p>
+																<p className="text-[.75rem]">
+																	If you want to tell me more, use the Feedback
+																	button
+																</p>
+															</div>
+														) : (
+															<>
+																<Button
+																	onClick={() => {
+																		mixpanel.track('click thumbs down')
+																		setFeedbackGiven(true)
+																	}}
+																>
+																	<ThumbsDown />
+																</Button>
+																<Button
+																	onClick={() => {
+																		mixpanel.track('click thumbs up')
+																		setFeedbackGiven(true)
+																	}}
+																>
+																	<ThumbsUp />
+																</Button>
+															</>
+														)}
+													</DialogFooter>
+												</>
 											) : (
 												<p>Game preview unavailable</p>
 											)
