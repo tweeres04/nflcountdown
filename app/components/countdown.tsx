@@ -238,7 +238,24 @@ export default function Countdown({
 										: 'bg-[#013369]'
 								)}
 							>
-								<DialogTitle>Game preview</DialogTitle>
+								<DialogTitle>
+									<div>
+										{game?.homeTeam && game?.awayTeam
+											? `${game?.homeTeam?.fullName} vs ${game?.awayTeam?.fullName}`
+											: 'Game preview'}
+									</div>
+									{game?.time ? (
+										<div className="text-sm">
+											{new Intl.DateTimeFormat('en-US', {
+												month: 'short',
+												weekday: 'short',
+												day: 'numeric',
+												hour: game.startTimeTbd ? undefined : 'numeric',
+												minute: game.startTimeTbd ? undefined : 'numeric',
+											}).format(new Date(game.time))}
+										</div>
+									) : null}
+								</DialogTitle>
 								<Suspense fallback={<GamePreviewLoading />}>
 									<Await resolve={gamePreview}>
 										{(preview) =>
