@@ -80,20 +80,19 @@ export default function InstallNotification({
 						/>
 					</svg>
 				</button>
-				<p className="has-text-centered">
+				<p className="text-center">
 					Install {countdownName} Countdown to your home screen for quick access
 				</p>
 				{deferredInstallPrompt ? (
-					<div className="text-center mt-2">
-						<Button
-							onClick={() => {
-								mixpanel.track('click add to home screen button')
-								deferredInstallPrompt.prompt()
-							}}
-						>
-							Add to home screen
-						</Button>
-					</div>
+					<Button
+						onClick={() => {
+							mixpanel.track('click add to home screen button')
+							deferredInstallPrompt.prompt()
+						}}
+						className="mx-auto mt-2"
+					>
+						Add to home screen
+					</Button>
 				) : isIos ? (
 					<p className="text-center mt-3">
 						Tap the share button (with this icon:{' '}
