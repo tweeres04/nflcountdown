@@ -44,4 +44,5 @@ mixpanel.init(window.mixpanelToken, {
 		capture_text_content: false,
 	},
 	record_sessions_percent: 100,
+	record_mask_text_selector: '',
 })
