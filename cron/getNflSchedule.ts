@@ -68,7 +68,9 @@ async function getAccessToken(): Promise<string> {
 		`https://www.nfl.com/schedules/${new Date().getFullYear()}/REG1/`
 	)
 
-	await page.locator('.nfl-o-matchup-group')
+	await page.locator(`h1 ::-p-text(SCHEDULE)`).wait()
+
+	await accessTokenPromise
 
 	await browser.close()
 
