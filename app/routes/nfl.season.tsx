@@ -28,7 +28,7 @@ export function meta() {
 		{ name: 'og:type', content: 'website' },
 		{
 			name: 'og:url',
-			content: 'https://teamcountdown.com/season',
+			content: 'https://teamcountdown.com/nfl/season',
 		},
 		{
 			name: 'og:image',
@@ -42,7 +42,7 @@ export function meta() {
 		{
 			tagName: 'link',
 			rel: 'canonical',
-			href: 'https://teamcountdown.com/season',
+			href: 'https://teamcountdown.com/nfl/season',
 		},
 	]
 }

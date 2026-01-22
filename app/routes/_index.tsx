@@ -3,7 +3,7 @@ import { Button } from '~/components/ui/button'
 
 export const meta: MetaFunction = () => {
 	const title = `Team Countdown - When is the next game?`
-	const description = `The fastest and prettiest way to check the next NFL, NBA, MLB, or NHL game. Launches instantly from your home screen.`
+	const description = `The fastest and prettiest way to check the next NFL, NBA, or MLB game. Launches instantly from your home screen.`
 	const url = `https://teamcountdown.com`
 	return [
 		{ title },
@@ -35,7 +35,6 @@ export default function Index() {
 		{ code: 'nfl', name: 'NFL', fullName: 'National Football League' },
 		{ code: 'nba', name: 'NBA', fullName: 'National Basketball Association' },
 		{ code: 'mlb', name: 'MLB', fullName: 'Major League Baseball' },
-		{ code: 'nhl', name: 'NHL', fullName: 'National Hockey League' },
 	]
 
 	return (

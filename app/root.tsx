@@ -70,7 +70,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 	const location = useLocation()
 
-	const isSeasonCountdown = location.pathname.match(/\/season\/?/)
+	const isSeasonCountdown = location.pathname.match(/\/nfl\/season\/?/)
 
 	return (
 		<html lang="en" className="text-[20px]">
@@ -90,7 +90,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 					/>
 				) : null}
 				{isSeasonCountdown ? (
-					<link rel="manifest" href="/season/manifest.json" />
+					<link rel="manifest" href="/nfl/season/manifest.json" />
 				) : null}
 				<Meta />
 				<Links />

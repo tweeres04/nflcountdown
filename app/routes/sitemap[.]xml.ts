@@ -49,7 +49,7 @@ export async function loader() {
 		// Add season page for NFL
 		if (LEAGUE === 'NFL') {
 			allUrls.push(`    <url>
-        <loc>https://teamcountdown.com/season</loc>
+        <loc>https://teamcountdown.com/nfl/season</loc>
     </url>`)
 		}
 
