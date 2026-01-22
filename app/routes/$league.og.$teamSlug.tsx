@@ -45,41 +45,8 @@ const nbaColors_: ColorObject = nbaColors.reduce(
 	{}
 )
 
-export async function loader({ params }: LoaderFunctionArgs) {
-	// Try to detect league from team abbreviation across all leagues
-	let LEAGUE: string | undefined
-	let team
-	let games
-
-	// Try NFL first
-	try {
-		const result = await getTeamAndGames('nfl', params.teamSlug)
-		LEAGUE = result.LEAGUE
-		team = result.team
-		games = result.games
-	} catch {
-		// Try NBA
-		try {
-			const result = await getTeamAndGames('nba', params.teamSlug)
-			LEAGUE = result.LEAGUE
-			team = result.team
-			games = result.games
-		} catch {
-			// Try MLB
-			try {
-				const result = await getTeamAndGames('mlb', params.teamSlug)
-				LEAGUE = result.LEAGUE
-				team = result.team
-				games = result.games
-			} catch {
-				throw new Response(null, { status: 404 })
-			}
-		}
-	}
-
-	if (!LEAGUE || !team || !games) {
-		throw new Response(null, { status: 404 })
-	}
+export async function loader({ params: { league, teamSlug } }: LoaderFunctionArgs) {
+	const { LEAGUE, team, games } = await getTeamAndGames(league, teamSlug)
 
 	// Find the next upcoming game
 	const game = games.filter(
