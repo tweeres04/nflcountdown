@@ -51,10 +51,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 	const loaderData = useLoaderData<typeof loader>() ?? {} // empty object in case we're in an error page
 	const { GTAG_ID, AHREFS_KEY, MIXPANEL_TOKEN } = loaderData
 	const { league, teamAbbrev } = useParams()
-	const LEAGUE = league?.toUpperCase()
+	const LEAGUE = league?.toUpperCase() ?? ''
 	const lowercaseAbbreviation = teamAbbrev?.toLowerCase()
 	const lowercaseLeague = LEAGUE?.toLowerCase()
-	const gradientClass_ = gradientClass(lowercaseLeague, lowercaseAbbreviation)
+	const gradientClass_ = gradientClass(lowercaseLeague ?? '', lowercaseAbbreviation)
 	const logo = (filetype: string) =>
 		teamAbbrev
 			? `/logos/${
@@ -111,7 +111,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 					}}
 				></script>
 				<DeferredInstallPromptContext.Provider value={deferredPrompt}>
-					<LeagueContext.Provider value={LEAGUE}>
+					<LeagueContext.Provider value={LEAGUE || 'NFL'}>
 						{children}
 					</LeagueContext.Provider>
 				</DeferredInstallPromptContext.Provider>

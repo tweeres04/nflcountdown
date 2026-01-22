@@ -8,7 +8,10 @@ import mlbTeams from '../../mlb_teams.json'
 import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
 import { nbaTeams, nbaTeamToTeam } from '~/lib/nbaGameToGame'
 
-export const meta: MetaFunction = ({ data }) => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+	if (!data) {
+		return []
+	}
 	const LEAGUE = data.LEAGUE
 	const lowercaseLeague = LEAGUE.toLowerCase()
 
