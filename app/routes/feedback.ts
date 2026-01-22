@@ -14,20 +14,6 @@ const mg = mailgun.client({
 
 export async function action({ request }: ActionFunctionArgs) {
 	const referer = request.headers.get('referer')
-	// Extract league from referer URL (e.g., /nfl/kc or /nba/bos)
-	let LEAGUE = 'NFL' // default
-	if (referer) {
-		const refererUrl = new URL(referer)
-		const pathParts = refererUrl.pathname.split('/').filter(Boolean)
-		if (pathParts.length > 0) {
-			const possibleLeague = pathParts[0].toUpperCase()
-			// Only recognize supported leagues
-			if (['NFL', 'NBA', 'MLB'].includes(possibleLeague)) {
-				LEAGUE = possibleLeague
-			}
-		}
-	}
-
 	const formData = await request.formData()
 	const entries = [...formData.entries()]
 	entries.push(['referer', referer ?? 'Not found'])
