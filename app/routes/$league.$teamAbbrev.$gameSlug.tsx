@@ -11,9 +11,12 @@ import { Game } from '~/lib/types'
 export { generateMeta as meta }
 
 export async function loader({
-	params: { teamAbbrev, gameSlug },
+	params: { league, teamAbbrev, gameSlug },
 }: LoaderFunctionArgs) {
-	const { LEAGUE, teams, team, games } = await getTeamAndGames(teamAbbrev)
+	const { LEAGUE, teams, team, games } = await getTeamAndGames(
+		league,
+		teamAbbrev
+	)
 
 	const currentGame = games.find((g: Game) => {
 		if (!g.time) return false

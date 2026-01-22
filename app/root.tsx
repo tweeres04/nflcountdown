@@ -21,17 +21,15 @@ import { LeagueContext } from './lib/league-context'
 import { LoaderFunctionArgs } from '@remix-run/node'
 
 export function loader({ request }: LoaderFunctionArgs) {
-	const LEAGUE = process.env.LEAGUE ?? 'NFL'
 	const url = new URL(request.url)
 	if (url.hostname.endsWith('.ca')) {
-		url.hostname = `${LEAGUE.toLowerCase()}countdown.tweeres.com`
+		url.hostname = `teamcountdown.com`
 		return Response.redirect(url.toString(), 308)
 	}
 	const GTAG_ID = process.env.GTAG_ID
 	const AHREFS_KEY = process.env.AHREFS_KEY
 	const MIXPANEL_TOKEN = process.env.MIXPANEL_TOKEN
 	return json({
-		LEAGUE,
 		GTAG_ID,
 		AHREFS_KEY,
 		MIXPANEL_TOKEN,
@@ -50,9 +48,10 @@ export function gradientClass(
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-	const { LEAGUE, GTAG_ID, AHREFS_KEY, MIXPANEL_TOKEN } =
-		useLoaderData<typeof loader>() ?? {} // empty object in case we're in an error page
-	const { teamAbbrev } = useParams()
+	const loaderData = useLoaderData<typeof loader>() ?? {} // empty object in case we're in an error page
+	const { GTAG_ID, AHREFS_KEY, MIXPANEL_TOKEN } = loaderData
+	const { league, teamAbbrev } = useParams()
+	const LEAGUE = league?.toUpperCase()
 	const lowercaseAbbreviation = teamAbbrev?.toLowerCase()
 	const lowercaseLeague = LEAGUE?.toLowerCase()
 	const gradientClass_ = gradientClass(lowercaseLeague, lowercaseAbbreviation)
@@ -84,8 +83,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 					type="image/png"
 					href={logo('png')}
 				></link>
-				{teamAbbrev ? (
-					<link rel="manifest" href={`/${teamAbbrev.toLowerCase()}/manifest`} />
+				{teamAbbrev && league ? (
+					<link
+						rel="manifest"
+						href={`/${league.toLowerCase()}/${teamAbbrev.toLowerCase()}/manifest`}
+					/>
 				) : null}
 				{isSeasonCountdown ? (
 					<link rel="manifest" href="/season/manifest.json" />

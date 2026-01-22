@@ -5,8 +5,10 @@ import mlbTeams from '../../mlb_teams.json'
 import { nbaTeams, nbaTeamToTeam } from '~/lib/nbaGameToGame'
 import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
 
-export function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
-	const LEAGUE = process.env.LEAGUE
+export function loader({
+	params: { league, teamAbbrev },
+}: LoaderFunctionArgs) {
+	const LEAGUE = league?.toUpperCase() ?? 'NFL'
 	let teams =
 		LEAGUE === 'MLB'
 			? mlbTeams.teams.map(mlbTeamToTeam)
@@ -38,7 +40,7 @@ export function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
 				sizes: 'any',
 			},
 		],
-		start_url: `/${lowercaseAbbreviation}/`,
+		start_url: `/${league?.toLowerCase()}/${lowercaseAbbreviation}/`,
 		display: 'standalone',
 		theme_color: team.primaryColor,
 		background_color: team.primaryColor,

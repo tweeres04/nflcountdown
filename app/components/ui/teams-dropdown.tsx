@@ -23,10 +23,11 @@ export default function TeamsDropdown({
 	children,
 }: Props) {
 	const LEAGUE = useContext(LeagueContext)
+	const lowercaseLeague = LEAGUE?.toLowerCase()
 	const color = lowercaseAbbreviation
 		? LEAGUE === 'NFL'
 			? lowercaseAbbreviation
-			: `${LEAGUE.toLowerCase()}-${lowercaseAbbreviation}`
+			: `${lowercaseLeague}-${lowercaseAbbreviation}`
 		: 'stone-900'
 
 	const contentClasses = `text-white bg-${color} hover:bg-${color} hover:text-white border-0 rounded-none`
@@ -50,11 +51,7 @@ export default function TeamsDropdown({
 						{['NFL', 'MLB', 'NBA', 'NHL'].map((league) =>
 							LEAGUE !== league ? (
 								<DropdownMenuItem asChild key={league}>
-									<a
-										href={`https://${league.toLowerCase()}countdown.tweeres.com`}
-									>
-										{league} Countdown
-									</a>
+									<a href={`/${league.toLowerCase()}`}>{league} Countdown</a>
 								</DropdownMenuItem>
 							) : null
 						)}
@@ -62,7 +59,9 @@ export default function TeamsDropdown({
 				</DropdownMenuSub>
 				{teams.map((t) => (
 					<DropdownMenuItem asChild key={t.abbreviation}>
-						<a href={`/${t.abbreviation.toLowerCase()}`}>{t.fullName}</a>
+						<a href={`/${lowercaseLeague}/${t.abbreviation.toLowerCase()}`}>
+							{t.fullName}
+						</a>
 					</DropdownMenuItem>
 				))}
 			</DropdownMenuContent>

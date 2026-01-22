@@ -13,10 +13,23 @@ const mg = mailgun.client({
 })
 
 export async function action({ request }: ActionFunctionArgs) {
-	const LEAGUE = process.env.LEAGUE ?? 'NFL'
+	const referer = request.headers.get('referer')
+	// Extract league from referer URL (e.g., /nfl/kc or /nba/bos)
+	let LEAGUE = 'NFL' // default
+	if (referer) {
+		const refererUrl = new URL(referer)
+		const pathParts = refererUrl.pathname.split('/').filter(Boolean)
+		if (pathParts.length > 0) {
+			const possibleLeague = pathParts[0].toUpperCase()
+			if (['NFL', 'NBA', 'MLB', 'NHL'].includes(possibleLeague)) {
+				LEAGUE = possibleLeague
+			}
+		}
+	}
+
 	const formData = await request.formData()
 	const entries = [...formData.entries()]
-	entries.push(['referer', request.headers.get('referer') ?? 'Not found'])
+	entries.push(['referer', referer ?? 'Not found'])
 	const userEmail = formData.get('email') ?? undefined
 	const emailBody = `
 		<ul style="list-style: none; padding-left: 0;">
@@ -38,7 +51,6 @@ export async function action({ request }: ActionFunctionArgs) {
 		'h:Reply-To': userEmail,
 	})
 
-	const referer = request.headers.get('referer')
 	const newUrl = new URL(referer ?? '/')
 	newUrl.searchParams.set('feedback_sent', 'true')
 

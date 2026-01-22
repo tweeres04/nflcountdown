@@ -10,8 +10,13 @@ import { Game } from '~/lib/types'
 
 export { generateMeta as meta }
 
-export async function loader({ params: { teamAbbrev } }: LoaderFunctionArgs) {
-	const { LEAGUE, teams, team, games } = await getTeamAndGames(teamAbbrev)
+export async function loader({
+	params: { league, teamAbbrev },
+}: LoaderFunctionArgs) {
+	const { LEAGUE, teams, team, games } = await getTeamAndGames(
+		league,
+		teamAbbrev
+	)
 
 	const nextGame = games.find(
 		(g: Game) => g.time && isFuture(addHours(g.time, 3))

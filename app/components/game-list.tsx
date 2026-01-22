@@ -1,4 +1,4 @@
-import { Link } from '@remix-run/react'
+import { Link, useParams } from '@remix-run/react'
 import { Game, Team } from '~/lib/types'
 import { getGameSlug } from '~/lib/getGameSlug'
 
@@ -8,6 +8,7 @@ interface GameListProps {
 }
 
 export default function GameList({ games, team }: GameListProps) {
+	const { league } = useParams()
 	const futureGames = games.filter(
 		(g) => g.time && new Date(g.time) > new Date()
 	)
@@ -46,8 +47,8 @@ export default function GameList({ games, team }: GameListProps) {
 							<Link
 								to={
 									i === 0
-										? `/${team.abbreviation.toLowerCase()}` // Show the next game view if it's the next game
-										: `/${team.abbreviation.toLowerCase()}/${gameSlug}`
+										? `/${league}/${team.abbreviation.toLowerCase()}` // Show the next game view if it's the next game
+										: `/${league}/${team.abbreviation.toLowerCase()}/${gameSlug}`
 								}
 								className="hover:text-white/80"
 							>

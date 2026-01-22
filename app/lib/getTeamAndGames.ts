@@ -5,8 +5,11 @@ import { uniqBy, orderBy } from 'lodash-es'
 import { mlbGameToGame, mlbTeamToTeam } from './mlbGameToGame'
 import { nbaGameToGame, nbaTeams, nbaTeamToTeam } from './nbaGameToGame'
 
-export async function getTeamAndGames(teamAbbrev: string | undefined) {
-	const LEAGUE = process.env.LEAGUE ?? 'NFL'
+export async function getTeamAndGames(
+	league: string | undefined,
+	teamAbbrev: string | undefined
+) {
+	const LEAGUE = league?.toUpperCase() ?? 'NFL'
 	let teams =
 		LEAGUE === 'MLB'
 			? mlbTeams.teams.map(mlbTeamToTeam)
