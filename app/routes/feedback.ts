@@ -44,11 +44,11 @@ export async function action({ request }: ActionFunctionArgs) {
 	`
 
 	mg.messages.create('tweeres.ca', {
-		from: `${LEAGUE} Countdown feedback <feedback@${LEAGUE.toLowerCase()}countdown.tweeres.ca>`,
+		from: `Team Countdown feedback <feedback@teamcountdown.tweeres.ca>`,
 		to: 'tweeres04@gmail.com',
-		subject: `${LEAGUE} Countdown feedback`,
+		subject: `Team Countdown feedback`,
 		html: emailBody,
-		'o:tag': [`${LEAGUE.toLowerCase()}countdown_feedback`],
+		'o:tag': [`teamcountdown_feedback`],
 		'h:Reply-To': userEmail,
 	})
 

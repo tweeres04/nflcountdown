@@ -8,7 +8,7 @@ import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
 export function loader({
 	params: { league, teamAbbrev },
 }: LoaderFunctionArgs) {
-	const LEAGUE = league?.toUpperCase() ?? 'NFL'
+	const LEAGUE = league!.toUpperCase()
 	let teams =
 		LEAGUE === 'MLB'
 			? mlbTeams.teams.map(mlbTeamToTeam)

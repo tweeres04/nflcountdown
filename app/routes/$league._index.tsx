@@ -9,9 +9,6 @@ import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
 import { nbaTeams, nbaTeamToTeam } from '~/lib/nbaGameToGame'
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-	if (!data) {
-		return []
-	}
 	const LEAGUE = data.LEAGUE
 	const lowercaseLeague = LEAGUE.toLowerCase()
 
@@ -49,7 +46,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 }
 
 export async function loader({ params: { league } }: LoaderFunctionArgs) {
-	const LEAGUE = league?.toUpperCase() ?? 'NFL'
+	const LEAGUE = league!.toUpperCase()
 	
 	// Validate league
 	if (!['NFL', 'NBA', 'MLB'].includes(LEAGUE)) {
