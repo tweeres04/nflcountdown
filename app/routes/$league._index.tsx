@@ -50,6 +50,12 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 
 export async function loader({ params: { league } }: LoaderFunctionArgs) {
 	const LEAGUE = league?.toUpperCase() ?? 'NFL'
+	
+	// Validate league
+	if (!['NFL', 'NBA', 'MLB'].includes(LEAGUE)) {
+		throw new Response(null, { status: 404 })
+	}
+	
 	let teams =
 		LEAGUE === 'MLB'
 			? mlbTeams.teams.map(mlbTeamToTeam)

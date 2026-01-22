@@ -21,7 +21,8 @@ export async function action({ request }: ActionFunctionArgs) {
 		const pathParts = refererUrl.pathname.split('/').filter(Boolean)
 		if (pathParts.length > 0) {
 			const possibleLeague = pathParts[0].toUpperCase()
-			if (['NFL', 'NBA', 'MLB', 'NHL'].includes(possibleLeague)) {
+			// Only recognize supported leagues
+			if (['NFL', 'NBA', 'MLB'].includes(possibleLeague)) {
 				LEAGUE = possibleLeague
 			}
 		}

@@ -10,6 +10,12 @@ export async function getTeamAndGames(
 	teamAbbrev: string | undefined
 ) {
 	const LEAGUE = league?.toUpperCase() ?? 'NFL'
+	
+	// Validate league
+	if (!['NFL', 'NBA', 'MLB'].includes(LEAGUE)) {
+		throw new Response(null, { status: 404 })
+	}
+	
 	let teams =
 		LEAGUE === 'MLB'
 			? mlbTeams.teams.map(mlbTeamToTeam)
