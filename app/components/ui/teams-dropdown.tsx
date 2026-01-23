@@ -55,6 +55,11 @@ export default function TeamsDropdown({
 								</DropdownMenuItem>
 							) : null
 						)}
+						{LEAGUE !== 'NHL' && (
+							<DropdownMenuItem asChild>
+								<a href="https://nhlcountdown.tweeres.com">NHL Countdown</a>
+							</DropdownMenuItem>
+						)}
 					</DropdownMenuSubContent>
 				</DropdownMenuSub>
 				{teams.map((t) => (
