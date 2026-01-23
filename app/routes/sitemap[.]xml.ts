@@ -1,14 +1,24 @@
-import schedule from '../../nfl_schedule.json'
-import mlbSchedule from '../../mlb_schedule.json'
-import nbaSchedule from '../../nba_schedule.json'
 import mlbTeams from '../../mlb_teams.json'
 import { uniqBy } from 'lodash-es'
 import { mlbGameToGame, mlbTeamToTeam } from '~/lib/mlbGameToGame'
-import { nbaGameToGame, nbaTeams, nbaTeamToTeam } from '~/lib/nbaGameToGame'
+import { nbaGameToGame, nbaTeamToTeam } from '~/lib/nbaGameToGame'
+import { nflGameToGame, nflTeamToTeam } from '~/lib/nflGameToGame'
 import { getGameSlug } from '~/lib/getGameSlug'
+import { readFile } from 'node:fs/promises'
+import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, Team, Game } from '~/lib/types'
 
 export async function loader() {
 	const leagues = ['NFL', 'MLB', 'NBA']
+
+	const [nflScheduleRaw, mlbScheduleRaw, nbaScheduleRaw] = await Promise.all([
+		readFile('data/nfl_schedule.json', 'utf-8'),
+		readFile('data/mlb_schedule.json', 'utf-8'),
+		readFile('data/nba_schedule.json', 'utf-8'),
+	])
+
+	const nflSchedule = JSON.parse(nflScheduleRaw) as NflScheduleApi
+	const mlbSchedule = JSON.parse(mlbScheduleRaw) as MlbScheduleApi
+	const nbaSchedule = JSON.parse(nbaScheduleRaw) as NbaScheduleApi
 
 	let allUrls: string[] = []
 
@@ -20,18 +30,25 @@ export async function loader() {
 	for (const LEAGUE of leagues) {
 		const lowercaseLeague = LEAGUE.toLowerCase()
 
-		let teams =
+		let teams: Team[] =
 			LEAGUE === 'MLB'
 				? mlbTeams.teams.map(mlbTeamToTeam)
 				: LEAGUE === 'NBA'
-				? nbaTeams.map(nbaTeamToTeam)
-				: uniqBy(
-						schedule.games.map((g) => g.homeTeam),
-						'id'
+				? uniqBy(
+						nbaSchedule.leagueSchedule.gameDates
+							.flatMap((gd) => gd.games)
+							.map((g) => g.homeTeam),
+						'teamId'
 				  )
+						.filter((t) => t.teamId > 0)
+						.map(nbaTeamToTeam)
+				: uniqBy(
+						nflSchedule.games.map((g) => g.homeTeam),
+						'id'
+				  ).map(nflTeamToTeam)
 
 		// Get all games for sitemap
-		const games =
+		const games: Game[] =
 			LEAGUE === 'MLB'
 				? mlbSchedule.dates.flatMap((d) => d.games).map(mlbGameToGame)
 				: LEAGUE === 'NBA'
@@ -39,7 +56,7 @@ export async function loader() {
 						.flatMap((gd) => gd.games)
 						.filter((g) => g.homeTeam.teamId > 0)
 						.map(nbaGameToGame)
-				: schedule.games
+				: nflSchedule.games.map(nflGameToGame)
 
 		// Add league index page
 		allUrls.push(`    <url>

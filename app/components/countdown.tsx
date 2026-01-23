@@ -39,11 +39,11 @@ const GamePreviewLoading = () => (
 )
 
 interface CountdownProps {
-	team: Team
+	team?: Team
 	teams: Team[]
-	games: Game[]
+	games?: Game[]
 	pageTitle: React.ReactNode
-	game: Game
+	game?: Game
 	gamePreview?: Promise<string | null>
 	isTeamPage?: boolean
 }
@@ -69,11 +69,13 @@ export function countdownString({
 	isTeamPage,
 	LEAGUE,
 }: {
-	game: Game
-	team: Team
+	game?: Game
+	team?: Team
 	isTeamPage: boolean
 	LEAGUE: string
 }) {
+	if (!game) return 'No upcoming games'
+
 	const countdownString = game?.time
 		? isPast(addHours(game.time, 3))
 			? 'Game completed'
@@ -81,16 +83,16 @@ export function countdownString({
 					start: game.time,
 					end: addHours(game.time, 3),
 			  })
-			? 'Game in progress!'
-			: `${countdown(new Date(game.time)).toString()} till ${
-					isTeamPage
-						? `the ${team.nickName} play next`
-						: LEAGUE === 'NFL'
-						? 'kickoff'
-						: LEAGUE === 'MLB'
-						? 'first pitch'
-						: 'tipoff'
-			  }`
+		? 'Game in progress!'
+		: `${countdown(new Date(game.time)).toString()} till ${
+				isTeamPage && team
+					? `the ${team.nickName} play next`
+					: LEAGUE === 'NFL'
+					? 'kickoff'
+					: LEAGUE === 'MLB'
+					? 'first pitch'
+					: 'tipoff'
+		  }`
 		: 'Game time TBD'
 	return countdownString
 }
@@ -98,7 +100,7 @@ export function countdownString({
 export default function Countdown({
 	team,
 	teams,
-	games,
+	games = [],
 	pageTitle,
 	game,
 	gamePreview,
@@ -311,7 +313,7 @@ export default function Countdown({
 							</DialogContent>
 						</Dialog>
 					)}
-					{games?.length > 0 ? (
+					{games.length > 0 ? (
 						<Button
 							onClick={() => {
 								mixpanel.track(
@@ -341,7 +343,7 @@ export default function Countdown({
 					) : null}
 				</div>
 
-				{showFullSchedule && <GameList games={games} team={team} />}
+				{showFullSchedule && team && <GameList games={games} team={team} />}
 			</div>
 			<InstallNotification
 				className={

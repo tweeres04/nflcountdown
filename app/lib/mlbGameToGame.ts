@@ -1,18 +1,16 @@
-import mlbSchedule from '../../mlb_schedule.json'
 import mlbTeams from '../../mlb_teams.json'
 import mlbColors from '../../mlb_colors.json'
 
-import { Game, Team } from './types'
+import { Game, Team, MlbGameApi, MlbTeamApi } from './types'
 
-type MlbGame = (typeof mlbSchedule)['dates'][0]['games'][0]
-type MlbTeam = (typeof mlbTeams)['teams'][0]
+type MlbTeamStatic = (typeof mlbTeams)['teams'][0]
 
 export function mlbTeamToTeam({
 	id,
 	name,
 	clubName,
 	abbreviation,
-}: MlbTeam): Team {
+}: MlbTeamApi | MlbTeamStatic): Team {
 	const color = mlbColors.find(
 		(c) => c.abbreviation === abbreviation
 	) as (typeof mlbColors)[0]
@@ -34,7 +32,7 @@ export function mlbGameToGame({
 		away: { team: mlbAwayTeam },
 	},
 	status: { startTimeTBD },
-}: MlbGame): Game {
+}: MlbGameApi): Game {
 	const mlbHomeTeam_ = mlbTeams.teams.find((t) => t.id === mlbHomeTeam.id)
 	const homeTeam = mlbHomeTeam_ ? mlbTeamToTeam(mlbHomeTeam_) : null
 	const mlbAwayTeam_ = mlbTeams.teams.find((t) => t.id === mlbAwayTeam.id)

@@ -5,47 +5,9 @@ import { addHours, isFuture } from 'date-fns'
 import type { Game } from '~/lib/types'
 import { countdownString } from '~/components/countdown'
 
-import schedule from '../../nfl_schedule.json'
-import mlbColors from '../../mlb_colors.json'
-import nbaColors from '../../nba_colors.json'
-
-const nflTeams = [...new Set(schedule.games.map((g) => g.homeTeam))]
-
-type ColorObject = Record<string, { DEFAULT: string; secondary: string }>
-
-const nflColors: ColorObject = nflTeams.reduce(
-	(result, t) => ({
-		...result,
-		[t.abbreviation.toLowerCase()]: {
-			DEFAULT: t.primaryColor,
-			secondary: t.secondaryColor,
-		},
-	}),
-	{}
-)
-
-const mlbColors_: ColorObject = mlbColors.reduce(
-	(result, c) => ({
-		...result,
-		[c.abbreviation.toLowerCase()]: {
-			DEFAULT: c.color_1,
-			secondary: c.color_2,
-		},
-	}),
-	{}
-)
-const nbaColors_: ColorObject = nbaColors.reduce(
-	(result, c) => ({
-		...result,
-		[c.abbreviation.toLowerCase()]: {
-			DEFAULT: c.color_1,
-			secondary: c.color_2,
-		},
-	}),
-	{}
-)
-
-export async function loader({ params: { league, teamSlug } }: LoaderFunctionArgs) {
+export async function loader({
+	params: { league, teamSlug },
+}: LoaderFunctionArgs) {
 	const { LEAGUE, team, games } = await getTeamAndGames(league, teamSlug)
 
 	// Find the next upcoming game
@@ -60,13 +22,6 @@ export async function loader({ params: { league, teamSlug } }: LoaderFunctionArg
 		LEAGUE,
 	})
 
-	const teamColours =
-		LEAGUE === 'NFL'
-			? nflColors[team.abbreviation.toLowerCase()]
-			: LEAGUE === 'NBA'
-			? nbaColors_[team.abbreviation.toLowerCase()]
-			: mlbColors_[team.abbreviation.toLowerCase()]
-
 	return new ImageResponse(
 		(
 			<div
@@ -78,7 +33,7 @@ export async function loader({ params: { league, teamSlug } }: LoaderFunctionArg
 					justifyContent: 'center',
 					width: '100%',
 					height: '100%',
-					background: `linear-gradient(to bottom, ${teamColours.DEFAULT}, ${teamColours.secondary})`,
+					background: `linear-gradient(to bottom, ${team.primaryColor}, ${team.secondaryColor})`,
 					color: 'white',
 					padding: '0 5rem',
 				}}

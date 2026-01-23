@@ -1,15 +1,17 @@
 import { json, type MetaFunction, LoaderFunctionArgs } from '@remix-run/node'
 import { uniqBy, orderBy } from 'lodash-es'
-import schedule from '../../nfl_schedule.json'
 import TeamsDropdown from '~/components/ui/teams-dropdown'
 import { useLoaderData } from '@remix-run/react'
 import { Button } from '~/components/ui/button'
 import mlbTeams from '../../mlb_teams.json'
 import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
-import { nbaTeams, nbaTeamToTeam } from '~/lib/nbaGameToGame'
+import { nbaTeamToTeam } from '~/lib/nbaGameToGame'
+import { nflTeamToTeam } from '~/lib/nflGameToGame'
+import { readFile } from 'node:fs/promises'
+import { NbaScheduleApi, NflScheduleApi, Team } from '~/lib/types'
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-	const LEAGUE = data.LEAGUE
+	const LEAGUE = data?.LEAGUE ?? 'NFL'
 	const lowercaseLeague = LEAGUE.toLowerCase()
 
 	const title = `When is the next ${LEAGUE} game? - ${LEAGUE} Countdown`
@@ -47,21 +49,38 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 
 export async function loader({ params: { league } }: LoaderFunctionArgs) {
 	const LEAGUE = league!.toUpperCase()
-	
+
 	// Validate league
 	if (!['NFL', 'NBA', 'MLB'].includes(LEAGUE)) {
 		throw new Response(null, { status: 404 })
 	}
-	
-	let teams =
+
+	const scheduleFile =
+		LEAGUE === 'NBA'
+			? 'data/nba_schedule.json'
+			: LEAGUE === 'MLB'
+			? 'data/mlb_schedule.json'
+			: 'data/nfl_schedule.json'
+
+	const scheduleRaw = await readFile(scheduleFile, 'utf-8')
+	const scheduleParsed = JSON.parse(scheduleRaw)
+
+	let teams: Team[] =
 		LEAGUE === 'MLB'
 			? mlbTeams.teams.map(mlbTeamToTeam)
 			: LEAGUE === 'NBA'
-			? nbaTeams.map(nbaTeamToTeam)
-			: uniqBy(
-					schedule.games.map((g) => g.homeTeam),
-					'id'
+			? uniqBy(
+					(scheduleParsed as NbaScheduleApi).leagueSchedule.gameDates
+						.flatMap((gd) => gd.games)
+						.map((g) => g.homeTeam),
+					'teamId'
 			  )
+					.filter((t) => t.teamId > 0)
+					.map(nbaTeamToTeam)
+			: uniqBy(
+					(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),
+					'id'
+			  ).map(nflTeamToTeam)
 	teams = orderBy(teams, 'fullName')
 
 	return json({ LEAGUE, teams })
