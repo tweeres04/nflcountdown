@@ -26,6 +26,33 @@ export function loader({ request }: LoaderFunctionArgs) {
 		url.hostname = `teamcountdown.com`
 		return Response.redirect(url.toString(), 308)
 	}
+
+	// Handle old {league}countdown.tweeres.com redirects
+	const oldDomainMatch = url.hostname.match(/^([a-z]+)countdown\.tweeres\.com$/)
+	if (oldDomainMatch) {
+		const league = oldDomainMatch[1].toLowerCase()
+		const teamAbbrev = url.pathname.replace(/^\//, '').replace(/\/$/, '')
+
+		// Log redirect for monitoring
+		console.log(
+			`Old domain redirect: ${url.hostname}${url.pathname} -> league: ${league}, team: ${teamAbbrev}`
+		)
+
+		// Handle supported leagues (NFL, NBA, MLB)
+		if (['nfl', 'nba', 'mlb'].includes(league) && teamAbbrev) {
+			const newUrl = `https://teamcountdown.com/${league}/${teamAbbrev}`
+			console.log(`Redirecting to new structure: ${newUrl}`)
+			return Response.redirect(newUrl, 308)
+		}
+
+		// If no team abbreviation, redirect to league index
+		if (['nfl', 'nba', 'mlb'].includes(league)) {
+			const newUrl = `https://teamcountdown.com/${league}`
+			console.log(`Redirecting to league index: ${newUrl}`)
+			return Response.redirect(newUrl, 308)
+		}
+	}
+
 	const GTAG_ID = process.env.GTAG_ID
 	const AHREFS_KEY = process.env.AHREFS_KEY
 	const MIXPANEL_TOKEN = process.env.MIXPANEL_TOKEN
@@ -54,7 +81,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 	const LEAGUE = league?.toUpperCase() ?? ''
 	const lowercaseAbbreviation = teamAbbrev?.toLowerCase()
 	const lowercaseLeague = LEAGUE?.toLowerCase()
-	const gradientClass_ = gradientClass(lowercaseLeague ?? '', lowercaseAbbreviation)
+	const gradientClass_ = gradientClass(
+		lowercaseLeague ?? '',
+		lowercaseAbbreviation ?? ''
+	)
 	const logo = (filetype: string) =>
 		teamAbbrev
 			? `/logos/${
