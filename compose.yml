@@ -6,7 +6,7 @@ services:
     restart: always
     volumes:
       - ./data:/app/data
-    env_file: '.env.production'
+    env_file: ".env.production"
     environment:
       LEAGUE: NFL
       GTAG_ID: G-KK8MSJMC9Z
@@ -18,7 +18,7 @@ services:
     restart: always
     volumes:
       - ./data:/app/data
-    env_file: '.env.production'
+    env_file: ".env.production"
     environment:
       LEAGUE: MLB
       GTAG_ID: G-Z5RM9E7MN3
@@ -30,7 +30,7 @@ services:
     restart: always
     volumes:
       - ./data:/app/data
-    env_file: '.env.production'
+    env_file: ".env.production"
     environment:
       LEAGUE: NBA
       GTAG_ID: G-ZN8T6TJEGC
@@ -42,11 +42,10 @@ services:
     restart: always
     volumes:
       - ./data:/app/data
-    env_file: '.env.production'
+    env_file: ".env.production"
     environment:
-      GTAG_ID: G-XXXXXXXXXX
+      GTAG_ID: G-7JQ2WSKCLT
       AHREFS_KEY: OR25pSoDpycSw5Y6N2q99Q
-      # No LEAGUE env var - league comes from URL path
   cron:
     build:
       dockerfile: ./cron/Dockerfile
@@ -54,7 +53,7 @@ services:
     restart: always
     volumes:
       - ./data:/app/data
-    env_file: '.env.production'
+    env_file: ".env.production"
 
 networks:
   default:
