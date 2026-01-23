@@ -92,7 +92,11 @@ export default function SeasonCountdown() {
 
 	// Create a fake game object for the countdown component
 	const seasonGame = {
+		id: 'season-start',
 		time: seasonStartDate.toISOString(),
+		homeTeam: null,
+		awayTeam: null,
+		startTimeTbd: false,
 	}
 
 	return (

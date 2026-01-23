@@ -1,23 +1,43 @@
 import { json, LoaderFunctionArgs } from '@remix-run/node'
 import { uniqBy } from 'lodash-es'
-import schedule from '../../nfl_schedule.json'
 import mlbTeams from '../../mlb_teams.json'
-import { nbaTeams, nbaTeamToTeam } from '~/lib/nbaGameToGame'
+import { nbaTeamToTeam } from '~/lib/nbaGameToGame'
 import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
+import { nflTeamToTeam } from '~/lib/nflGameToGame'
+import { readFile } from 'node:fs/promises'
+import { NbaScheduleApi, NflScheduleApi, Team } from '~/lib/types'
 
-export function loader({
+export async function loader({
 	params: { league, teamAbbrev },
 }: LoaderFunctionArgs) {
 	const LEAGUE = league!.toUpperCase()
-	let teams =
+
+	const scheduleFile =
+		LEAGUE === 'NBA'
+			? 'data/nba_schedule.json'
+			: LEAGUE === 'MLB'
+			? 'data/mlb_schedule.json'
+			: 'data/nfl_schedule.json'
+
+	const scheduleRaw = await readFile(scheduleFile, 'utf-8')
+	const scheduleParsed = JSON.parse(scheduleRaw)
+
+	const teams: Team[] =
 		LEAGUE === 'MLB'
 			? mlbTeams.teams.map(mlbTeamToTeam)
 			: LEAGUE === 'NBA'
-			? nbaTeams.map(nbaTeamToTeam)
-			: uniqBy(
-					schedule.games.map((g) => g.homeTeam),
-					'id'
+			? uniqBy(
+					(scheduleParsed as NbaScheduleApi).leagueSchedule.gameDates
+						.flatMap((gd) => gd.games)
+						.map((g) => g.homeTeam),
+					'teamId'
 			  )
+					.filter((t) => t.teamId > 0)
+					.map(nbaTeamToTeam)
+			: uniqBy(
+					(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),
+					'id'
+			  ).map(nflTeamToTeam)
 
 	const lowercaseAbbreviation = teamAbbrev?.toLowerCase()
 

@@ -1,6 +1,9 @@
 // for perplexity to generate color codes
+import { NbaScheduleApi } from '~/lib/types'
+import { readFile } from 'node:fs/promises'
 
-import nbaSchedule from 'data/nba_schedule.json'
+const raw = await readFile('data/nba_schedule.json', 'utf-8')
+const nbaSchedule = JSON.parse(raw) as NbaScheduleApi
 
 const nbaGames = nbaSchedule.leagueSchedule.gameDates.flatMap((gd) => gd.games)
 

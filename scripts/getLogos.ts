@@ -17,7 +17,8 @@ const fn = LEAGUE === 'NBA' ? getNbaLogos : getNflLogos
 await fn()
 
 async function getNflLogos() {
-	await teams.reduce(
+	const nflTeams = teams as any[]
+	await nflTeams.reduce(
 		(p, t) =>
 			p.then(async () => {
 				const svgText = await fetch(
