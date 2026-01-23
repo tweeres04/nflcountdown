@@ -1,40 +1,4 @@
 services:
-  nflcountdown:
-    build:
-      dockerfile: ./Dockerfile
-      context: .
-    restart: always
-    volumes:
-      - ./data:/app/data
-    env_file: ".env.production"
-    environment:
-      LEAGUE: NFL
-      GTAG_ID: G-KK8MSJMC9Z
-      AHREFS_KEY: OR25pSoDpycSw5Y6N2q99Q
-  mlbcountdown:
-    build:
-      dockerfile: ./Dockerfile
-      context: .
-    restart: always
-    volumes:
-      - ./data:/app/data
-    env_file: ".env.production"
-    environment:
-      LEAGUE: MLB
-      GTAG_ID: G-Z5RM9E7MN3
-      AHREFS_KEY: OR25pSoDpycSw5Y6N2q99Q
-  nbacountdown:
-    build:
-      dockerfile: ./Dockerfile
-      context: .
-    restart: always
-    volumes:
-      - ./data:/app/data
-    env_file: ".env.production"
-    environment:
-      LEAGUE: NBA
-      GTAG_ID: G-ZN8T6TJEGC
-      AHREFS_KEY: OR25pSoDpycSw5Y6N2q99Q
   teamcountdown:
     build:
       dockerfile: ./Dockerfile
