@@ -13,10 +13,10 @@ const mg = mailgun.client({
 })
 
 export async function action({ request }: ActionFunctionArgs) {
-	const LEAGUE = process.env.LEAGUE ?? 'NFL'
+	const referer = request.headers.get('referer')
 	const formData = await request.formData()
 	const entries = [...formData.entries()]
-	entries.push(['referer', request.headers.get('referer') ?? 'Not found'])
+	entries.push(['referer', referer ?? 'Not found'])
 	const userEmail = formData.get('email') ?? undefined
 	const emailBody = `
 		<ul style="list-style: none; padding-left: 0;">
@@ -30,15 +30,14 @@ export async function action({ request }: ActionFunctionArgs) {
 	`
 
 	mg.messages.create('tweeres.ca', {
-		from: `${LEAGUE} Countdown feedback <feedback@${LEAGUE.toLowerCase()}countdown.tweeres.ca>`,
+		from: `Team Countdown feedback <feedback@teamcountdown.tweeres.ca>`,
 		to: 'tweeres04@gmail.com',
-		subject: `${LEAGUE} Countdown feedback`,
+		subject: `Team Countdown feedback`,
 		html: emailBody,
-		'o:tag': [`${LEAGUE.toLowerCase()}countdown_feedback`],
+		'o:tag': [`teamcountdown_feedback`],
 		'h:Reply-To': userEmail,
 	})
 
-	const referer = request.headers.get('referer')
 	const newUrl = new URL(referer ?? '/')
 	newUrl.searchParams.set('feedback_sent', 'true')
 

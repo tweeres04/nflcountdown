@@ -28,11 +28,11 @@ export function meta() {
 		{ name: 'og:type', content: 'website' },
 		{
 			name: 'og:url',
-			content: 'https://nflcountdown.tweeres.com/season',
+			content: 'https://teamcountdown.com/nfl/season',
 		},
 		{
 			name: 'og:image',
-			content: 'https://nflcountdown.tweeres.com/og.png',
+			content: 'https://teamcountdown.com/og.png',
 		},
 		{
 			name: 'og:description',
@@ -42,7 +42,7 @@ export function meta() {
 		{
 			tagName: 'link',
 			rel: 'canonical',
-			href: 'https://nflcountdown.tweeres.com/season',
+			href: 'https://teamcountdown.com/nfl/season',
 		},
 	]
 }
@@ -76,16 +76,11 @@ function getNextSeasonStartDate() {
 }
 
 export async function loader() {
-	const LEAGUE = process.env.LEAGUE
-
-	if (LEAGUE?.toLowerCase() !== 'nfl') {
-		throw new Response(null, { status: 404 })
-	}
-
-	const { teams } = await getTeamAndGames('KC') // Todo: Shouldn't need to pass a team here
+	// Season countdown is only for NFL
+	const { teams } = await getTeamAndGames('nfl', 'KC') // Todo: Shouldn't need to pass a team here
 
 	return json({
-		LEAGUE,
+		LEAGUE: 'NFL',
 		teams,
 	})
 }

@@ -45,14 +45,8 @@ const nbaColors_: ColorObject = nbaColors.reduce(
 	{}
 )
 
-export async function loader({ params }: LoaderFunctionArgs) {
-	const LEAGUE = process.env.LEAGUE
-
-	if (!LEAGUE) {
-		throw 'No LEAGUE env var'
-	}
-
-	const { team, games } = await getTeamAndGames(params.teamSlug)
+export async function loader({ params: { league, teamSlug } }: LoaderFunctionArgs) {
+	const { LEAGUE, team, games } = await getTeamAndGames(league, teamSlug)
 
 	// Find the next upcoming game
 	const game = games.filter(
@@ -63,7 +57,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
 		game,
 		team,
 		isTeamPage: true,
-		LEAGUE: 'MLB',
+		LEAGUE,
 	})
 
 	const teamColours =

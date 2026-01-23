@@ -1,21 +1,10 @@
-import { json, type MetaFunction } from '@remix-run/node'
-import { uniqBy, orderBy } from 'lodash-es'
-import schedule from '../../nfl_schedule.json'
-import TeamsDropdown from '~/components/ui/teams-dropdown'
-import { useLoaderData } from '@remix-run/react'
+import { type MetaFunction } from '@remix-run/node'
 import { Button } from '~/components/ui/button'
-import mlbTeams from '../../mlb_teams.json'
-import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
-import { nbaTeams, nbaTeamToTeam } from '~/lib/nbaGameToGame'
 
-export const meta: MetaFunction = ({ data }) => {
-	const LEAGUE = data.LEAGUE
-	const lowercaseLeague = LEAGUE.toLowerCase()
-
-	const title = `When is the next ${LEAGUE} game? - ${LEAGUE} Countdown`
-	const description = `The fastest and prettiest way to check the next ${LEAGUE} game. Launches instantly from your home screen.`
-	const ogImage = LEAGUE === 'NFL' ? 'og.png' : `${lowercaseLeague}-og.png`
-	const url = `https://${lowercaseLeague}countdown.tweeres.com`
+export const meta: MetaFunction = () => {
+	const title = `When is the next game? - Team Countdown`
+	const description = `The fastest and prettiest way to check the next NFL, NBA, or MLB game. Launches instantly from your home screen.`
+	const url = `https://teamcountdown.com`
 	return [
 		{ title },
 		{
@@ -29,14 +18,10 @@ export const meta: MetaFunction = ({ data }) => {
 			content: url,
 		},
 		{
-			name: 'og:image',
-			content: `https://${lowercaseLeague}countdown.tweeres.com/${ogImage}`,
-		},
-		{
 			name: 'og:description',
 			content: description,
 		},
-		{ name: 'og:site_name', content: `${LEAGUE} Countdown` },
+		{ name: 'og:site_name', content: `Team Countdown` },
 		{
 			tagName: 'link',
 			rel: 'canonical',
@@ -45,29 +30,18 @@ export const meta: MetaFunction = ({ data }) => {
 	]
 }
 
-export async function loader() {
-	const LEAGUE = process.env.LEAGUE ?? 'NFL'
-	let teams =
-		LEAGUE === 'MLB'
-			? mlbTeams.teams.map(mlbTeamToTeam)
-			: LEAGUE === 'NBA'
-			? nbaTeams.map(nbaTeamToTeam)
-			: uniqBy(
-					schedule.games.map((g) => g.homeTeam),
-					'id'
-			  )
-	teams = orderBy(teams, 'fullName')
-
-	return json({ LEAGUE, teams })
-}
-
 export default function Index() {
-	const { LEAGUE, teams } = useLoaderData<typeof loader>()
+	const leagues = [
+		{ code: 'nfl', name: 'NFL', fullName: 'National Football League' },
+		{ code: 'nba', name: 'NBA', fullName: 'National Basketball Association' },
+		{ code: 'mlb', name: 'MLB', fullName: 'Major League Baseball' },
+	]
+
 	return (
 		<>
 			<div className="flex flex-col min-h-screen md:h-auto">
 				<div className="p-4 max-w-[500px] lg:max-w-[750px] mx-auto space-y-12 min-h-[600px] grow">
-					<h1 className="text-3xl">{LEAGUE} Countdown</h1>
+					<h1 className="text-3xl">Team Countdown</h1>
 					<div className="flex flex-col gap-10">
 						<div className="space-y-5">
 							<div className="space-y-3">
@@ -75,40 +49,21 @@ export default function Index() {
 									Get pumped for your team's next game!
 								</h2>
 								<p>
-									A fast, pretty web app that counts down to the next {LEAGUE}{' '}
-									game. Saves to your home screen for immediate access.
+									A fast, pretty web app that counts down to the next game.
+									Saves to your home screen for immediate access.
 								</p>
 							</div>
-							<TeamsDropdown teams={teams}>
-								<Button className="border-stone-900">Pick your team</Button>
-							</TeamsDropdown>
-						</div>
-						<div>
-							<div className="space-y-1 max-w-[400px] mx-auto">
-								<img
-									src={
-										LEAGUE === 'NFL'
-											? '/hero.png'
-											: `/${LEAGUE.toLowerCase()}-hero.png`
-									}
-									alt={`Screenshot of ${
-										LEAGUE === 'MLB'
-											? 'Texas Rangers'
-											: LEAGUE === 'NBA'
-											? 'Boston Celtics'
-											: 'Kansas City Chiefs'
-									} countdown in action.`}
-									className="rounded-sm"
-								/>
-								<p className="text-sm">
-									Screenshot of{' '}
-									{LEAGUE === 'MLB'
-										? 'Texas Rangers'
-										: LEAGUE === 'NBA'
-										? 'Boston Celtics'
-										: 'Kansas City Chiefs'}{' '}
-									countdown in action.
-								</p>
+							<div className="space-y-3">
+								<h3 className="text-xl">Choose your league:</h3>
+								<div className="flex flex-col gap-2">
+									{leagues.map((league) => (
+										<a key={league.code} href={`/${league.code}`}>
+											<Button className="border-stone-900 w-full">
+												{league.name} - {league.fullName}
+											</Button>
+										</a>
+									))}
+								</div>
 							</div>
 						</div>
 					</div>
@@ -117,30 +72,6 @@ export default function Index() {
 					<div className="p-4 max-w-[500px] lg:max-w-[750px] mx-auto text-sm">
 						<p>
 							<a href="https://tweeres.ca">By Tyler Weeres</a>
-						</p>
-						<p>
-							{LEAGUE === 'MLB' ? (
-								<a
-									href="https://www.flaticon.com/free-icons/baseball"
-									title="baseball icons"
-								>
-									Baseball icons created by Freepik - Flaticon
-								</a>
-							) : LEAGUE === 'NBA' ? (
-								<a
-									href="https://www.flaticon.com/free-icons/basketball"
-									title="basketball icons"
-								>
-									Basketball icons created by Freepik - Flaticon
-								</a>
-							) : (
-								<a
-									href="https://www.flaticon.com/free-icons/american-football"
-									title="american football icons"
-								>
-									American football icon created by Smashicons - Flaticon
-								</a>
-							)}
 						</p>
 					</div>
 				</footer>
