@@ -48,7 +48,7 @@ export default function TeamsDropdown({
 						More sports
 					</DropdownMenuSubTrigger>
 					<DropdownMenuSubContent className={contentClasses}>
-						{['NFL', 'MLB', 'NBA', 'NHL'].map((league) =>
+						{['NFL', 'MLB', 'NBA'].map((league) =>
 							LEAGUE !== league ? (
 								<DropdownMenuItem asChild key={league}>
 									<a href={`/${league.toLowerCase()}`}>{league} Countdown</a>
