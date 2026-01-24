@@ -31,16 +31,25 @@ export function loader({ request }: LoaderFunctionArgs) {
 	const oldDomainMatch = url.hostname.match(/^([a-z]+)countdown\.tweeres\.com$/)
 	if (oldDomainMatch) {
 		const league = oldDomainMatch[1].toLowerCase()
-		const teamAbbrev = url.pathname.replace(/^\//, '').replace(/\/$/, '')
+		const pathParts = url.pathname.split('/').filter(Boolean)
+		const teamAbbrev = pathParts[0]
+		const gameSlug = pathParts[1]
 
 		// Log redirect for monitoring
 		console.log(
-			`Old domain redirect: ${url.hostname}${url.pathname} -> league: ${league}, team: ${teamAbbrev}`
+			`Old domain redirect: ${url.hostname}${url.pathname} -> league: ${league}, team: ${teamAbbrev}, game: ${gameSlug || 'none'}`
 		)
+
+		// If there are more than 2 path parts, it's invalid
+		if (pathParts.length > 2) {
+			return new Response('Not Found', { status: 404 })
+		}
 
 		// Handle supported leagues (NFL, NBA, MLB)
 		if (['nfl', 'nba', 'mlb'].includes(league) && teamAbbrev) {
-			const newUrl = `https://teamcountdown.com/${league}/${teamAbbrev}`
+			const newUrl = gameSlug
+				? `https://teamcountdown.com/${league}/${teamAbbrev}/${gameSlug}`
+				: `https://teamcountdown.com/${league}/${teamAbbrev}`
 			console.log(`Redirecting to new structure: ${newUrl}`)
 			return Response.redirect(newUrl, 308)
 		}
