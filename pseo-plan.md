@@ -242,45 +242,30 @@ Other games this week:
 
 ---
 
-### 5. Sitemap Split Strategy ⚡ MEDIUM PRIORITY
+### 5. Sitemap Split Strategy ⚠️ DEPRIORITIZED
 
-**Why:** Better crawl efficiency at scale, faster detection of new pages
+**Status:** Moved to low priority after analysis
 
-**Current:** Single sitemap with 8,000+ URLs
+**Why deprioritized:**
+- Current sitemap has 8,117 URLs (only 16% of Google's 50,000 URL limit)
+- Well under 50MB file size limit
+- Splitting is recommended for sites with 25,000+ URLs or multiple content types
+- Your use case doesn't match scenarios where splitting helps:
+  - ❌ Not a very large site (100,000+ URLs)
+  - ❌ All leagues update together (daily cron jobs)
+  - ❌ No different update frequencies between sections
+  - ❌ Single content type (game countdowns)
 
-**Proposed Structure:**
-```
-/sitemap.xml (index)
-  ├── /sitemap-nfl.xml (~600 URLs)
-  ├── /sitemap-nba.xml (~2,600 URLs)
-  └── /sitemap-mlb.xml (~4,900 URLs)
-```
+**When to revisit:**
+- If player pages are added (could add 1,000+ URLs)
+- If total URLs approach 25,000+
+- If sitemap generation becomes slow
 
-**Sitemap index example:**
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap>
-    <loc>https://teamcountdown.com/sitemap-nfl.xml</loc>
-    <lastmod>2026-01-23</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://teamcountdown.com/sitemap-nba.xml</loc>
-    <lastmod>2026-01-23</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://teamcountdown.com/sitemap-mlb.xml</loc>
-    <lastmod>2026-01-23</lastmod>
-  </sitemap>
-</sitemapindex>
-```
+**Current verdict:** Single sitemap works great at current scale
 
-**Files to create/modify:**
-- Modify: `app/routes/sitemap[.]xml.ts` → make it an index
-- Create: `app/routes/sitemap-$league[.]xml.ts` (per-league sitemaps)
-
-**Effort:** Low (1-2 hours)  
-**Impact:** Medium
+**Original Effort Estimate:** 1-2 hours  
+**Original Impact Estimate:** Medium  
+**Revised Impact:** Negligible (solving a problem that doesn't exist)
 
 ---
 
@@ -454,7 +439,7 @@ For venue/stadium pages (if added)
 | ⚡ 4 | Opponent links on game pages | ⬜ | | |
 | ⚡ 4 | Upcoming opponents on team pages | ⬜ | | |
 | ⚡ 4 | Related games component | ⬜ | | |
-| ⚡ 5 | Split sitemap by league | ⬜ | | |
+| ⚠️ 5 | Split sitemap by league | ❌ | | Deprioritized - only 8K URLs, under limit |
 | ⚠️ 6 | Twitter Card meta tags | ❌ | | Deprioritized - redundant with OG tags |
 
 ### Future Opportunities
@@ -548,10 +533,16 @@ Sites doing pSEO well in sports:
 - Decision: Skip sitemap enhancements, focus on higher-impact improvements
 
 - ❌ **DEPRIORITIZED: Priority 6 - Twitter Card Meta Tags**
-- Twitter automatically uses Open Graph tags as fallback
+- Research shows Twitter automatically uses Open Graph tags as fallback
 - Current OG implementation is comprehensive
 - Zero functional benefit when OG tags already exist
 - Decision: Skip Twitter Cards entirely
+
+- ❌ **DEPRIORITIZED: Priority 5 - Split Sitemap by League**
+- Current sitemap has 8,117 URLs (only 16% of Google's 50,000 limit)
+- Sitemap splitting is recommended for 25,000+ URLs or crawl budget issues
+- All leagues update together via daily cron jobs (no independent update benefit)
+- Decision: Keep single sitemap, revisit if URL count approaches 25,000+
 
 ---
 
@@ -561,6 +552,7 @@ Sites doing pSEO well in sports:
 |------|-------------------|----------------------|
 | Enhanced sitemap metadata | 🔥 High | Google ignores priority/changefreq; lastmod challenging for static game pages |
 | Twitter Card meta tags | 📝 Low-Medium | Redundant with existing comprehensive OG tags |
+| Split sitemap by league | ⚡ Medium | Only 8,117 URLs (16% of Google's 50K limit); no crawl budget issues at this scale |
 
 ---
 
