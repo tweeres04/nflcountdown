@@ -3,6 +3,8 @@ import type { Game, Team } from './types'
 import {
 	generateSportsTeamSchema,
 	generateSportsEventSchema,
+	generateBreadcrumbSchema,
+	type BreadcrumbItem,
 } from './schema-helpers'
 import { getGameSlug } from './getGameSlug'
 
@@ -11,10 +13,11 @@ interface MetaParams {
 	team: Team
 	game?: Game // For game pages - the specific game being viewed
 	nextGame?: Game // For team pages - the upcoming game (for schema)
+	breadcrumbItems?: BreadcrumbItem[] // For breadcrumb schema
 }
 
 export const generateMeta: MetaFunction = ({ data, params }) => {
-	const { LEAGUE, team, game, nextGame } = data as MetaParams
+	const { LEAGUE, team, game, nextGame, breadcrumbItems } = data as MetaParams
 	const lowercaseAbbreviation = team.abbreviation.toLowerCase()
 	const lowercaseLeague = LEAGUE.toLowerCase()
 
@@ -90,6 +93,11 @@ export const generateMeta: MetaFunction = ({ data, params }) => {
 				}
 			}
 		}
+	}
+
+	// Add breadcrumb schema if available
+	if (breadcrumbItems && breadcrumbItems.length >= 2) {
+		metaTags.push({ 'script:ld+json': generateBreadcrumbSchema(breadcrumbItems) })
 	}
 
 	return metaTags

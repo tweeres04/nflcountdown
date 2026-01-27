@@ -9,7 +9,18 @@ import { nbaTeamToTeam } from '~/lib/nbaGameToGame'
 import { nflTeamToTeam } from '~/lib/nflGameToGame'
 import { readFile } from 'node:fs/promises'
 import { NbaScheduleApi, NflScheduleApi, Team } from '~/lib/types'
-import { generateSportsOrganizationSchema } from '~/lib/schema-helpers'
+import {
+	generateSportsOrganizationSchema,
+	generateBreadcrumbSchema,
+} from '~/lib/schema-helpers'
+import {
+	Breadcrumb,
+	BreadcrumbList,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbPage,
+	BreadcrumbSeparator,
+} from '~/components/ui/breadcrumb'
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	const LEAGUE = data?.LEAGUE ?? 'NFL'
@@ -19,6 +30,11 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	const description = `The fastest and prettiest way to check the next ${LEAGUE} game. Launches instantly from your home screen.`
 	const ogImage = LEAGUE === 'NFL' ? 'og.png' : `${lowercaseLeague}-og.png`
 	const url = `https://teamcountdown.com/${lowercaseLeague}`
+	
+	const breadcrumbItems = [
+		{ label: 'Home', href: '/' },
+		{ label: LEAGUE }, // No href = current page
+	]
 	
 	const metaTags: any[] = [
 		{ title },
@@ -48,6 +64,9 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 		},
 		{
 			'script:ld+json': generateSportsOrganizationSchema(LEAGUE, url),
+		},
+		{
+			'script:ld+json': generateBreadcrumbSchema(breadcrumbItems),
 		},
 	]
 	
@@ -99,6 +118,17 @@ export default function LeagueIndex() {
 		<>
 			<div className="flex flex-col min-h-screen md:h-auto">
 				<div className="p-4 max-w-[500px] lg:max-w-[750px] mx-auto space-y-12 min-h-[600px] grow">
+					<Breadcrumb className="mb-4">
+						<BreadcrumbList>
+							<BreadcrumbItem>
+								<BreadcrumbLink href="/">Home</BreadcrumbLink>
+							</BreadcrumbItem>
+							<BreadcrumbSeparator />
+							<BreadcrumbItem>
+								<BreadcrumbPage>{LEAGUE}</BreadcrumbPage>
+							</BreadcrumbItem>
+						</BreadcrumbList>
+					</Breadcrumb>
 					<h1 className="text-3xl">{LEAGUE} Countdown</h1>
 					<div className="flex flex-col gap-10">
 						<div className="space-y-5">

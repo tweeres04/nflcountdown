@@ -22,6 +22,15 @@ import { Eye, ThumbsDown, ThumbsUp } from 'lucide-react'
 import { Badge } from './ui/badge'
 import { Await } from '@remix-run/react'
 import mixpanel from 'mixpanel-browser'
+import {
+	Breadcrumb,
+	BreadcrumbList,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbPage,
+	BreadcrumbSeparator,
+} from './ui/breadcrumb'
+import type { BreadcrumbItem as BreadcrumbItemType } from '~/lib/schema-helpers'
 
 // Simple inline loading skeleton for Dialog
 const GamePreviewLoading = () => (
@@ -46,6 +55,7 @@ interface CountdownProps {
 	game?: Game
 	gamePreview?: Promise<string | null>
 	isTeamPage?: boolean
+	breadcrumbItems?: BreadcrumbItemType[]
 }
 
 function useUpdateTime() {
@@ -83,16 +93,16 @@ export function countdownString({
 					start: game.time,
 					end: addHours(game.time, 3),
 			  })
-		? 'Game in progress!'
-		: `${countdown(new Date(game.time)).toString()} till ${
-				isTeamPage && team
-					? `the ${team.nickName} play next`
-					: LEAGUE === 'NFL'
-					? 'kickoff'
-					: LEAGUE === 'MLB'
-					? 'first pitch'
-					: 'tipoff'
-		  }`
+			? 'Game in progress!'
+			: `${countdown(new Date(game.time)).toString()} till ${
+					isTeamPage && team
+						? `the ${team.nickName} play next`
+						: LEAGUE === 'NFL'
+						? 'kickoff'
+						: LEAGUE === 'MLB'
+						? 'first pitch'
+						: 'tipoff'
+			  }`
 		: 'Game time TBD'
 	return countdownString
 }
@@ -105,6 +115,7 @@ export default function Countdown({
 	game,
 	gamePreview,
 	isTeamPage = false,
+	breadcrumbItems,
 }: CountdownProps) {
 	const LEAGUE = useContext(LeagueContext)
 	useUpdateTime()
@@ -150,6 +161,38 @@ export default function Countdown({
 	return (
 		<>
 			<div className="font-sans text-white p-4 max-w-[500px] lg:max-w-[750px] mx-auto">
+				{/* Breadcrumb navigation */}
+				{breadcrumbItems && breadcrumbItems.length > 0 && (
+					<Breadcrumb className="mb-3">
+						<BreadcrumbList className="text-white/70">
+							{breadcrumbItems.map((item, index) => (
+								<>
+									<BreadcrumbItem key={`item-${index}`}>
+										{item.href ? (
+											<BreadcrumbLink
+												href={item.href}
+												className="hover:text-white"
+											>
+												{item.label}
+											</BreadcrumbLink>
+										) : (
+											<BreadcrumbPage className="text-white font-normal">
+												{item.label}
+											</BreadcrumbPage>
+										)}
+									</BreadcrumbItem>
+									{index < breadcrumbItems.length - 1 && (
+										<BreadcrumbSeparator
+											key={`sep-${index}`}
+											className="text-white/50"
+										/>
+									)}
+								</>
+							))}
+						</BreadcrumbList>
+					</Breadcrumb>
+				)}
+
 				<div className="flex gap-10">
 					<h1 className="text-2xl grow">{pageTitle}</h1>
 					<TeamsDropdown

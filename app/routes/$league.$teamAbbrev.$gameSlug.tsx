@@ -36,6 +36,28 @@ export async function loader({
 			? getCachedGamePreview(LEAGUE, currentGame, team)
 			: Promise.resolve(null)
 
+	const opponent =
+		currentGame.homeTeam?.abbreviation === team.abbreviation
+			? currentGame.awayTeam?.fullName
+			: currentGame.homeTeam?.fullName
+
+	const gameDate = currentGame.time
+		? new Intl.DateTimeFormat('en-US', {
+				month: 'short',
+				day: 'numeric',
+		  }).format(new Date(currentGame.time))
+		: ''
+
+	const breadcrumbItems = [
+		{ label: 'Home', href: '/' },
+		{ label: LEAGUE, href: `/${LEAGUE.toLowerCase()}` },
+		{
+			label: team.fullName,
+			href: `/${LEAGUE.toLowerCase()}/${team.abbreviation.toLowerCase()}`,
+		},
+		{ label: `vs ${opponent ?? 'TBD'} ${gameDate}` }, // No href = current page
+	]
+
 	return defer({
 		LEAGUE,
 		teams,
@@ -43,11 +65,12 @@ export async function loader({
 		game: currentGame,
 		games,
 		gamePreview: gamePreviewPromise,
+		breadcrumbItems,
 	})
 }
 
 export default function GameCountdown() {
-	const { teams, team, game, games, gamePreview } =
+	const { teams, team, game, games, gamePreview, breadcrumbItems } =
 		useLoaderData<typeof loader>()
 
 	const opposingTeam =
@@ -67,6 +90,7 @@ export default function GameCountdown() {
 					{team.fullName} vs {opposingTeam?.fullName ?? 'TBD'}
 				</>
 			}
+			breadcrumbItems={breadcrumbItems}
 		/>
 	)
 }

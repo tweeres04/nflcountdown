@@ -31,6 +31,12 @@ export async function loader({
 			? getCachedGamePreview(LEAGUE, nextGame, team)
 			: Promise.resolve(null)
 
+	const breadcrumbItems = [
+		{ label: 'Home', href: '/' },
+		{ label: LEAGUE, href: `/${LEAGUE.toLowerCase()}` },
+		{ label: team.fullName }, // No href = current page
+	]
+
 	return defer({
 		LEAGUE,
 		teams,
@@ -38,11 +44,13 @@ export async function loader({
 		games,
 		nextGame, // Pass to meta for SportsEvent schema on team pages
 		gamePreview: gamePreviewPromise,
+		breadcrumbItems,
 	})
 }
 
 export default function TeamCountdown() {
-	const { teams, team, games, gamePreview } = useLoaderData<typeof loader>()
+	const { teams, team, games, gamePreview, breadcrumbItems } =
+		useLoaderData<typeof loader>()
 	const nextGame = games.find(
 		(g: Game) => g.time && isFuture(addHours(g.time, 3))
 	)
@@ -56,6 +64,7 @@ export default function TeamCountdown() {
 			game={nextGame}
 			gamePreview={gamePreview}
 			isTeamPage={true}
+			breadcrumbItems={breadcrumbItems}
 		/>
 	)
 }

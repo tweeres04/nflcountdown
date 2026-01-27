@@ -1,5 +1,10 @@
 import { Team, Game } from './types'
 
+export interface BreadcrumbItem {
+	label: string
+	href?: string // undefined = current page (no link)
+}
+
 export function getSportName(league: string): string {
 	switch (league) {
 		case 'NFL':
@@ -166,5 +171,19 @@ export function generateWebSiteSchema() {
 				name: 'Major League Baseball',
 			},
 		],
+	}
+}
+
+export function generateBreadcrumbSchema(items: BreadcrumbItem[]) {
+	return {
+		'@context': 'https://schema.org',
+		'@type': 'BreadcrumbList',
+		itemListElement: items.map((item, index) => ({
+			'@type': 'ListItem',
+			position: index + 1,
+			name: item.label,
+			// Last item (current page) should not have "item" property
+			...(item.href && { item: `https://teamcountdown.com${item.href}` }),
+		})),
 	}
 }
