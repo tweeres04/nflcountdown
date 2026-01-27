@@ -473,8 +473,8 @@ For venue/stadium pages (if added)
 | 🔥 2 | Enhanced sitemap (lastmod) | ⬜ | | |
 | 🔥 2 | Enhanced sitemap (priority) | ⬜ | | |
 | 🔥 2 | Enhanced sitemap (changefreq) | ⬜ | | |
-| 🔥 3 | Breadcrumb component | ⬜ | | |
-| 🔥 3 | Breadcrumb schema | ⬜ | | |
+| 🔥 3 | Breadcrumb component | ✅ | OpenCode | 2026-01-27 |
+| 🔥 3 | Breadcrumb schema | ✅ | OpenCode | 2026-01-27 |
 | ⚡ 4 | Opponent links on game pages | ⬜ | | |
 | ⚡ 4 | Upcoming opponents on team pages | ⬜ | | |
 | ⚡ 4 | Related games component | ⬜ | | |
@@ -551,6 +551,19 @@ Sites doing pSEO well in sports:
 - ESLint shows only pre-existing warnings (no new issues from structured data)
 - **Ready for testing and deployment**
 
+**2026-01-27:**
+- ✅ **COMPLETED: Priority 3 - Breadcrumb Navigation Implementation**
+- Installed Shadcn breadcrumb component via CLI
+- Added `BreadcrumbItem` type and `generateBreadcrumbSchema()` to schema-helpers.ts
+- Updated `generateMeta.ts` to accept breadcrumbItems and add BreadcrumbList schema
+- Updated `countdown.tsx` component to accept and render breadcrumbs
+- Added breadcrumbs to all route files (league, team, game, season pages)
+- Breadcrumb structure: Home > League > Team > Game
+- Styled for white text on team-colored backgrounds with ChevronRight separators
+- TypeScript and lint checks passing (no new errors)
+- Created `docs/breadcrumbs-plan.md` for implementation details
+- **Deployed and ready for testing**
+
 ---
 
-_Last updated: January 26, 2026_
+_Last updated: January 27, 2026_
