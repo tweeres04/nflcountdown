@@ -124,49 +124,29 @@ These improvements focus on **high impact, low effort** changes based on 2026 pS
 
 ---
 
-### 2. Enhanced Sitemap with Metadata 🔥 HIGH PRIORITY
+### 2. Enhanced Sitemap with Metadata ⚠️ DEPRIORITIZED
 
-**Why:** Better crawl efficiency, helps Google prioritize important pages
+**Status:** Moved to low priority after research
 
-**Current state:** Only includes `<loc>` tags
+**Research findings (Jan 2026):**
+- ❌ **`<priority>`** - Google officially ignores this tag
+- ❌ **`<changefreq>`** - Google officially ignores this tag  
+- ⚠️ **`<lastmod>`** - Google uses this BUT only if consistently accurate
 
-**Add:**
+**Challenge with `<lastmod>`:**
+- Team pages: Content changes (next game rotates) → could use current date
+- Game pages: Content is static during season (game details don't change)
+- Can't use future dates for upcoming games (invalid)
+- Daily refresh of static game pages wastes Google's crawl budget
 
-#### `<lastmod>` - Last modification date
-- Team pages: Current date (updated daily)
-- Future game pages: Game date or data refresh timestamp
-- Past game pages: Game date
-- League pages: Weekly update timestamp
+**Decision:** Skip sitemap metadata enhancements
+- Current basic sitemap with `<loc>` only is sufficient
+- Structured data and breadcrumbs provide better signals
+- Not worth implementation time for minimal/questionable benefit
 
-#### `<priority>` - Relative importance (0.0 to 1.0)
-- Homepage: `1.0`
-- League indexes: `0.9`
-- Team pages: `0.8`
-- Future game pages: `0.6`
-- Past game pages: `0.3`
-
-#### `<changefreq>` - Update frequency
-- Team pages: `daily`
-- Upcoming game pages (next 7 days): `daily`
-- Future game pages (7+ days): `weekly`
-- Past game pages: `never`
-- League indexes: `weekly`
-
-**Example enhanced sitemap entry:**
-```xml
-<url>
-  <loc>https://teamcountdown.com/nfl/phi</loc>
-  <lastmod>2026-01-23</lastmod>
-  <changefreq>daily</changefreq>
-  <priority>0.8</priority>
-</url>
-```
-
-**Files to modify:**
-- `app/routes/sitemap[.]xml.ts`
-
-**Effort:** Low (1-2 hours)  
-**Impact:** High
+**Original Effort Estimate:** 1-2 hours  
+**Original Impact Estimate:** High  
+**Revised Impact:** Low (Google ignores most of it)
 
 ---
 
@@ -304,23 +284,19 @@ Other games this week:
 
 ---
 
-### 6. Twitter Card Meta Tags 📝 LOW-MEDIUM PRIORITY
+### 6. Twitter Card Meta Tags ⚠️ DEPRIORITIZED
 
-**Why:** Better social sharing, more professional appearance
+**Status:** Moved to low priority after research
 
-**Add to `generateMeta.ts`:**
-```typescript
-{ name: 'twitter:card', content: 'summary_large_image' },
-{ name: 'twitter:title', content: title },
-{ name: 'twitter:description', content: description },
-{ name: 'twitter:image', content: ogImage },
-```
+**Why deprioritized:**
+- Twitter/X automatically falls back to Open Graph tags
+- Current OG implementation is comprehensive
+- Zero functional benefit when OG tags exist
+- Better to spend time on features with real impact
 
-**Files to modify:**
-- `app/lib/generateMeta.ts`
-
-**Effort:** Very Low (30 minutes)  
-**Impact:** Low-Medium
+**Original Effort Estimate:** 30 minutes  
+**Original Impact Estimate:** Low-Medium  
+**Revised Impact:** Negligible (redundant with existing OG tags)
 
 ---
 
@@ -470,16 +446,16 @@ For venue/stadium pages (if added)
 | 🔥 1 | Structured data - Team pages | ✅ | OpenCode | 2026-01-26 |
 | 🔥 1 | Structured data - Game pages | ✅ | OpenCode | 2026-01-26 |
 | 🔥 1 | Structured data - League pages | ✅ | OpenCode | 2026-01-26 |
-| 🔥 2 | Enhanced sitemap (lastmod) | ⬜ | | |
-| 🔥 2 | Enhanced sitemap (priority) | ⬜ | | |
-| 🔥 2 | Enhanced sitemap (changefreq) | ⬜ | | |
+| ⚠️ 2 | Enhanced sitemap (lastmod) | ❌ | | Deprioritized - minimal benefit |
+| ⚠️ 2 | Enhanced sitemap (priority) | ❌ | | Deprioritized - Google ignores |
+| ⚠️ 2 | Enhanced sitemap (changefreq) | ❌ | | Deprioritized - Google ignores |
 | 🔥 3 | Breadcrumb component | ✅ | OpenCode | 2026-01-27 |
 | 🔥 3 | Breadcrumb schema | ✅ | OpenCode | 2026-01-27 |
 | ⚡ 4 | Opponent links on game pages | ⬜ | | |
 | ⚡ 4 | Upcoming opponents on team pages | ⬜ | | |
 | ⚡ 4 | Related games component | ⬜ | | |
 | ⚡ 5 | Split sitemap by league | ⬜ | | |
-| 📝 6 | Twitter Card meta tags | ⬜ | | |
+| ⚠️ 6 | Twitter Card meta tags | ❌ | | Deprioritized - redundant with OG tags |
 
 ### Future Opportunities
 
@@ -563,6 +539,28 @@ Sites doing pSEO well in sports:
 - TypeScript and lint checks passing (no new errors)
 - Created `docs/breadcrumbs-plan.md` for implementation details
 - **Deployed and ready for testing**
+
+- ❌ **DEPRIORITIZED: Priority 2 - Enhanced Sitemap Metadata**
+- Research shows Google ignores `<priority>` and `<changefreq>` tags
+- `<lastmod>` is only useful if consistently accurate
+- Challenge: Game pages are static (can't use future dates for upcoming games)
+- Adding current date to 8,000 static pages would waste crawl budget
+- Decision: Skip sitemap enhancements, focus on higher-impact improvements
+
+- ❌ **DEPRIORITIZED: Priority 6 - Twitter Card Meta Tags**
+- Twitter automatically uses Open Graph tags as fallback
+- Current OG implementation is comprehensive
+- Zero functional benefit when OG tags already exist
+- Decision: Skip Twitter Cards entirely
+
+---
+
+### Deprioritized Items
+
+| Task | Original Priority | Reason Deprioritized |
+|------|-------------------|----------------------|
+| Enhanced sitemap metadata | 🔥 High | Google ignores priority/changefreq; lastmod challenging for static game pages |
+| Twitter Card meta tags | 📝 Low-Medium | Redundant with existing comprehensive OG tags |
 
 ---
 
