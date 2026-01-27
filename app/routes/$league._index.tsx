@@ -9,6 +9,7 @@ import { nbaTeamToTeam } from '~/lib/nbaGameToGame'
 import { nflTeamToTeam } from '~/lib/nflGameToGame'
 import { readFile } from 'node:fs/promises'
 import { NbaScheduleApi, NflScheduleApi, Team } from '~/lib/types'
+import { generateSportsOrganizationSchema } from '~/lib/schema-helpers'
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	const LEAGUE = data?.LEAGUE ?? 'NFL'
@@ -18,7 +19,8 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	const description = `The fastest and prettiest way to check the next ${LEAGUE} game. Launches instantly from your home screen.`
 	const ogImage = LEAGUE === 'NFL' ? 'og.png' : `${lowercaseLeague}-og.png`
 	const url = `https://teamcountdown.com/${lowercaseLeague}`
-	return [
+	
+	const metaTags: any[] = [
 		{ title },
 		{
 			name: 'description',
@@ -44,7 +46,12 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 			rel: 'canonical',
 			href: url,
 		},
+		{
+			'script:ld+json': generateSportsOrganizationSchema(LEAGUE, url),
+		},
 	]
+	
+	return metaTags
 }
 
 export async function loader({ params: { league } }: LoaderFunctionArgs) {

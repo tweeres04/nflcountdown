@@ -36,6 +36,7 @@ export async function loader({
 		teams,
 		team,
 		games,
+		nextGame, // Pass to meta for SportsEvent schema on team pages
 		gamePreview: gamePreviewPromise,
 	})
 }

@@ -14,8 +14,9 @@ import { getTeamAndGames } from '~/lib/getTeamAndGames'
 export function meta() {
 	const title = 'How Many Days Till NFL Kickoff? Live NFL Season Countdown'
 	const description = `Find out exactly how many days until NFL season starts. Live countdown showing the precise days, hours, and minutes until NFL football returns in ${getNextSeasonStartDate().getFullYear()}.`
+	const url = 'https://teamcountdown.com/nfl/season'
 
-	return [
+	const metaTags: any[] = [
 		{ title },
 		{
 			name: 'description',
@@ -28,7 +29,7 @@ export function meta() {
 		{ name: 'og:type', content: 'website' },
 		{
 			name: 'og:url',
-			content: 'https://teamcountdown.com/nfl/season',
+			content: url,
 		},
 		{
 			name: 'og:image',
@@ -42,9 +43,24 @@ export function meta() {
 		{
 			tagName: 'link',
 			rel: 'canonical',
-			href: 'https://teamcountdown.com/nfl/season',
+			href: url,
+		},
+		{
+			'script:ld+json': {
+				'@context': 'https://schema.org',
+				'@type': 'WebPage',
+				name: 'NFL Season Countdown',
+				description: description,
+				url: url,
+				about: {
+					'@type': 'SportsOrganization',
+					name: 'National Football League',
+				},
+			},
 		},
 	]
+
+	return metaTags
 }
 
 function getNextSeasonStartDate() {

@@ -1,11 +1,13 @@
 import { type MetaFunction } from '@remix-run/node'
 import { Button } from '~/components/ui/button'
+import { generateWebSiteSchema } from '~/lib/schema-helpers'
 
 export const meta: MetaFunction = () => {
 	const title = `When is the next game? - Team Countdown`
 	const description = `The fastest and prettiest way to check the next NFL, NBA, or MLB game. Launches instantly from your home screen.`
 	const url = `https://teamcountdown.com`
-	return [
+	
+	const metaTags: any[] = [
 		{ title },
 		{
 			name: 'description',
@@ -27,7 +29,12 @@ export const meta: MetaFunction = () => {
 			rel: 'canonical',
 			href: url,
 		},
+		{
+			'script:ld+json': generateWebSiteSchema(),
+		},
 	]
+	
+	return metaTags
 }
 
 export default function Index() {
