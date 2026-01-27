@@ -41,7 +41,7 @@ export const generateMeta: MetaFunction = ({ data, params }) => {
 		description = `Countdown to ${team.fullName} vs ${opponent}${gameDateStringForDescription}. Launches instantly from your home screen.`
 	} else {
 		title = `When is the next ${team.fullName} game? - Team Countdown`
-		description = `The fastest and prettiest way to check the next ${team.fullName} game. Launches instantly from your home screen.`
+		description = `Live countdown to the next ${team.fullName} game. The fastest way to see exactly when your team plays next. Saves to your home screen for instant access.`
 	}
 
 	const ogImage = `https://teamcountdown.com/${lowercaseLeague}/og/${lowercaseAbbreviation}`
