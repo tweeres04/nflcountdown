@@ -20,7 +20,7 @@ import {
 } from './ui/dialog'
 import { Eye, ThumbsDown, ThumbsUp } from 'lucide-react'
 import { Badge } from './ui/badge'
-import { Await } from '@remix-run/react'
+import { Await, Link } from '@remix-run/react'
 import mixpanel from 'mixpanel-browser'
 import {
 	Breadcrumb,
@@ -148,13 +148,22 @@ export default function Countdown({
 		</div>
 	) : null
 
+	// Calculate opposing team for linking
+	const opposingTeam =
+		game?.homeTeam?.abbreviation !== team?.abbreviation
+			? game?.homeTeam
+			: game?.awayTeam
+
 	const gameMatchupInfo =
-		game?.awayTeam && game?.homeTeam ? (
+		game?.awayTeam && game?.homeTeam && opposingTeam ? (
 			<div className="text-sm" suppressHydrationWarning>
 				vs{' '}
-				{game.homeTeam.abbreviation !== team?.abbreviation
-					? game.homeTeam.fullName
-					: game.awayTeam.fullName}
+				<Link
+					to={`/${LEAGUE.toLowerCase()}/${opposingTeam.abbreviation.toLowerCase()}`}
+					className="underline decoration-white/50 hover:decoration-white hover:text-white transition-colors"
+				>
+					{opposingTeam.fullName}
+				</Link>
 			</div>
 		) : null
 
