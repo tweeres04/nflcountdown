@@ -39,7 +39,7 @@ export function meta() {
 			name: 'og:description',
 			content: description,
 		},
-		{ name: 'og:site_name', content: 'NFL Countdown' },
+		{ name: 'og:site_name', content: 'Team Countdown' },
 		{
 			tagName: 'link',
 			rel: 'canonical',

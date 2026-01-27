@@ -15,7 +15,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	const LEAGUE = data?.LEAGUE ?? 'NFL'
 	const lowercaseLeague = LEAGUE.toLowerCase()
 
-	const title = `When is the next ${LEAGUE} game? - ${LEAGUE} Countdown`
+	const title = `When is the next ${LEAGUE} game? - Team Countdown`
 	const description = `The fastest and prettiest way to check the next ${LEAGUE} game. Launches instantly from your home screen.`
 	const ogImage = LEAGUE === 'NFL' ? 'og.png' : `${lowercaseLeague}-og.png`
 	const url = `https://teamcountdown.com/${lowercaseLeague}`
@@ -40,7 +40,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 			name: 'og:description',
 			content: description,
 		},
-		{ name: 'og:site_name', content: `${LEAGUE} Countdown` },
+		{ name: 'og:site_name', content: 'Team Countdown' },
 		{
 			tagName: 'link',
 			rel: 'canonical',

@@ -37,10 +37,10 @@ export const generateMeta: MetaFunction = ({ data, params }) => {
 			? ` on ${gameDateFormatted}`
 			: ''
 
-		title = `${team.fullName} vs ${opponent}${gameDateStringForTitle} - ${LEAGUE} Countdown`
+		title = `${team.fullName} vs ${opponent}${gameDateStringForTitle} - Team Countdown`
 		description = `Countdown to ${team.fullName} vs ${opponent}${gameDateStringForDescription}. Launches instantly from your home screen.`
 	} else {
-		title = `When is the next ${team.fullName} game? - ${LEAGUE} Countdown`
+		title = `When is the next ${team.fullName} game? - Team Countdown`
 		description = `The fastest and prettiest way to check the next ${team.fullName} game. Launches instantly from your home screen.`
 	}
 
@@ -58,7 +58,7 @@ export const generateMeta: MetaFunction = ({ data, params }) => {
 		{ name: 'og:url', content: url },
 		{ name: 'og:image', content: ogImage },
 		{ name: 'og:description', content: description },
-		{ name: 'og:site_name', content: `${LEAGUE} Countdown` },
+		{ name: 'og:site_name', content: 'Team Countdown' },
 		{ tagName: 'link', rel: 'canonical', href: url },
 	]
 
