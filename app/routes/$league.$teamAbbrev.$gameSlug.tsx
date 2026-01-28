@@ -6,6 +6,7 @@ import Countdown from '~/components/countdown'
 import { getTeamAndGames } from '~/lib/getTeamAndGames'
 import { generateMeta } from '~/lib/generateMeta'
 import { getCachedGamePreview } from '~/lib/gemini-service'
+import { getSuggestedGames } from '~/lib/getSuggestedGames'
 import { Game } from '~/lib/types'
 
 export { generateMeta as meta }
@@ -36,6 +37,13 @@ export async function loader({
 			? getCachedGamePreview(LEAGUE, currentGame, team)
 			: Promise.resolve(null)
 
+	// Get suggested games (other teams' games happening now/soon)
+	const suggestedGames = await getSuggestedGames(
+		LEAGUE,
+		currentGame.id,
+		team.id
+	)
+
 	const opponent =
 		currentGame.homeTeam?.abbreviation === team.abbreviation
 			? currentGame.awayTeam?.fullName
@@ -65,13 +73,21 @@ export async function loader({
 		game: currentGame,
 		games,
 		gamePreview: gamePreviewPromise,
+		suggestedGames,
 		breadcrumbItems,
 	})
 }
 
 export default function GameCountdown() {
-	const { teams, team, game, games, gamePreview, breadcrumbItems } =
-		useLoaderData<typeof loader>()
+	const {
+		teams,
+		team,
+		game,
+		games,
+		gamePreview,
+		suggestedGames,
+		breadcrumbItems,
+	} = useLoaderData<typeof loader>()
 
 	const opposingTeam =
 		game.homeTeam?.abbreviation === team.abbreviation
@@ -91,6 +107,7 @@ export default function GameCountdown() {
 				</>
 			}
 			breadcrumbItems={breadcrumbItems}
+			suggestedGames={suggestedGames}
 		/>
 	)
 }

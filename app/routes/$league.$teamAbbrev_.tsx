@@ -6,6 +6,7 @@ import Countdown from '~/components/countdown'
 import { getTeamAndGames } from '~/lib/getTeamAndGames'
 import { generateMeta } from '~/lib/generateMeta'
 import { getCachedGamePreview } from '~/lib/gemini-service'
+import { getSuggestedGames } from '~/lib/getSuggestedGames'
 import { Game } from '~/lib/types'
 
 export { generateMeta as meta }
@@ -31,6 +32,11 @@ export async function loader({
 			? getCachedGamePreview(LEAGUE, nextGame, team)
 			: Promise.resolve(null)
 
+	// Get suggested games (other teams' games happening now/soon)
+	const suggestedGames = nextGame
+		? await getSuggestedGames(LEAGUE, nextGame.id, team.id)
+		: []
+
 	const breadcrumbItems = [
 		{ label: 'Home', href: '/' },
 		{ label: LEAGUE, href: `/${LEAGUE.toLowerCase()}` },
@@ -44,13 +50,20 @@ export async function loader({
 		games,
 		nextGame, // Pass to meta for SportsEvent schema on team pages
 		gamePreview: gamePreviewPromise,
+		suggestedGames,
 		breadcrumbItems,
 	})
 }
 
 export default function TeamCountdown() {
-	const { teams, team, games, gamePreview, breadcrumbItems } =
-		useLoaderData<typeof loader>()
+	const {
+		teams,
+		team,
+		games,
+		gamePreview,
+		suggestedGames,
+		breadcrumbItems,
+	} = useLoaderData<typeof loader>()
 	const nextGame = games.find(
 		(g: Game) => g.time && isFuture(addHours(g.time, 3))
 	)
@@ -65,6 +78,7 @@ export default function TeamCountdown() {
 			gamePreview={gamePreview}
 			isTeamPage={true}
 			breadcrumbItems={breadcrumbItems}
+			suggestedGames={suggestedGames}
 		/>
 	)
 }

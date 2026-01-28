@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+	.content-link {
+		@apply underline decoration-white/50 hover:decoration-white hover:text-white transition-colors;
+	}
+}

@@ -8,6 +8,7 @@ import IosShareIcon from './IosShareIcon'
 import { cn } from '~/lib/utils'
 import { LeagueContext } from '~/lib/league-context'
 import GameList from './game-list'
+import YouMightLike from './you-might-like'
 import { addHours, isPast, isWithinInterval } from 'date-fns'
 import countdown from '../external/countdown'
 import Markdown from 'react-markdown'
@@ -56,6 +57,7 @@ interface CountdownProps {
 	gamePreview?: Promise<string | null>
 	isTeamPage?: boolean
 	breadcrumbItems?: BreadcrumbItemType[]
+	suggestedGames?: Game[]
 }
 
 function useUpdateTime() {
@@ -116,6 +118,7 @@ export default function Countdown({
 	gamePreview,
 	isTeamPage = false,
 	breadcrumbItems,
+	suggestedGames = [],
 }: CountdownProps) {
 	const LEAGUE = useContext(LeagueContext)
 	useUpdateTime()
@@ -160,7 +163,7 @@ export default function Countdown({
 				vs{' '}
 				<Link
 					to={`/${LEAGUE.toLowerCase()}/${opposingTeam.abbreviation.toLowerCase()}`}
-					className="underline decoration-white/50 hover:decoration-white hover:text-white transition-colors"
+					className="content-link"
 				>
 					{opposingTeam.fullName}
 				</Link>
@@ -396,6 +399,10 @@ export default function Countdown({
 				</div>
 
 				{showFullSchedule && team && <GameList games={games} team={team} />}
+
+				{suggestedGames.length > 0 && (
+					<YouMightLike games={suggestedGames} league={LEAGUE} />
+				)}
 			</div>
 			<InstallNotification
 				className={
