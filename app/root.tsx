@@ -133,6 +133,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				) : null}
 				<Meta />
 				<Links />
+				<meta
+					name="impact-site-verification"
+					value="f3298dd7-eba2-4d11-ad59-973b722b00cf"
+				></meta>
 			</head>
 			<body
 				className={cn(
