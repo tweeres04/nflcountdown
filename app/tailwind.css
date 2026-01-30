@@ -4,6 +4,10 @@
 
 @layer components {
 	.content-link {
-		@apply underline decoration-white/50 hover:decoration-white hover:text-white transition-colors;
+		@apply underline decoration-white/50 hover:decoration-white transition-colors;
+
+		&.stone {
+			@apply decoration-stone-900/50 hover:decoration-stone-900;
+		}
 	}
 }

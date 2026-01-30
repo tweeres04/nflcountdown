@@ -9,6 +9,7 @@ import { getCachedGamePreview } from '~/lib/gemini-service'
 import { getSuggestedGames } from '~/lib/getSuggestedGames'
 import { getAffiliateLinks } from '~/lib/affiliate-links'
 import { Game } from '~/lib/types'
+import Footer from '~/components/footer'
 
 export { generateMeta as meta }
 
@@ -75,17 +76,20 @@ export default function TeamCountdown() {
 	)
 
 	return (
-		<Countdown
-			pageTitle={`${team.fullName} Countdown`}
-			team={team}
-			teams={teams}
-			games={games}
-			game={nextGame}
-			gamePreview={gamePreview}
-			isTeamPage={true}
-			breadcrumbItems={breadcrumbItems}
-			suggestedGames={suggestedGames}
-			affiliateLinks={affiliateLinks}
-		/>
+		<>
+			<Countdown
+				pageTitle={`${team.fullName} Countdown`}
+				team={team}
+				teams={teams}
+				games={games}
+				game={nextGame}
+				gamePreview={gamePreview}
+				isTeamPage={true}
+				breadcrumbItems={breadcrumbItems}
+				suggestedGames={suggestedGames}
+				affiliateLinks={affiliateLinks}
+			/>
+			<Footer countdown />
+		</>
 	)
 }
