@@ -1,6 +1,7 @@
 import { type MetaFunction } from '@remix-run/node'
 import { Button } from '~/components/ui/button'
 import { generateWebSiteSchema } from '~/lib/schema-helpers'
+import Footer from '~/components/footer'
 
 export const meta: MetaFunction = () => {
 	const title = `When is the next game? - Team Countdown`
@@ -75,13 +76,7 @@ export default function Index() {
 						</div>
 					</div>
 				</div>
-				<footer className="bg-stone-200">
-					<div className="p-4 max-w-[500px] lg:max-w-[750px] mx-auto text-sm">
-						<p>
-							<a href="https://tweeres.ca">By Tyler Weeres</a>
-						</p>
-					</div>
-				</footer>
+			<Footer />
 			</div>
 		</>
 	)

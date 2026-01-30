@@ -19,7 +19,14 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from './ui/dialog'
-import { Eye, ThumbsDown, ThumbsUp } from 'lucide-react'
+import {
+	Eye,
+	ThumbsDown,
+	ThumbsUp,
+	Ticket,
+	TrendingUp,
+	ShoppingBag,
+} from 'lucide-react'
 import { Badge } from './ui/badge'
 import { Await, Link } from '@remix-run/react'
 import mixpanel from 'mixpanel-browser'
@@ -32,6 +39,7 @@ import {
 	BreadcrumbSeparator,
 } from './ui/breadcrumb'
 import type { BreadcrumbItem as BreadcrumbItemType } from '~/lib/schema-helpers'
+import type { AffiliateLinks } from '~/lib/affiliate-links'
 
 // Simple inline loading skeleton for Dialog
 const GamePreviewLoading = () => (
@@ -58,6 +66,7 @@ interface CountdownProps {
 	isTeamPage?: boolean
 	breadcrumbItems?: BreadcrumbItemType[]
 	suggestedGames?: Game[]
+	affiliateLinks?: AffiliateLinks
 }
 
 function useUpdateTime() {
@@ -119,6 +128,7 @@ export default function Countdown({
 	isTeamPage = false,
 	breadcrumbItems,
 	suggestedGames = [],
+	affiliateLinks,
 }: CountdownProps) {
 	const LEAGUE = useContext(LeagueContext)
 	useUpdateTime()
@@ -172,7 +182,7 @@ export default function Countdown({
 
 	return (
 		<>
-			<div className="font-sans text-white p-4 max-w-[500px] lg:max-w-[750px] mx-auto">
+			<div className="font-sans text-white p-4 max-w-[500px] lg:max-w-[750px] mx-auto pb-32">
 				{/* Breadcrumb navigation */}
 				{breadcrumbItems && breadcrumbItems.length > 0 && (
 					<Breadcrumb className="mb-3">
@@ -399,6 +409,46 @@ export default function Countdown({
 				</div>
 
 				{showFullSchedule && team && <GameList games={games} team={team} />}
+
+				{affiliateLinks?.tickets ||
+				affiliateLinks?.betting ||
+				affiliateLinks?.merch ? (
+					<div className="flex gap-3 mt-6 justify-center">
+						{affiliateLinks.tickets && (
+							<Button variant="affiliate" asChild size="sm">
+								<a
+									href={affiliateLinks.tickets}
+									target="_blank"
+									rel="noopener noreferrer sponsored"
+								>
+									Tickets <Ticket className="size-4" />
+								</a>
+							</Button>
+						)}
+						{affiliateLinks.betting && (
+							<Button variant="affiliate" asChild size="sm">
+								<a
+									href={affiliateLinks.betting}
+									target="_blank"
+									rel="noopener noreferrer sponsored"
+								>
+									Bet <TrendingUp className="size-4" />
+								</a>
+							</Button>
+						)}
+						{affiliateLinks.merch && (
+							<Button variant="affiliate" asChild size="sm">
+								<a
+									href={affiliateLinks.merch}
+									target="_blank"
+									rel="noopener noreferrer sponsored"
+								>
+									Gear <ShoppingBag className="size-4" />
+								</a>
+							</Button>
+						)}
+					</div>
+				) : null}
 
 				{suggestedGames.length > 0 && (
 					<YouMightLike games={suggestedGames} league={LEAGUE} />

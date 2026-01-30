@@ -37,7 +37,9 @@ export function loader({ request }: LoaderFunctionArgs) {
 
 		// Log redirect for monitoring
 		console.log(
-			`Old domain redirect: ${url.hostname}${url.pathname} -> league: ${league}, team: ${teamAbbrev}, game: ${gameSlug || 'none'}`
+			`Old domain redirect: ${url.hostname}${
+				url.pathname
+			} -> league: ${league}, team: ${teamAbbrev}, game: ${gameSlug || 'none'}`
 		)
 
 		// If there are more than 2 path parts, it's invalid

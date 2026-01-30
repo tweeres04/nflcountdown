@@ -13,6 +13,7 @@ import {
 	generateSportsOrganizationSchema,
 	generateBreadcrumbSchema,
 } from '~/lib/schema-helpers'
+import Footer from '~/components/footer'
 import {
 	Breadcrumb,
 	BreadcrumbList,
@@ -175,37 +176,7 @@ export default function LeagueIndex() {
 						</div>
 					</div>
 				</div>
-				<footer className="bg-stone-200">
-					<div className="p-4 max-w-[500px] lg:max-w-[750px] mx-auto text-sm">
-						<p>
-							<a href="https://tweeres.ca">By Tyler Weeres</a>
-						</p>
-						<p>
-							{LEAGUE === 'MLB' ? (
-								<a
-									href="https://www.flaticon.com/free-icons/baseball"
-									title="baseball icons"
-								>
-									Baseball icons created by Freepik - Flaticon
-								</a>
-							) : LEAGUE === 'NBA' ? (
-								<a
-									href="https://www.flaticon.com/free-icons/basketball"
-									title="basketball icons"
-								>
-									Basketball icons created by Freepik - Flaticon
-								</a>
-							) : (
-								<a
-									href="https://www.flaticon.com/free-icons/american-football"
-									title="american football icons"
-								>
-									American football icon created by Smashicons - Flaticon
-								</a>
-							)}
-						</p>
-					</div>
-				</footer>
+			<Footer league={LEAGUE} />
 			</div>
 		</>
 	)
