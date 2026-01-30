@@ -1,12 +1,13 @@
 import { type MetaFunction } from '@remix-run/node'
 import { Button } from '~/components/ui/button'
 import { generateWebSiteSchema } from '~/lib/schema-helpers'
+import Footer from '~/components/footer'
 
 export const meta: MetaFunction = () => {
 	const title = `When is the next game? - Team Countdown`
 	const description = `The fastest and prettiest way to check the next NFL, NBA, or MLB game. Launches instantly from your home screen.`
 	const url = `https://teamcountdown.com`
-	
+
 	const metaTags: any[] = [
 		{ title },
 		{
@@ -33,7 +34,7 @@ export const meta: MetaFunction = () => {
 			'script:ld+json': generateWebSiteSchema(),
 		},
 	]
-	
+
 	return metaTags
 }
 
@@ -47,7 +48,7 @@ export default function Index() {
 	return (
 		<>
 			<div className="flex flex-col min-h-screen md:h-auto">
-				<div className="p-4 max-w-[500px] lg:max-w-[750px] mx-auto space-y-12 min-h-[600px] grow">
+				<div className="p-4 max-w-[500px] lg:max-w-[750px] mx-auto space-y-12 min-h-[600px] grow pb-20">
 					<h1 className="text-3xl">Team Countdown</h1>
 					<div className="flex flex-col gap-10">
 						<div className="space-y-5">
@@ -75,13 +76,7 @@ export default function Index() {
 						</div>
 					</div>
 				</div>
-				<footer className="bg-stone-200">
-					<div className="p-4 max-w-[500px] lg:max-w-[750px] mx-auto text-sm">
-						<p>
-							<a href="https://tweeres.ca">By Tyler Weeres</a>
-						</p>
-					</div>
-				</footer>
+				<Footer />
 			</div>
 		</>
 	)

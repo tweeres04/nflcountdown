@@ -7,7 +7,9 @@ import { getTeamAndGames } from '~/lib/getTeamAndGames'
 import { generateMeta } from '~/lib/generateMeta'
 import { getCachedGamePreview } from '~/lib/gemini-service'
 import { getSuggestedGames } from '~/lib/getSuggestedGames'
+import { getAffiliateLinks } from '~/lib/affiliate-links'
 import { Game } from '~/lib/types'
+import Footer from '~/components/footer'
 
 export { generateMeta as meta }
 
@@ -66,6 +68,9 @@ export async function loader({
 		{ label: `vs ${opponent ?? 'TBD'} ${gameDate}` }, // No href = current page
 	]
 
+	// Generate affiliate links
+	const affiliateLinks = getAffiliateLinks(team, LEAGUE)
+
 	return defer({
 		LEAGUE,
 		teams,
@@ -75,6 +80,7 @@ export async function loader({
 		gamePreview: gamePreviewPromise,
 		suggestedGames,
 		breadcrumbItems,
+		affiliateLinks,
 	})
 }
 
@@ -87,6 +93,7 @@ export default function GameCountdown() {
 		gamePreview,
 		suggestedGames,
 		breadcrumbItems,
+		affiliateLinks,
 	} = useLoaderData<typeof loader>()
 
 	const opposingTeam =
@@ -95,19 +102,23 @@ export default function GameCountdown() {
 			: game.homeTeam
 
 	return (
-		<Countdown
-			team={team}
-			teams={teams}
-			games={games}
-			game={game}
-			gamePreview={gamePreview}
-			pageTitle={
-				<>
-					{team.fullName} vs {opposingTeam?.fullName ?? 'TBD'}
-				</>
-			}
-			breadcrumbItems={breadcrumbItems}
-			suggestedGames={suggestedGames}
-		/>
+		<>
+			<Countdown
+				team={team}
+				teams={teams}
+				games={games}
+				game={game}
+				gamePreview={gamePreview}
+				pageTitle={
+					<>
+						{team.fullName} vs {opposingTeam?.fullName ?? 'TBD'}
+					</>
+				}
+				breadcrumbItems={breadcrumbItems}
+				suggestedGames={suggestedGames}
+				affiliateLinks={affiliateLinks}
+			/>
+			<Footer countdown />
+		</>
 	)
 }

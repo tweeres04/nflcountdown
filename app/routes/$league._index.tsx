@@ -13,6 +13,7 @@ import {
 	generateSportsOrganizationSchema,
 	generateBreadcrumbSchema,
 } from '~/lib/schema-helpers'
+import Footer from '~/components/footer'
 import {
 	Breadcrumb,
 	BreadcrumbList,
@@ -30,12 +31,12 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	const description = `The fastest and prettiest way to check the next ${LEAGUE} game. Launches instantly from your home screen.`
 	const ogImage = LEAGUE === 'NFL' ? 'og.png' : `${lowercaseLeague}-og.png`
 	const url = `https://teamcountdown.com/${lowercaseLeague}`
-	
+
 	const breadcrumbItems = [
 		{ label: 'Home', href: '/' },
 		{ label: LEAGUE }, // No href = current page
 	]
-	
+
 	const metaTags: any[] = [
 		{ title },
 		{
@@ -69,7 +70,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 			'script:ld+json': generateBreadcrumbSchema(breadcrumbItems),
 		},
 	]
-	
+
 	return metaTags
 }
 
@@ -117,7 +118,7 @@ export default function LeagueIndex() {
 	return (
 		<>
 			<div className="flex flex-col min-h-screen md:h-auto">
-				<div className="p-4 max-w-[500px] lg:max-w-[750px] mx-auto space-y-12 min-h-[600px] grow">
+				<div className="p-4 max-w-[500px] lg:max-w-[750px] mx-auto space-y-12 min-h-[600px] grow pb-20">
 					<Breadcrumb className="mb-4">
 						<BreadcrumbList>
 							<BreadcrumbItem>
@@ -175,37 +176,7 @@ export default function LeagueIndex() {
 						</div>
 					</div>
 				</div>
-				<footer className="bg-stone-200">
-					<div className="p-4 max-w-[500px] lg:max-w-[750px] mx-auto text-sm">
-						<p>
-							<a href="https://tweeres.ca">By Tyler Weeres</a>
-						</p>
-						<p>
-							{LEAGUE === 'MLB' ? (
-								<a
-									href="https://www.flaticon.com/free-icons/baseball"
-									title="baseball icons"
-								>
-									Baseball icons created by Freepik - Flaticon
-								</a>
-							) : LEAGUE === 'NBA' ? (
-								<a
-									href="https://www.flaticon.com/free-icons/basketball"
-									title="basketball icons"
-								>
-									Basketball icons created by Freepik - Flaticon
-								</a>
-							) : (
-								<a
-									href="https://www.flaticon.com/free-icons/american-football"
-									title="american football icons"
-								>
-									American football icon created by Smashicons - Flaticon
-								</a>
-							)}
-						</p>
-					</div>
-				</footer>
+				<Footer league={LEAGUE} />
 			</div>
 		</>
 	)
