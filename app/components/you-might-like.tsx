@@ -30,19 +30,19 @@ function MiniCountdown({ gameTime }: { gameTime: string }) {
 				return
 			}
 
-		// Game hasn't started yet
-		const totalMinutes = Math.floor(diff / 60000)
-		const days = Math.floor(totalMinutes / (60 * 24))
-		const hours = Math.floor((totalMinutes % (60 * 24)) / 60)
-		const minutes = totalMinutes % 60
+			// Game hasn't started yet
+			const totalMinutes = Math.floor(diff / 60000)
+			const days = Math.floor(totalMinutes / (60 * 24))
+			const hours = Math.floor((totalMinutes % (60 * 24)) / 60)
+			const minutes = totalMinutes % 60
 
-		if (days > 0) {
-			setTimeString(`in ${days}d ${hours}h ${minutes}m`)
-		} else if (hours > 0) {
-			setTimeString(`in ${hours}h ${minutes}m`)
-		} else {
-			setTimeString(`in ${minutes}m`)
-		}
+			if (days > 0) {
+				setTimeString(`in ${days}d ${hours}h ${minutes}m`)
+			} else if (hours > 0) {
+				setTimeString(`in ${hours}h ${minutes}m`)
+			} else {
+				setTimeString(`in ${minutes}m`)
+			}
 		}
 
 		updateCountdown()
@@ -61,7 +61,7 @@ export default function YouMightLike({ games, league }: YouMightLikeProps) {
 	if (games.length === 0) return null
 
 	return (
-		<div className="mt-8 lg:max-w-[500px] mx-auto">
+		<div className="mt-10 lg:max-w-[500px] mx-auto">
 			<h3 className="text-xl mb-4">You might like</h3>
 			<div className="space-y-3">
 				{games.map((game) => {

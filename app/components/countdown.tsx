@@ -413,7 +413,7 @@ export default function Countdown({
 				{affiliateLinks?.tickets ||
 				affiliateLinks?.betting ||
 				affiliateLinks?.merch ? (
-					<div className="flex gap-3 mt-6 justify-center">
+					<div className="flex gap-3 mt-10 justify-center">
 						{affiliateLinks.tickets && (
 							<Button variant="affiliate" asChild size="sm">
 								<a
