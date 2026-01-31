@@ -7,7 +7,7 @@ This document outlines the plan for adding NHL support to the countdown app.
 ## Overview
 
 - **API:** Official NHL API at `https://api-web.nhle.com` (requires follow redirects)
-- **Logo Source:** `https://assets.nhle.com/logos/nhl/svg/{TEAM}_light.svg`
+- **Logo Source:** `https://assets.nhle.com/logos/nhl/svg/{TEAM}_dark.svg` (white fill for dark backgrounds)
 - **Featured Team:** Florida Panthers (FLA) - 2024 Stanley Cup Champions
 - **Total Teams:** 32
 
