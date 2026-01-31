@@ -288,7 +288,7 @@ export default function Countdown({
 										mixpanel.track('Click game preview button')
 									}}
 								>
-									Game preview <Eye className="size-5" />
+									Quick preview <Eye className="size-5" />
 								</Button>
 							</DialogTrigger>
 							<DialogContent
