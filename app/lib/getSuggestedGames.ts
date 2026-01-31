@@ -11,8 +11,9 @@ const GAME_DURATION_HOURS: Record<string, number> = {
 
 export async function getSuggestedGames(
 	league: string,
-	excludeGameId: string,
-	excludeTeamId?: number | string
+	excludeGameId?: string,
+	excludeTeamId?: number | string,
+	limit: number = 3
 ): Promise<Game[]> {
 	const LEAGUE = league.toUpperCase()
 	const now = new Date()
@@ -24,8 +25,8 @@ export async function getSuggestedGames(
 	// Filter and sort games
 	const suggestedGames = allGames
 		.filter((g) => {
-			// Skip current game
-			if (g.id === excludeGameId) return false
+			// Skip current game (if provided)
+			if (excludeGameId && g.id === excludeGameId) return false
 
 			// Skip games without full data
 			if (!g.time || !g.homeTeam || !g.awayTeam) return false
@@ -67,7 +68,7 @@ export async function getSuggestedGames(
 			// Then sort by start time (earliest first)
 			return aTime.getTime() - bTime.getTime()
 		})
-		.slice(0, 3) // Show max 3 games
+		.slice(0, limit)
 
 	return suggestedGames
 }

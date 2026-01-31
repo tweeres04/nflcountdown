@@ -22,6 +22,8 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from '~/components/ui/breadcrumb'
+import { getSuggestedGames } from '~/lib/getSuggestedGames'
+import UpcomingGames from '~/components/upcoming-games'
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	const LEAGUE = data?.LEAGUE ?? 'NFL'
@@ -110,11 +112,14 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 			  ).map(nflTeamToTeam)
 	teams = orderBy(teams, 'fullName')
 
-	return json({ LEAGUE, teams })
+	// Get upcoming games for the league
+	const upcomingGames = await getSuggestedGames(LEAGUE, undefined, undefined, 5)
+
+	return json({ LEAGUE, teams, upcomingGames })
 }
 
 export default function LeagueIndex() {
-	const { LEAGUE, teams } = useLoaderData<typeof loader>()
+	const { LEAGUE, teams, upcomingGames } = useLoaderData<typeof loader>()
 	return (
 		<>
 			<div className="flex flex-col min-h-screen md:h-auto">
@@ -174,6 +179,7 @@ export default function LeagueIndex() {
 								</p>
 							</div>
 						</div>
+						<UpcomingGames games={upcomingGames} league={LEAGUE} />
 					</div>
 				</div>
 				<Footer league={LEAGUE} />
