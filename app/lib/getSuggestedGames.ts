@@ -42,10 +42,9 @@ export async function getSuggestedGames(
 			}
 
 			const gameTime = new Date(g.time)
-			const gameEndTime = addHours(gameTime, gameDuration)
 
 			// Skip completed games
-			if (now > gameEndTime) return false
+			if (now > gameTime) return false
 
 			// Include games within next 7 days
 			const daysUntilGame =
