@@ -60,8 +60,8 @@ export default function Footer({ league, countdown = false }: FooterProps) {
 					</p>
 				)}
 				{countdown ? null : (
-					<div className="space-y-2">
-						{/* <p className="text-xs text-stone-600 mt-10">
+					<div className="space-y-2 mt-5">
+						{/* <p className="text-xs text-stone-600">
 							This site contains affiliate links. We may earn a commission if
 							you make a purchase through these links at no additional cost to
 							you.
