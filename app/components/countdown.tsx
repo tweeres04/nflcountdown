@@ -268,9 +268,7 @@ export default function Countdown({
 									.share({
 										title: `${team?.fullName ?? 'NFL Season'} Countdown`,
 										text: countdownString_,
-										url: `${
-											document.location.href
-										}?utm_source=${LEAGUE.toLowerCase()}countdown&utm_medium=share_button`,
+										url: `${document.location.href}?utm_source=teamcountdown&utm_medium=share_button`,
 									})
 									.catch(() => {})
 								mixpanel.track('click share button')
