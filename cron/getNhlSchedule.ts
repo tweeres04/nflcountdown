@@ -54,7 +54,9 @@ async function fetchTeamSchedule(teamAbbrev: string): Promise<NhlGame[]> {
 	})
 
 	if (!response.ok) {
-		console.error(`Failed to fetch schedule for ${teamAbbrev}: ${response.status}`)
+		console.error(
+			`Failed to fetch schedule for ${teamAbbrev}: ${response.status}`
+		)
 		return []
 	}
 
@@ -70,8 +72,8 @@ async function fetchAndSaveNhlSchedule() {
 		const allGames: NhlGame[] = []
 		const seenGameIds = new Set<number>()
 
-		// Fetch in batches of 8 teams to avoid overwhelming the API
-		const batchSize = 8
+		// Fetch in batches to avoid overwhelming the API
+		const batchSize = 2
 		for (let i = 0; i < nhlTeamAbbreviations.length; i += batchSize) {
 			const batch = nhlTeamAbbreviations.slice(i, i + batchSize)
 			const batchResults = await Promise.all(
@@ -90,14 +92,18 @@ async function fetchAndSaveNhlSchedule() {
 
 			// Small delay between batches
 			if (i + batchSize < nhlTeamAbbreviations.length) {
-				await new Promise((resolve) => setTimeout(resolve, 500))
+				await new Promise((resolve) => setTimeout(resolve, 1000))
 			}
 		}
 
 		// Filter out preseason games (gameType 1) and sort by date
 		const regularAndPlayoffGames = allGames
 			.filter((game) => game.gameType !== 1)
-			.sort((a, b) => new Date(a.startTimeUTC).getTime() - new Date(b.startTimeUTC).getTime())
+			.sort(
+				(a, b) =>
+					new Date(a.startTimeUTC).getTime() -
+					new Date(b.startTimeUTC).getTime()
+			)
 
 		const outputData = {
 			games: regularAndPlayoffGames,
@@ -110,8 +116,16 @@ async function fetchAndSaveNhlSchedule() {
 
 		console.log(`Successfully fetched and saved NHL schedule.`)
 		console.log(`Total unique games: ${regularAndPlayoffGames.length}`)
-		console.log(`Regular season games: ${regularAndPlayoffGames.filter((g) => g.gameType === 2).length}`)
-		console.log(`Playoff games: ${regularAndPlayoffGames.filter((g) => g.gameType === 3).length}`)
+		console.log(
+			`Regular season games: ${
+				regularAndPlayoffGames.filter((g) => g.gameType === 2).length
+			}`
+		)
+		console.log(
+			`Playoff games: ${
+				regularAndPlayoffGames.filter((g) => g.gameType === 3).length
+			}`
+		)
 	} catch (error) {
 		console.error('Error fetching or saving NHL schedule:', error)
 		process.exit(1)
