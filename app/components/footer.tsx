@@ -61,7 +61,7 @@ export default function Footer({ league, countdown = false }: FooterProps) {
 				)}
 				{countdown ? null : (
 					<div className="space-y-2">
-						<p className="text-xs text-stone-600 mt-10">
+						{/* <p className="text-xs text-stone-600 mt-10">
 							This site contains affiliate links. We may earn a commission if
 							you make a purchase through these links at no additional cost to
 							you.
@@ -74,7 +74,7 @@ export default function Footer({ league, countdown = false }: FooterProps) {
 							>
 								1-800-GAMBLER
 							</a>
-						</p>
+						</p> */}
 						<p className="text-xs text-stone-600">
 							Team names, logos, and trademarks are the property of their
 							respective owners. This site is not affiliated with or endorsed by
