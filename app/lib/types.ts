@@ -79,3 +79,24 @@ export interface MlbScheduleApi {
 		games: Array<MlbGameApi>
 	}>
 }
+
+export interface NhlTeamApi {
+	id: number
+	commonName: { default: string }
+	placeName: { default: string }
+	abbrev: string
+}
+
+export interface NhlGameApi {
+	id: number
+	gameDate: string
+	startTimeUTC: string
+	gameType: number // 1=preseason, 2=regular, 3=playoffs
+	gameState: string
+	homeTeam: NhlTeamApi & { score?: number }
+	awayTeam: NhlTeamApi & { score?: number }
+}
+
+export interface NhlScheduleApi {
+	games: NhlGameApi[]
+}

@@ -4,8 +4,9 @@ import { uniqBy, orderBy } from 'lodash-es'
 import { mlbTeamToTeam } from './mlbGameToGame'
 import { nbaTeamToTeam } from './nbaGameToGame'
 import { nflTeamToTeam } from './nflGameToGame'
+import { nhlTeamToTeam } from './nhlGameToGame'
 import { getAllGames } from './getAllGames'
-import { NbaScheduleApi, NflScheduleApi, Team } from './types'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, Team } from './types'
 
 export async function getTeamAndGames(
 	league: string | undefined,
@@ -14,7 +15,7 @@ export async function getTeamAndGames(
 	const LEAGUE = league?.toUpperCase() ?? 'NFL'
 
 	// Validate league
-	if (!['NFL', 'NBA', 'MLB'].includes(LEAGUE)) {
+	if (!['NFL', 'NBA', 'MLB', 'NHL'].includes(LEAGUE)) {
 		throw new Response(null, { status: 404 })
 	}
 
@@ -39,6 +40,12 @@ export async function getTeamAndGames(
 		const nflSchedule: NflScheduleApi = JSON.parse(raw)
 		teams = uniqBy(nflSchedule.games.map((g) => g.homeTeam), 'id').map(
 			nflTeamToTeam
+		)
+	} else if (LEAGUE === 'NHL') {
+		const raw = await readFile('data/nhl_schedule.json', 'utf-8')
+		const nhlSchedule: NhlScheduleApi = JSON.parse(raw)
+		teams = uniqBy(nhlSchedule.games.map((g) => g.homeTeam), 'id').map(
+			nhlTeamToTeam
 		)
 	}
 

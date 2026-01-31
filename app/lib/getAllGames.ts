@@ -2,7 +2,8 @@ import { readFile } from 'node:fs/promises'
 import { mlbGameToGame } from './mlbGameToGame'
 import { nbaGameToGame } from './nbaGameToGame'
 import { nflGameToGame } from './nflGameToGame'
-import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, Game } from './types'
+import { nhlGameToGame } from './nhlGameToGame'
+import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, Game } from './types'
 
 /**
  * Loads all games for a given league from JSON schedule files.
@@ -31,6 +32,12 @@ export async function getAllGames(league: string): Promise<Game[]> {
 		const raw = await readFile('data/nfl_schedule.json', 'utf-8')
 		const nflSchedule: NflScheduleApi = JSON.parse(raw)
 		return nflSchedule.games.map(nflGameToGame)
+	}
+
+	if (LEAGUE === 'NHL') {
+		const raw = await readFile('data/nhl_schedule.json', 'utf-8')
+		const nhlSchedule: NhlScheduleApi = JSON.parse(raw)
+		return nhlSchedule.games.map(nhlGameToGame)
 	}
 
 	return []

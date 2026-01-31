@@ -14,8 +14,10 @@ RUN npm ci
 
 COPY ./cron/crontab /etc/crontabs/root
 COPY ./nba_colors.json /
+COPY ./nhl_colors.json /
 COPY ./cron/getNbaSchedule.ts .
 COPY ./cron/getNflSchedule.ts .
 COPY ./cron/getMlbSchedule.ts .
+COPY ./cron/getNhlSchedule.ts .
 
 CMD ["crond", "-f", "-d", "8"]

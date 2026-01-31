@@ -1,0 +1,194 @@
+[
+	{
+		"team": "Anaheim Ducks",
+		"abbreviation": "ANA",
+		"color_1": "#F47A38",
+		"color_2": "#000000"
+	},
+	{
+		"team": "Boston Bruins",
+		"abbreviation": "BOS",
+		"color_1": "#FFB81C",
+		"color_2": "#000000"
+	},
+	{
+		"team": "Buffalo Sabres",
+		"abbreviation": "BUF",
+		"color_1": "#002654",
+		"color_2": "#FCB514"
+	},
+	{
+		"team": "Calgary Flames",
+		"abbreviation": "CGY",
+		"color_1": "#C8102E",
+		"color_2": "#F1BE48"
+	},
+	{
+		"team": "Carolina Hurricanes",
+		"abbreviation": "CAR",
+		"color_1": "#CC0000",
+		"color_2": "#000000"
+	},
+	{
+		"team": "Chicago Blackhawks",
+		"abbreviation": "CHI",
+		"color_1": "#CF0A2C",
+		"color_2": "#000000"
+	},
+	{
+		"team": "Colorado Avalanche",
+		"abbreviation": "COL",
+		"color_1": "#6F263D",
+		"color_2": "#236192"
+	},
+	{
+		"team": "Columbus Blue Jackets",
+		"abbreviation": "CBJ",
+		"color_1": "#002654",
+		"color_2": "#CE1126"
+	},
+	{
+		"team": "Dallas Stars",
+		"abbreviation": "DAL",
+		"color_1": "#006847",
+		"color_2": "#8F8F8C"
+	},
+	{
+		"team": "Detroit Red Wings",
+		"abbreviation": "DET",
+		"color_1": "#CE1126",
+		"color_2": "#FFFFFF"
+	},
+	{
+		"team": "Edmonton Oilers",
+		"abbreviation": "EDM",
+		"color_1": "#041E42",
+		"color_2": "#FF4C00"
+	},
+	{
+		"team": "Florida Panthers",
+		"abbreviation": "FLA",
+		"color_1": "#041E42",
+		"color_2": "#C8102E"
+	},
+	{
+		"team": "Los Angeles Kings",
+		"abbreviation": "LAK",
+		"color_1": "#111111",
+		"color_2": "#A2AAAD"
+	},
+	{
+		"team": "Minnesota Wild",
+		"abbreviation": "MIN",
+		"color_1": "#024930",
+		"color_2": "#A6192E"
+	},
+	{
+		"team": "Montreal Canadiens",
+		"abbreviation": "MTL",
+		"color_1": "#AF1E2D",
+		"color_2": "#192168"
+	},
+	{
+		"team": "Nashville Predators",
+		"abbreviation": "NSH",
+		"color_1": "#FFB81C",
+		"color_2": "#041E42"
+	},
+	{
+		"team": "New Jersey Devils",
+		"abbreviation": "NJD",
+		"color_1": "#CE1126",
+		"color_2": "#000000"
+	},
+	{
+		"team": "New York Islanders",
+		"abbreviation": "NYI",
+		"color_1": "#00539B",
+		"color_2": "#F47D30"
+	},
+	{
+		"team": "New York Rangers",
+		"abbreviation": "NYR",
+		"color_1": "#0038A8",
+		"color_2": "#CE1126"
+	},
+	{
+		"team": "Ottawa Senators",
+		"abbreviation": "OTT",
+		"color_1": "#C52032",
+		"color_2": "#C2912C"
+	},
+	{
+		"team": "Philadelphia Flyers",
+		"abbreviation": "PHI",
+		"color_1": "#F74902",
+		"color_2": "#000000"
+	},
+	{
+		"team": "Pittsburgh Penguins",
+		"abbreviation": "PIT",
+		"color_1": "#000000",
+		"color_2": "#FCB514"
+	},
+	{
+		"team": "San Jose Sharks",
+		"abbreviation": "SJS",
+		"color_1": "#006D75",
+		"color_2": "#000000"
+	},
+	{
+		"team": "Seattle Kraken",
+		"abbreviation": "SEA",
+		"color_1": "#001628",
+		"color_2": "#99D9D9"
+	},
+	{
+		"team": "St. Louis Blues",
+		"abbreviation": "STL",
+		"color_1": "#002F87",
+		"color_2": "#FCB514"
+	},
+	{
+		"team": "Tampa Bay Lightning",
+		"abbreviation": "TBL",
+		"color_1": "#002868",
+		"color_2": "#FFFFFF"
+	},
+	{
+		"team": "Toronto Maple Leafs",
+		"abbreviation": "TOR",
+		"color_1": "#00205B",
+		"color_2": "#FFFFFF"
+	},
+	{
+		"team": "Utah Hockey Club",
+		"abbreviation": "UTA",
+		"color_1": "#6CACE4",
+		"color_2": "#000000"
+	},
+	{
+		"team": "Vancouver Canucks",
+		"abbreviation": "VAN",
+		"color_1": "#00205B",
+		"color_2": "#00843D"
+	},
+	{
+		"team": "Vegas Golden Knights",
+		"abbreviation": "VGK",
+		"color_1": "#B4975A",
+		"color_2": "#333F42"
+	},
+	{
+		"team": "Washington Capitals",
+		"abbreviation": "WSH",
+		"color_1": "#C8102E",
+		"color_2": "#041E42"
+	},
+	{
+		"team": "Winnipeg Jets",
+		"abbreviation": "WPG",
+		"color_1": "#041E42",
+		"color_2": "#004C97"
+	}
+]

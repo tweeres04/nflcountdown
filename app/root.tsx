@@ -20,11 +20,70 @@ import {
 import { LeagueContext } from './lib/league-context'
 import { LoaderFunctionArgs } from '@remix-run/node'
 
+// NHL slug to abbreviation mapping for legacy nhlcountdown.tweeres.com redirects
+const nhlSlugToAbbrev: Record<string, string> = {
+	'devils': 'njd',
+	'islanders': 'nyi',
+	'rangers': 'nyr',
+	'flyers': 'phi',
+	'penguins': 'pit',
+	'bruins': 'bos',
+	'sabres': 'buf',
+	'canadiens': 'mtl',
+	'senators': 'ott',
+	'maple-leafs': 'tor',
+	'hurricanes': 'car',
+	'panthers': 'fla',
+	'lightning': 'tbl',
+	'capitals': 'wsh',
+	'blackhawks': 'chi',
+	'red-wings': 'det',
+	'predators': 'nsh',
+	'blues': 'stl',
+	'flames': 'cgy',
+	'avalanche': 'col',
+	'oilers': 'edm',
+	'canucks': 'van',
+	'ducks': 'ana',
+	'stars': 'dal',
+	'kings': 'lak',
+	'sharks': 'sjs',
+	'blue-jackets': 'cbj',
+	'wild': 'min',
+	'jets': 'wpg',
+	'coyotes': 'uta', // Arizona Coyotes moved to Utah in 2024
+	'golden-knights': 'vgk',
+	'kraken': 'sea',
+}
+
 export function loader({ request }: LoaderFunctionArgs) {
 	const url = new URL(request.url)
 	if (url.hostname.endsWith('.ca')) {
 		url.hostname = `teamcountdown.com`
 		return Response.redirect(url.toString(), 308)
+	}
+
+	// Handle old nhlcountdown.tweeres.com redirects (different URL structure than other leagues)
+	if (url.hostname === 'nhlcountdown.tweeres.com') {
+		const pathParts = url.pathname.split('/').filter(Boolean)
+		const teamSlug = pathParts[0]
+
+		console.log(
+			`NHL legacy redirect: ${url.hostname}${url.pathname} -> slug: ${teamSlug || 'none'}`
+		)
+
+		// Handle /{slug} and /{slug}/countdown patterns
+		if (teamSlug && nhlSlugToAbbrev[teamSlug]) {
+			const abbrev = nhlSlugToAbbrev[teamSlug]
+			const newUrl = `https://teamcountdown.com/nhl/${abbrev}`
+			console.log(`Redirecting to: ${newUrl}`)
+			return Response.redirect(newUrl, 308)
+		}
+
+		// No valid team slug, redirect to NHL index
+		const newUrl = 'https://teamcountdown.com/nhl'
+		console.log(`Redirecting to NHL index: ${newUrl}`)
+		return Response.redirect(newUrl, 308)
 	}
 
 	// Handle old {league}countdown.tweeres.com redirects

@@ -4,8 +4,9 @@ import mlbTeams from '../../mlb_teams.json'
 import { nbaTeamToTeam } from '~/lib/nbaGameToGame'
 import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
 import { nflTeamToTeam } from '~/lib/nflGameToGame'
+import { nhlTeamToTeam } from '~/lib/nhlGameToGame'
 import { readFile } from 'node:fs/promises'
-import { NbaScheduleApi, NflScheduleApi, Team } from '~/lib/types'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, Team } from '~/lib/types'
 
 export async function loader({
 	params: { league, teamAbbrev },
@@ -17,6 +18,8 @@ export async function loader({
 			? 'data/nba_schedule.json'
 			: LEAGUE === 'MLB'
 			? 'data/mlb_schedule.json'
+			: LEAGUE === 'NHL'
+			? 'data/nhl_schedule.json'
 			: 'data/nfl_schedule.json'
 
 	const scheduleRaw = await readFile(scheduleFile, 'utf-8')
@@ -34,6 +37,11 @@ export async function loader({
 			  )
 					.filter((t) => t.teamId > 0)
 					.map(nbaTeamToTeam)
+			: LEAGUE === 'NHL'
+			? uniqBy(
+					(scheduleParsed as NhlScheduleApi).games.map((g) => g.homeTeam),
+					'id'
+			  ).map(nhlTeamToTeam)
 			: uniqBy(
 					(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),
 					'id'
