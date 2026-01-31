@@ -27,9 +27,18 @@ export async function generateGamePreview(
 		  })
 		: 'Date TBD'
 
-	const prompt = `You are a bullet point game summarizer. Tell us about any exciting storylines in this ${league} matchup. Respond with only bullet points, and keep it to 3 bullet points or less:
-${team.fullName} vs ${opponentTeam?.fullName || 'TBD'}
-Game Date: ${gameDate}`
+	const prompt = `You are a bullet point game summarizer. Tell us about any exciting storylines in this matchup.
+	
+IMPORTANT:
+- Respond with only bullet points
+- Keep it to 3 bullet points or less
+- Use a casual short tone, like someone telling their buddy about the game
+- The point is to get the reader pumped about the game
+- Avoid the use of em dashes
+
+<league>${league}</league>
+<matchup>${team.fullName} vs ${opponentTeam?.fullName || 'TBD'}</matchup>
+<game-date>${gameDate}</game-date>`
 
 	try {
 		const result = await ai.models.generateContent({
