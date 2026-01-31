@@ -3,22 +3,25 @@ import { uniqBy } from 'lodash-es'
 import { mlbGameToGame, mlbTeamToTeam } from '~/lib/mlbGameToGame'
 import { nbaGameToGame, nbaTeamToTeam } from '~/lib/nbaGameToGame'
 import { nflGameToGame, nflTeamToTeam } from '~/lib/nflGameToGame'
+import { nhlGameToGame, nhlTeamToTeam } from '~/lib/nhlGameToGame'
 import { getGameSlug } from '~/lib/getGameSlug'
 import { readFile } from 'node:fs/promises'
-import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, Team, Game } from '~/lib/types'
+import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, Team, Game } from '~/lib/types'
 
 export async function loader() {
-	const leagues = ['NFL', 'MLB', 'NBA']
+	const leagues = ['NFL', 'MLB', 'NBA', 'NHL']
 
-	const [nflScheduleRaw, mlbScheduleRaw, nbaScheduleRaw] = await Promise.all([
+	const [nflScheduleRaw, mlbScheduleRaw, nbaScheduleRaw, nhlScheduleRaw] = await Promise.all([
 		readFile('data/nfl_schedule.json', 'utf-8'),
 		readFile('data/mlb_schedule.json', 'utf-8'),
 		readFile('data/nba_schedule.json', 'utf-8'),
+		readFile('data/nhl_schedule.json', 'utf-8'),
 	])
 
 	const nflSchedule = JSON.parse(nflScheduleRaw) as NflScheduleApi
 	const mlbSchedule = JSON.parse(mlbScheduleRaw) as MlbScheduleApi
 	const nbaSchedule = JSON.parse(nbaScheduleRaw) as NbaScheduleApi
+	const nhlSchedule = JSON.parse(nhlScheduleRaw) as NhlScheduleApi
 
 	let allUrls: string[] = []
 
@@ -42,6 +45,11 @@ export async function loader() {
 				  )
 						.filter((t) => t.teamId > 0)
 						.map(nbaTeamToTeam)
+				: LEAGUE === 'NHL'
+				? uniqBy(
+						nhlSchedule.games.map((g) => g.homeTeam),
+						'id'
+				  ).map(nhlTeamToTeam)
 				: uniqBy(
 						nflSchedule.games.map((g) => g.homeTeam),
 						'id'
@@ -56,6 +64,8 @@ export async function loader() {
 						.flatMap((gd) => gd.games)
 						.filter((g) => g.homeTeam.teamId > 0)
 						.map(nbaGameToGame)
+				: LEAGUE === 'NHL'
+				? nhlSchedule.games.map(nhlGameToGame)
 				: nflSchedule.games.map(nflGameToGame)
 
 		// Add league index page
