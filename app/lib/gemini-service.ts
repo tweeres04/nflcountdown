@@ -30,7 +30,7 @@ export async function generateGamePreview(
 	const prompt = `You are a bullet point game summarizer. Tell us about any exciting storylines in this matchup.
 	
 IMPORTANT:
-- Respond with only bullet points
+- Respond with only bullet points. Do not include any preamble before the bullets.
 - Keep it to 3 bullet points or less
 - Use a casual short tone, like someone telling their buddy about the game
 - The point is to get the reader pumped about the game
