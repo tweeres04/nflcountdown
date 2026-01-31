@@ -288,18 +288,7 @@ export default function Countdown({
 										mixpanel.track('Click game preview button')
 									}}
 								>
-									Game preview <Eye className="size-5" />{' '}
-									<Badge
-										className={cn(
-											lowercaseAbbreviation
-												? LEAGUE === 'NFL'
-													? `bg-${lowercaseAbbreviation} hover:bg-${lowercaseAbbreviation}-secondary`
-													: `bg-${LEAGUE.toLowerCase()}-${lowercaseAbbreviation} hover:bg-${LEAGUE.toLowerCase()}-${lowercaseAbbreviation}-secondary`
-												: undefined
-										)}
-									>
-										New
-									</Badge>
+									Game preview <Eye className="size-5" />
 								</Button>
 							</DialogTrigger>
 							<DialogContent
