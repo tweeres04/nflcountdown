@@ -57,7 +57,7 @@
 		"team": "Detroit Red Wings",
 		"abbreviation": "DET",
 		"color_1": "#CE1126",
-		"color_2": "#FFFFFF"
+		"color_2": "#A71930"
 	},
 	{
 		"team": "Edmonton Oilers",
@@ -153,13 +153,13 @@
 		"team": "Tampa Bay Lightning",
 		"abbreviation": "TBL",
 		"color_1": "#002868",
-		"color_2": "#FFFFFF"
+		"color_2": "#003D82"
 	},
 	{
 		"team": "Toronto Maple Leafs",
 		"abbreviation": "TOR",
 		"color_1": "#00205B",
-		"color_2": "#FFFFFF"
+		"color_2": "#003580"
 	},
 	{
 		"team": "Utah Hockey Club",
