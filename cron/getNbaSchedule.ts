@@ -3,8 +3,6 @@ import path, { dirname } from 'path'
 import { fileURLToPath } from 'url' // Import necessary functions
 import nbaColors from '../nba_colors.json'
 
-import Mailgun from 'mailgun.js'
-
 const nbaTeamAbbreviations = nbaColors.map((team) => team.abbreviation)
 
 // Get the directory name in ES module scope
@@ -49,27 +47,8 @@ async function fetchAndSaveNbaSchedule() {
 
 		console.log('Successfully fetched and saved NBA schedule.')
 	} catch (error) {
-		const mailgun = new Mailgun(FormData)
-
-		if (!process.env.MAILGUN_API_KEY) {
-			throw 'MAILGUN_API_KEY not found'
-		}
-
-		const mg = mailgun.client({
-			username: 'api',
-			key: process.env.MAILGUN_API_KEY,
-		})
-
-		mg.messages.create('mg.tweeres.com', {
-			from: `errors@teamcountdown.tweeres.ca`,
-			to: 'tweeres04@gmail.com',
-			subject: `Error fetching NBA schedule`,
-			html: 'There was an error fetching the NBA schedule. Please check the logs for more details.',
-			'o:tag': ['nba schedule fetch error'],
-		})
-
 		console.error('Error fetching or saving NBA schedule:', error)
-		process.exit(1) // Exit with error code
+		process.exit(1)
 	}
 }
 

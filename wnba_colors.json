@@ -1,0 +1,80 @@
+[
+	{
+		"team": "Las Vegas Aces",
+		"abbreviation": "LVA",
+		"color_1": "#A7A8AA",
+		"color_2": "#000000"
+	},
+	{
+		"team": "Atlanta Dream",
+		"abbreviation": "ATL",
+		"color_1": "#E31837",
+		"color_2": "#0C2340"
+	},
+	{
+		"team": "Indiana Fever",
+		"abbreviation": "IND",
+		"color_1": "#002D62",
+		"color_2": "#E03A3E"
+	},
+	{
+		"team": "New York Liberty",
+		"abbreviation": "NYL",
+		"color_1": "#6ECEB2",
+		"color_2": "#000000"
+	},
+	{
+		"team": "Minnesota Lynx",
+		"abbreviation": "MIN",
+		"color_1": "#0C2340",
+		"color_2": "#78BE20"
+	},
+	{
+		"team": "Phoenix Mercury",
+		"abbreviation": "PHX",
+		"color_1": "#201747",
+		"color_2": "#E56020"
+	},
+	{
+		"team": "Washington Mystics",
+		"abbreviation": "WAS",
+		"color_1": "#002B5C",
+		"color_2": "#E03A3E"
+	},
+	{
+		"team": "Chicago Sky",
+		"abbreviation": "CHI",
+		"color_1": "#5091CD",
+		"color_2": "#FFD520"
+	},
+	{
+		"team": "Los Angeles Sparks",
+		"abbreviation": "LAS",
+		"color_1": "#552583",
+		"color_2": "#FDB927"
+	},
+	{
+		"team": "Seattle Storm",
+		"abbreviation": "SEA",
+		"color_1": "#2C5234",
+		"color_2": "#FBE122"
+	},
+	{
+		"team": "Connecticut Sun",
+		"abbreviation": "CON",
+		"color_1": "#F05023",
+		"color_2": "#002B5C"
+	},
+	{
+		"team": "Golden State Valkyries",
+		"abbreviation": "GSV",
+		"color_1": "#1D428A",
+		"color_2": "#FFC72C"
+	},
+	{
+		"team": "Dallas Wings",
+		"abbreviation": "DAL",
+		"color_1": "#003DA5",
+		"color_2": "#C4D600"
+	}
+]

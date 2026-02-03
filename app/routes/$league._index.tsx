@@ -8,8 +8,9 @@ import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
 import { nbaTeamToTeam } from '~/lib/nbaGameToGame'
 import { nflTeamToTeam } from '~/lib/nflGameToGame'
 import { nhlTeamToTeam } from '~/lib/nhlGameToGame'
+import { wnbaTeamToTeam } from '~/lib/wnbaGameToGame'
 import { readFile } from 'node:fs/promises'
-import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, Team } from '~/lib/types'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, Team } from '~/lib/types'
 import {
 	generateSportsOrganizationSchema,
 	generateBreadcrumbSchema,
@@ -81,7 +82,7 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 	const LEAGUE = league!.toUpperCase()
 
 	// Validate league
-	if (!['NFL', 'NBA', 'MLB', 'NHL'].includes(LEAGUE)) {
+	if (!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA'].includes(LEAGUE)) {
 		throw new Response(null, { status: 404 })
 	}
 
@@ -92,6 +93,8 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 			? 'data/mlb_schedule.json'
 			: LEAGUE === 'NHL'
 			? 'data/nhl_schedule.json'
+			: LEAGUE === 'WNBA'
+			? 'data/wnba_schedule.json'
 			: 'data/nfl_schedule.json'
 
 	const scheduleRaw = await readFile(scheduleFile, 'utf-8')
@@ -114,6 +117,15 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 					(scheduleParsed as NhlScheduleApi).games.map((g) => g.homeTeam),
 					'id'
 			  ).map(nhlTeamToTeam)
+			: LEAGUE === 'WNBA'
+			? uniqBy(
+					(scheduleParsed as WnbaScheduleApi).leagueSchedule.gameDates
+						.flatMap((gd) => gd.games)
+						.map((g) => g.homeTeam),
+					'teamId'
+			  )
+					.filter((t) => t.teamId > 0)
+					.map(wnbaTeamToTeam)
 			: uniqBy(
 					(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),
 					'id'
@@ -167,15 +179,17 @@ export default function LeagueIndex() {
 											? '/hero.png'
 											: `/${LEAGUE.toLowerCase()}-hero.png`
 									}
-									alt={`Screenshot of ${
-										LEAGUE === 'MLB'
-											? 'Texas Rangers'
-											: LEAGUE === 'NBA'
-											? 'Boston Celtics'
-											: LEAGUE === 'NHL'
-											? 'Florida Panthers'
-											: 'Kansas City Chiefs'
-									} countdown in action.`}
+								alt={`Screenshot of ${
+									LEAGUE === 'MLB'
+										? 'Texas Rangers'
+										: LEAGUE === 'NBA'
+										? 'Boston Celtics'
+										: LEAGUE === 'NHL'
+										? 'Florida Panthers'
+										: LEAGUE === 'WNBA'
+										? 'Indiana Fever'
+										: 'Kansas City Chiefs'
+								} countdown in action.`}
 									className="rounded-sm"
 								/>
 								<p className="text-sm">
@@ -186,6 +200,8 @@ export default function LeagueIndex() {
 										? 'Boston Celtics'
 										: LEAGUE === 'NHL'
 										? 'Florida Panthers'
+										: LEAGUE === 'WNBA'
+										? 'Indiana Fever'
 										: 'Kansas City Chiefs'}{' '}
 									countdown in action.
 								</p>

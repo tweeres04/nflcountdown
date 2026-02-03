@@ -101,3 +101,7 @@ export interface NhlGameApi {
 export interface NhlScheduleApi {
 	games: NhlGameApi[]
 }
+
+// WNBA uses the same API format as NBA
+export type WnbaTeamApi = NbaTeamApi
+export type WnbaScheduleApi = NbaScheduleApi

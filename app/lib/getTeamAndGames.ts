@@ -5,8 +5,9 @@ import { mlbTeamToTeam } from './mlbGameToGame'
 import { nbaTeamToTeam } from './nbaGameToGame'
 import { nflTeamToTeam } from './nflGameToGame'
 import { nhlTeamToTeam } from './nhlGameToGame'
+import { wnbaTeamToTeam } from './wnbaGameToGame'
 import { getAllGames } from './getAllGames'
-import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, Team } from './types'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, Team } from './types'
 
 export async function getTeamAndGames(
 	league: string | undefined,
@@ -15,7 +16,7 @@ export async function getTeamAndGames(
 	const LEAGUE = league?.toUpperCase() ?? 'NFL'
 
 	// Validate league
-	if (!['NFL', 'NBA', 'MLB', 'NHL'].includes(LEAGUE)) {
+	if (!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA'].includes(LEAGUE)) {
 		throw new Response(null, { status: 404 })
 	}
 
@@ -47,6 +48,17 @@ export async function getTeamAndGames(
 		teams = uniqBy(nhlSchedule.games.map((g) => g.homeTeam), 'id').map(
 			nhlTeamToTeam
 		)
+	} else if (LEAGUE === 'WNBA') {
+		const raw = await readFile('data/wnba_schedule.json', 'utf-8')
+		const wnbaSchedule: WnbaScheduleApi = JSON.parse(raw)
+		teams = uniqBy(
+			wnbaSchedule.leagueSchedule.gameDates
+				.flatMap((gd) => gd.games)
+				.map((g) => g.homeTeam),
+			'teamId'
+		)
+			.filter((t) => t.teamId > 0)
+			.map(wnbaTeamToTeam)
 	}
 
 	teams = orderBy(teams, 'fullName')

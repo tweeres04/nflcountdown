@@ -5,7 +5,7 @@ import Footer from '~/components/footer'
 
 export const meta: MetaFunction = () => {
 	const title = `When is the next game? - Team Countdown`
-	const description = `The fastest and prettiest way to check the next NFL, NBA, MLB, or NHL game. Launches instantly from your home screen.`
+	const description = `The fastest and prettiest way to check the next NFL, NBA, WNBA, MLB, or NHL game. Launches instantly from your home screen.`
 	const url = `https://teamcountdown.com`
 
 	const metaTags: any[] = [
@@ -42,6 +42,7 @@ export default function Index() {
 	const leagues = [
 		{ code: 'nfl', name: 'NFL', fullName: 'National Football League' },
 		{ code: 'nba', name: 'NBA', fullName: 'National Basketball Association' },
+		{ code: 'wnba', name: 'WNBA', fullName: "Women's National Basketball Association" },
 		{ code: 'mlb', name: 'MLB', fullName: 'Major League Baseball' },
 		{ code: 'nhl', name: 'NHL', fullName: 'National Hockey League' },
 	]
