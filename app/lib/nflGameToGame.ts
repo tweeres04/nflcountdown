@@ -11,12 +11,15 @@ export function nflTeamToTeam(nflTeam: NflTeamApi): Team {
 	}
 }
 
-export function nflGameToGame(nflGame: NflScheduleApi['games'][0]): Game {
+export function nflGameToGame(nflGame: any): Game {
+	const broadcast = nflGame.broadcastInfo?.homeNetworkChannels?.join(', ') || null
+	
 	return {
 		id: nflGame.id,
 		time: nflGame.time,
 		homeTeam: nflTeamToTeam(nflGame.homeTeam),
 		awayTeam: nflTeamToTeam(nflGame.awayTeam),
 		startTimeTbd: false,
+		broadcast,
 	}
 }

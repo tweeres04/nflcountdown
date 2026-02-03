@@ -37,17 +37,39 @@ export function nbaTeamToTeam({
 	}
 }
 
-export function nbaGameToGame({
-	gameId,
-	gameDateTimeUTC,
-	homeTeam,
-	awayTeam,
-}: NbaScheduleApi['leagueSchedule']['gameDates'][0]['games'][0]): Game {
+/**
+ * Transforms an NBA API game object to the unified Game type.
+ * @param game - Raw game object from NBA API
+ * @param viewingTeamAbbrev - Optional team abbreviation (e.g., 'LAL') of the team page being viewed.
+ *                            Used to order broadcast networks - viewing team's local networks shown before opponent's.
+ *                            If not provided, defaults to home team's networks first.
+ */
+export function nbaGameToGame(game: any, viewingTeamAbbrev?: string): Game {
+	// Determine if viewing team is home or away
+	const isViewingHome = viewingTeamAbbrev === game.homeTeam.teamTricode
+	
+	// Extract all broadcast types
+	const national = game.broadcasters?.nationalTvBroadcasters?.map((b: any) => b.broadcasterDisplay).filter(Boolean) || []
+	const home = game.broadcasters?.homeTvBroadcasters?.map((b: any) => b.broadcasterDisplay).filter(Boolean) || []
+	const away = game.broadcasters?.awayTvBroadcasters?.map((b: any) => b.broadcasterDisplay).filter(Boolean) || []
+	
+	// Order: National first, then viewing team's local, then opponent's local
+	// If no viewing team, default to home first
+	const ordered = viewingTeamAbbrev === undefined
+		? [...national, ...home, ...away]
+		: isViewingHome
+			? [...national, ...home, ...away]
+			: [...national, ...away, ...home]
+	
+	// Dedupe while preserving order
+	const broadcast = ordered.length > 0 ? [...new Set(ordered)].join(', ') : null
+	
 	return {
-		id: gameId,
-		time: gameDateTimeUTC,
-		homeTeam: nbaTeamToTeam(homeTeam),
-		awayTeam: nbaTeamToTeam(awayTeam),
+		id: game.gameId,
+		time: game.gameDateTimeUTC,
+		homeTeam: nbaTeamToTeam(game.homeTeam),
+		awayTeam: nbaTeamToTeam(game.awayTeam),
 		startTimeTbd: false,
+		broadcast,
 	}
 }

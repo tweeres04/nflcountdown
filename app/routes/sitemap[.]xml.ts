@@ -64,9 +64,9 @@ export async function loader() {
 						.flatMap((gd) => gd.games)
 						.filter((g) => g.homeTeam.teamId > 0)
 						.map(nbaGameToGame)
-				: LEAGUE === 'NHL'
-				? nhlSchedule.games.map(nhlGameToGame)
-				: nflSchedule.games.map(nflGameToGame)
+			: LEAGUE === 'NHL'
+			? nhlSchedule.games.map(g => nhlGameToGame(g))
+			: nflSchedule.games.map(nflGameToGame)
 
 		// Add league index page
 		allUrls.push(`    <url>

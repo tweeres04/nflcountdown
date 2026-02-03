@@ -257,9 +257,12 @@ export default function Countdown({
 					<div className="text-3xl" suppressHydrationWarning>
 						{countdownString_}
 					</div>
-					<div>
+					<div className="space-y-1">
 						{gameDateInfo}
 						{gameMatchupInfo}
+						{game?.broadcast && (
+							<div className="text-sm">Watch: {game.broadcast}</div>
+						)}
 					</div>
 				</div>
 

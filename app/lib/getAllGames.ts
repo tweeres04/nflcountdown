@@ -8,8 +8,12 @@ import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, Game } 
 /**
  * Loads all games for a given league from JSON schedule files.
  * Handles league-specific filtering and transformations.
+ * @param league - League identifier (e.g., 'NFL', 'NBA', 'NHL', 'MLB')
+ * @param viewingTeamAbbrev - Optional team abbreviation for the team page being viewed.
+ *                            Currently only used by NHL to order broadcast networks appropriately
+ *                            (Canadian networks first for Canadian teams, US networks first for US teams).
  */
-export async function getAllGames(league: string): Promise<Game[]> {
+export async function getAllGames(league: string, viewingTeamAbbrev?: string): Promise<Game[]> {
 	const LEAGUE = league.toUpperCase()
 
 	if (LEAGUE === 'MLB') {
@@ -25,7 +29,7 @@ export async function getAllGames(league: string): Promise<Game[]> {
 			.flatMap((gd) => gd.games)
 			.filter((g) => g.homeTeam.teamId > 0)
 			.filter((g) => g.gameLabel !== 'Preseason')
-			.map(nbaGameToGame)
+			.map(g => nbaGameToGame(g, viewingTeamAbbrev))
 	}
 
 	if (LEAGUE === 'NFL') {
@@ -37,7 +41,7 @@ export async function getAllGames(league: string): Promise<Game[]> {
 	if (LEAGUE === 'NHL') {
 		const raw = await readFile('data/nhl_schedule.json', 'utf-8')
 		const nhlSchedule: NhlScheduleApi = JSON.parse(raw)
-		return nhlSchedule.games.map(nhlGameToGame)
+		return nhlSchedule.games.map(g => nhlGameToGame(g, viewingTeamAbbrev))
 	}
 
 	return []

@@ -15,6 +15,7 @@ export type Game = {
 	homeTeam: Team | null
 	awayTeam: Team | null
 	startTimeTbd: boolean | null
+	broadcast?: string | null
 }
 
 // API Types for raw data parsing

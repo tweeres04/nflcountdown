@@ -60,7 +60,7 @@ export async function getTeamAndGames(
 	}
 
 	// Load all games and filter to this team's games
-	const allGames = await getAllGames(LEAGUE)
+	const allGames = await getAllGames(LEAGUE, teamAbbrev?.toUpperCase())
 	const games = allGames.filter(
 		(g) => g.homeTeam?.id === team.id || g.awayTeam?.id === team.id
 	)
