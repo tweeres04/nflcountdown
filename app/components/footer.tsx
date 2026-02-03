@@ -19,47 +19,9 @@ export default function Footer({ league, countdown = false }: FooterProps) {
 						className={cn('content-link', countdown ? null : 'stone')}
 					>
 						By Tyler Weeres
-					</a>
-				</p>
-				{league && (
-					<p className="mt-2">
-						{league === 'MLB' ? (
-							<>
-								Baseball icons created by{' '}
-								<a
-									href="https://www.flaticon.com/free-icons/baseball"
-									title="baseball icons"
-									className={cn('content-link', countdown ? null : 'stone')}
-								>
-									Freepik - Flaticon
-								</a>
-							</>
-						) : league === 'NBA' ? (
-							<>
-								Basketball icons created by{' '}
-								<a
-									href="https://www.flaticon.com/free-icons/basketball"
-									title="basketball icons"
-									className={cn('content-link', countdown ? null : 'stone')}
-								>
-									Freepik - Flaticon
-								</a>
-							</>
-						) : (
-							<>
-								American football icon created by{' '}
-								<a
-									href="https://www.flaticon.com/free-icons/american-football"
-									title="american football icons"
-									className={cn('content-link', countdown ? null : 'stone')}
-								>
-									Smashicons - Flaticon
-								</a>
-							</>
-						)}
-					</p>
-				)}
-				{countdown ? null : (
+			</a>
+		</p>
+		{countdown ? null : (
 					<div className="space-y-2 mt-5">
 						{/* <p className="text-xs text-stone-600">
 							This site contains affiliate links. We may earn a commission if
@@ -75,11 +37,11 @@ export default function Footer({ league, countdown = false }: FooterProps) {
 								1-800-GAMBLER
 							</a>
 						</p> */}
-						<p className="text-xs text-stone-600">
-							Team names, logos, and trademarks are the property of their
-							respective owners. This site is not affiliated with or endorsed by
-							the NFL, NBA, MLB, or any team.
-						</p>
+					<p className="text-xs text-stone-600">
+						Team names, logos, and trademarks are the property of their
+						respective owners. This site is not affiliated with or endorsed by
+						the NFL, NBA, WNBA, MLB, NHL, or any team.
+					</p>
 					</div>
 				)}
 			</div>

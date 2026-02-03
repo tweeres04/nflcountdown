@@ -160,11 +160,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			? `/logos/${
 					LEAGUE === 'NFL' ? '' : `${lowercaseLeague}/`
 			  }${lowercaseAbbreviation}.${filetype}`
-			: LEAGUE === 'MLB'
-			? `/baseball.${filetype}`
-			: LEAGUE === 'NBA'
-			? `basketball.${filetype}`
-			: `/football.${filetype}`
+			: LEAGUE
+			? `/logos/${lowercaseLeague}.${filetype}`
+			: `/logos/nfl.${filetype}`
 
 	const { deferredPrompt } = useDeferredInstallPrompt()
 
