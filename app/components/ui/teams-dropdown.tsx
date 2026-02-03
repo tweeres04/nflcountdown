@@ -41,27 +41,22 @@ export default function TeamsDropdown({
 						<a href="/nfl/season">2026 NFL Season</a>
 					</DropdownMenuItem>
 				) : null}
-				<DropdownMenuSub>
-					<DropdownMenuSubTrigger
-						className={`data-[state=open]:bg-${color} focus:bg-${color}`}
-					>
-						More sports
-					</DropdownMenuSubTrigger>
-					<DropdownMenuSubContent className={contentClasses}>
-						{['NFL', 'MLB', 'NBA'].map((league) =>
-							LEAGUE !== league ? (
-								<DropdownMenuItem asChild key={league}>
-									<a href={`/${league.toLowerCase()}`}>{league} Countdown</a>
-								</DropdownMenuItem>
-							) : null
-						)}
-						{LEAGUE !== 'NHL' && (
-							<DropdownMenuItem asChild>
-								<a href="https://nhlcountdown.tweeres.com">NHL Countdown</a>
+			<DropdownMenuSub>
+				<DropdownMenuSubTrigger
+					className={`data-[state=open]:bg-${color} focus:bg-${color}`}
+				>
+					More leagues
+				</DropdownMenuSubTrigger>
+				<DropdownMenuSubContent className={contentClasses}>
+					{['NFL', 'MLB', 'NBA', 'WNBA', 'NHL'].map((league) =>
+						LEAGUE !== league ? (
+							<DropdownMenuItem asChild key={league}>
+								<a href={`/${league.toLowerCase()}`}>{league}</a>
 							</DropdownMenuItem>
-						)}
-					</DropdownMenuSubContent>
-				</DropdownMenuSub>
+						) : null
+					)}
+				</DropdownMenuSubContent>
+			</DropdownMenuSub>
 				{teams.map((t) => (
 					<DropdownMenuItem asChild key={t.abbreviation}>
 						<a href={`/${lowercaseLeague}/${t.abbreviation.toLowerCase()}`}>
