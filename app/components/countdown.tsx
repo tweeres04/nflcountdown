@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, useRef, Suspense } from 'react'
+import { useContext, useState, useEffect, useRef, Suspense, Fragment } from 'react'
 import { Game, Team } from '~/lib/types'
 import TeamsDropdown from './ui/teams-dropdown'
 import { Button } from './ui/button'
@@ -188,8 +188,8 @@ export default function Countdown({
 					<Breadcrumb className="mb-3">
 						<BreadcrumbList className="text-white/70">
 							{breadcrumbItems.map((item, index) => (
-								<>
-									<BreadcrumbItem key={`item-${index}`}>
+								<Fragment key={index}>
+									<BreadcrumbItem>
 										{item.href ? (
 											<BreadcrumbLink
 												href={item.href}
@@ -204,12 +204,9 @@ export default function Countdown({
 										)}
 									</BreadcrumbItem>
 									{index < breadcrumbItems.length - 1 && (
-										<BreadcrumbSeparator
-											key={`sep-${index}`}
-											className="text-white/50"
-										/>
+										<BreadcrumbSeparator className="text-white/50" />
 									)}
-								</>
+								</Fragment>
 							))}
 						</BreadcrumbList>
 					</Breadcrumb>
