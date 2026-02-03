@@ -190,7 +190,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 					/>
 				) : null}
 				{isSeasonCountdown ? (
-					<link rel="manifest" href="/nfl/season/manifest.json" />
+					<link rel="manifest" href="/nfl-season-manifest.json" />
 				) : null}
 				<Meta />
 				<Links />
