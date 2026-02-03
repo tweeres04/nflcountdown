@@ -1,20 +1,14 @@
 import { json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import {
-	addDays,
-	getYear,
-	nextMonday,
-	startOfMonth,
-	isFuture,
-	isMonday,
-} from 'date-fns'
+import { getYear } from 'date-fns'
 import Countdown from '~/components/countdown'
 import { getTeamAndGames } from '~/lib/getTeamAndGames'
 import { generateBreadcrumbSchema } from '~/lib/schema-helpers'
+import { getNflSeasonStartDate } from '~/lib/getNflSeasonStartDate'
 
 export function meta() {
 	const title = 'How Many Days Till NFL Kickoff? Live NFL Season Countdown'
-	const description = `Find out exactly how many days until NFL season starts. Live countdown showing the precise days, hours, and minutes until NFL football returns in ${getNextSeasonStartDate().getFullYear()}.`
+	const description = `Find out exactly how many days until NFL season starts. Live countdown showing the precise days, hours, and minutes until NFL football returns in ${getNflSeasonStartDate().getFullYear()}.`
 	const url = 'https://teamcountdown.com/nfl/season'
 
 	const breadcrumbItems = [
@@ -73,34 +67,6 @@ export function meta() {
 	return metaTags
 }
 
-function getNextSeasonStartDate() {
-	const today = new Date()
-	const currentYear = getYear(today)
-
-	const firstDayOfSeptember = new Date(currentYear, 8, 1)
-
-	// First Monday of September in currentYear (Labor day in USA)
-	const firstMondayOfSeptember = isMonday(firstDayOfSeptember)
-		? firstDayOfSeptember
-		: nextMonday(startOfMonth(firstDayOfSeptember))
-
-	// Weekend following the first Monday (Thursday)
-	let seasonStartDate = addDays(firstMondayOfSeptember, 3)
-
-	// If this date has already passed, use next year
-	if (!isFuture(seasonStartDate)) {
-		const firstDayOfSeptemberNextYear = new Date(currentYear + 1, 8, 1)
-		seasonStartDate = isMonday(firstDayOfSeptemberNextYear)
-			? firstDayOfSeptemberNextYear
-			: nextMonday(startOfMonth(firstDayOfSeptemberNextYear))
-		seasonStartDate = addDays(seasonStartDate, 3)
-	}
-
-	// Set time to 8:15 PM EDT (UTC-4)
-	seasonStartDate.setUTCHours(20 + 4, 15, 0, 0) // Adding 4 hours to convert from EDT to UTC
-	return seasonStartDate
-}
-
 export async function loader() {
 	// Season countdown is only for NFL
 	const { teams } = await getTeamAndGames('nfl', 'KC') // Todo: Shouldn't need to pass a team here
@@ -121,7 +87,7 @@ export async function loader() {
 export default function SeasonCountdown() {
 	const { teams, breadcrumbItems } = useLoaderData<typeof loader>()
 
-	const seasonStartDate = getNextSeasonStartDate()
+	const seasonStartDate = getNflSeasonStartDate()
 
 	// Create a fake game object for the countdown component
 	const seasonGame = {

@@ -143,10 +143,11 @@ export default function Countdown({
 
 	const [showFullSchedule, setShowFullSchedule] = useState(false)
 	const lowercaseAbbreviation = team?.abbreviation?.toLowerCase()
-	const logo =
-		LEAGUE === 'NFL'
-			? `/logos/${lowercaseAbbreviation ?? 'nfl'}.svg`
+	const logo = lowercaseAbbreviation
+		? LEAGUE === 'NFL'
+			? `/logos/${lowercaseAbbreviation}.svg`
 			: `/logos/${LEAGUE.toLowerCase()}/${lowercaseAbbreviation}.svg`
+		: `/logos/${LEAGUE.toLowerCase()}.svg`
 
 	const gameDateInfo = game?.time ? (
 		<div suppressHydrationWarning>
@@ -452,7 +453,7 @@ export default function Countdown({
 							: `bg-${LEAGUE.toLowerCase()}-${lowercaseAbbreviation}`
 						: 'bg-[#013369]'
 				}
-				countdownName={team?.fullName ?? 'NFL Season'}
+				countdownName={team?.fullName ?? `${LEAGUE} Season`}
 			/>
 		</>
 	)
