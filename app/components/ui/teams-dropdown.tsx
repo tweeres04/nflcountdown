@@ -57,7 +57,7 @@ export default function TeamsDropdown({
 			{/* Visible dropdown menu for users */}
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
-				<DropdownMenuContent className={contentClasses} forceMount>
+				<DropdownMenuContent className={contentClasses}>
 					{LEAGUE === 'NFL' ? (
 						<DropdownMenuItem asChild>
 							<a href="/nfl/season">2026 NFL Season</a>
@@ -69,7 +69,7 @@ export default function TeamsDropdown({
 						>
 							More leagues
 						</DropdownMenuSubTrigger>
-						<DropdownMenuSubContent className={contentClasses} forceMount>
+						<DropdownMenuSubContent className={contentClasses}>
 							{['NFL', 'MLB', 'NBA', 'WNBA', 'NHL', 'MLS'].map((league) =>
 								LEAGUE !== league ? (
 									<DropdownMenuItem asChild key={league}>
