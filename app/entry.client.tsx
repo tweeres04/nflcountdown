@@ -12,6 +12,7 @@ import mixpanel from 'mixpanel-browser'
 declare global {
 	interface Window {
 		mixpanelToken: string
+		gtag: (...args: unknown[]) => void
 	}
 }
 
@@ -46,3 +47,14 @@ mixpanel.init(window.mixpanelToken, {
 	record_sessions_percent: 100,
 	record_mask_text_selector: '',
 })
+
+// Track whether app is opened in standalone mode (added to home screen)
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+
+// Register as Mixpanel super property (attached to all events)
+mixpanel.register({ isStandalone })
+
+// Add to GA as event parameter (attached to all events)
+if (typeof window.gtag === 'function') {
+	window.gtag('set', { is_standalone: isStandalone })
+}
