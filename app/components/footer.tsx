@@ -13,22 +13,21 @@ export default function Footer({ league, countdown = false }: FooterProps) {
 			)}
 		>
 			<div className="p-4 max-w-[500px] lg:max-w-[750px] mx-auto text-sm">
-				<p>
+				<p className={cn('flex', countdown ? 'justify-around' : 'gap-3')}>
 					<a
 						href="/"
 						className={cn('content-link', countdown ? null : 'stone')}
 					>
 						Team Countdown
 					</a>
-					{' · '}
 					<a
 						href="https://tweeres.ca"
 						className={cn('content-link', countdown ? null : 'stone')}
 					>
 						By Tyler Weeres
 					</a>
-		</p>
-		{countdown ? null : (
+				</p>
+				{countdown ? null : (
 					<div className="space-y-2 mt-5">
 						{/* <p className="text-xs text-stone-600">
 							This site contains affiliate links. We may earn a commission if
@@ -44,11 +43,11 @@ export default function Footer({ league, countdown = false }: FooterProps) {
 								1-800-GAMBLER
 							</a>
 						</p> */}
-					<p className="text-xs text-stone-600">
-						Team names, logos, and trademarks are the property of their
-						respective owners. This site is not affiliated with or endorsed by
-						the NFL, NBA, WNBA, MLB, NHL, MLS, or any team.
-					</p>
+						<p className="text-xs text-stone-600">
+							Team names, logos, and trademarks are the property of their
+							respective owners. This site is not affiliated with or endorsed by
+							the NFL, NBA, WNBA, MLB, NHL, MLS, or any team.
+						</p>
 					</div>
 				)}
 			</div>
