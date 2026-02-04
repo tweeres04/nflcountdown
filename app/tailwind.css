@@ -8,6 +8,10 @@
 	}
 }
 
+h1, h2, h3, h4, h5, h6 {
+	letter-spacing: -0.02em;
+}
+
 @layer components {
 	.content-link {
 		@apply underline decoration-white/50 hover:decoration-white transition-colors;
