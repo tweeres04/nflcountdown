@@ -6,8 +6,9 @@ import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
 import { nflTeamToTeam } from '~/lib/nflGameToGame'
 import { nhlTeamToTeam } from '~/lib/nhlGameToGame'
 import { wnbaTeamToTeam } from '~/lib/wnbaGameToGame'
+import { cplTeamToTeam } from '~/lib/cplGameToGame'
 import { readFile } from 'node:fs/promises'
-import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, Team } from '~/lib/types'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, Team } from '~/lib/types'
 
 export async function loader({
 	params: { league, teamAbbrev },
@@ -23,6 +24,8 @@ export async function loader({
 			? 'data/nhl_schedule.json'
 			: LEAGUE === 'WNBA'
 			? 'data/wnba_schedule.json'
+			: LEAGUE === 'CPL'
+			? 'data/cpl_schedule.json'
 			: 'data/nfl_schedule.json'
 
 	const scheduleRaw = await readFile(scheduleFile, 'utf-8')
@@ -54,6 +57,11 @@ export async function loader({
 			  )
 					.filter((t) => t.teamId > 0)
 					.map(wnbaTeamToTeam)
+			: LEAGUE === 'CPL'
+			? uniqBy(
+					(scheduleParsed as CplScheduleApi).matches.flatMap((m) => [m.home, m.away]),
+					'teamId'
+			  ).map(cplTeamToTeam)
 			: uniqBy(
 					(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),
 					'id'
@@ -69,6 +77,9 @@ export async function loader({
 		throw new Response(null, { status: 404 })
 	}
 
+	// Determine icon size based on league
+	const iconSize = LEAGUE === 'WNBA' ? '500x500' : '512x512'
+
 	return json({
 		name: `${team.fullName} Countdown`,
 		short_name: team.nickName,
@@ -77,7 +88,8 @@ export async function loader({
 				src: `/logos/${
 					LEAGUE === 'NFL' ? '' : `${LEAGUE?.toLowerCase()}/`
 				}${lowercaseAbbreviation}.png`,
-				sizes: 'any',
+				sizes: iconSize,
+				type: 'image/png',
 			},
 		],
 		start_url: `/${league?.toLowerCase()}/${lowercaseAbbreviation}/`,
