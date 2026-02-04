@@ -182,6 +182,9 @@ export default function LeagueIndex() {
 									A fast, pretty web app that counts down to the next {LEAGUE}{' '}
 									game. Saves to your home screen for immediate access.
 								</p>
+								<a href="#teams" className="content-link stone inline-flex items-center gap-1">
+									Choose your team <span aria-hidden="true">↓</span>
+								</a>
 							</div>
 						</div>
 						<div>
@@ -228,7 +231,7 @@ export default function LeagueIndex() {
 								</p>
 							</div>
 						</div>
-						<div className="space-y-3">
+						<div id="teams" className="space-y-3">
 							<h3 className="text-xl">Choose your team:</h3>
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 								{teams.map((team) => (
