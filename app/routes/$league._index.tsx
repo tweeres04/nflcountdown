@@ -178,13 +178,24 @@ export default function LeagueIndex() {
 								<h2 className="text-2xl">
 									Get pumped for your team's next game!
 								</h2>
-								<p>
-									A fast, pretty web app that counts down to the next {LEAGUE}{' '}
-									game. Saves to your home screen for immediate access.
-								</p>
-								<a href="#teams" className="content-link stone inline-flex items-center gap-1">
-									Choose your team <span aria-hidden="true">↓</span>
-								</a>
+							<p>
+								A fast, pretty web app that counts down to the next {LEAGUE}{' '}
+								game. Saves to your home screen for immediate access.
+							</p>
+							<a 
+								href="#teams" 
+								onClick={(e) => {
+									e.preventDefault()
+									const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+									document.getElementById('teams')?.scrollIntoView({ 
+										behavior: prefersReducedMotion ? 'auto' : 'smooth', 
+										block: 'start' 
+									})
+								}}
+								className="content-link stone inline-flex items-center gap-1"
+							>
+								Choose your team <span aria-hidden="true">↓</span>
+							</a>
 							</div>
 						</div>
 						<div>
