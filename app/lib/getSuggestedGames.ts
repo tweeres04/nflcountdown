@@ -1,13 +1,6 @@
-import { addHours, differenceInMilliseconds } from 'date-fns'
+import { differenceInMilliseconds } from 'date-fns'
 import { getAllGames } from './getAllGames'
 import { Game } from './types'
-
-// Game duration by league (in hours)
-const GAME_DURATION_HOURS: Record<string, number> = {
-	NFL: 3,
-	NBA: 3,
-	MLB: 3,
-}
 
 export async function getSuggestedGames(
 	league: string,
@@ -17,7 +10,6 @@ export async function getSuggestedGames(
 ): Promise<Game[]> {
 	const LEAGUE = league.toUpperCase()
 	const now = new Date()
-	const gameDuration = GAME_DURATION_HOURS[LEAGUE] || 3
 
 	// Load all games for the league
 	const allGames = await getAllGames(LEAGUE)
@@ -43,7 +35,7 @@ export async function getSuggestedGames(
 
 			const gameTime = new Date(g.time)
 
-			// Skip completed games
+			// Skip completed and in progress games
 			if (now > gameTime) return false
 
 			// Include games within next 7 days
@@ -54,15 +46,6 @@ export async function getSuggestedGames(
 		.sort((a, b) => {
 			const aTime = new Date(a.time!)
 			const bTime = new Date(b.time!)
-			const aEndTime = addHours(aTime, gameDuration)
-			const bEndTime = addHours(bTime, gameDuration)
-
-			// In progress games first
-			const aInProgress = now >= aTime && now <= aEndTime
-			const bInProgress = now >= bTime && now <= bEndTime
-
-			if (aInProgress && !bInProgress) return -1
-			if (!aInProgress && bInProgress) return 1
 
 			// Then sort by start time (earliest first)
 			return aTime.getTime() - bTime.getTime()

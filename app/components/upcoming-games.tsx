@@ -15,7 +15,7 @@ export default function UpcomingGames({ games, league }: UpcomingGamesProps) {
 
 	return (
 		<div className="space-y-3">
-			<h2 className="text-2xl">Live and upcoming games</h2>
+			<h2 className="text-2xl">Upcoming games</h2>
 			<div className="space-y-3">
 				{games.map((game) => {
 					const homeAbbrev = game.homeTeam!.abbreviation.toLowerCase()
