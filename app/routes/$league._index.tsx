@@ -32,7 +32,15 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	const lowercaseLeague = LEAGUE.toLowerCase()
 
 	const title = `When is the next ${LEAGUE} game? - Team Countdown`
-	const description = `The fastest and prettiest way to check the next ${LEAGUE} game. Launches instantly from your home screen.`
+	
+	// League-specific endings for meta description
+	const gameEvent = 
+		LEAGUE === 'NBA' || LEAGUE === 'WNBA' ? 'tip-off' :
+		LEAGUE === 'MLB' ? 'first pitch' :
+		LEAGUE === 'NHL' ? 'puck drop' :
+		'kickoff' // NFL, MLS, CPL
+	
+	const description = `Get pumped for your team's next ${LEAGUE} game. Add the countdown to your home screen and watch the clock tick until ${gameEvent}.`
 	const ogImage = LEAGUE === 'NFL' ? 'og.png' : `${lowercaseLeague}-og.png`
 	const url = `https://teamcountdown.com/${lowercaseLeague}`
 
@@ -156,6 +164,13 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 
 export default function LeagueIndex() {
 	const { LEAGUE, teams, upcomingGames } = useLoaderData<typeof loader>()
+	
+	// League-specific game event for body copy
+	const gameEvent = 
+		LEAGUE === 'NBA' || LEAGUE === 'WNBA' ? 'tip-off' :
+		LEAGUE === 'MLB' ? 'first pitch' :
+		LEAGUE === 'NHL' ? 'puck drop' :
+		'kickoff' // NFL, MLS, CPL
 	return (
 		<>
 			<div className="flex flex-col min-h-screen md:h-auto">
@@ -176,11 +191,10 @@ export default function LeagueIndex() {
 						<div className="space-y-5">
 							<div className="space-y-3">
 								<h2 className="text-2xl">
-									Get pumped for your team's next game!
+									Get pumped for game day
 								</h2>
 							<p>
-								A fast, pretty web app that counts down to the next {LEAGUE}{' '}
-								game. Saves to your home screen for immediate access.
+								Pick your team. Add it to your home screen. Watch the days, hours, and minutes tick away until {gameEvent}.
 							</p>
 							<a 
 								href="#teams" 
