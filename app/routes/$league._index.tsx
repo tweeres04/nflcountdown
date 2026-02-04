@@ -1,8 +1,6 @@
 import { json, type MetaFunction, LoaderFunctionArgs } from '@remix-run/node'
 import { uniqBy, orderBy } from 'lodash-es'
-import TeamsDropdown from '~/components/ui/teams-dropdown'
 import { useLoaderData } from '@remix-run/react'
-import { Button } from '~/components/ui/button'
 import mlbTeams from '../../mlb_teams.json'
 import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
 import { nbaTeamToTeam } from '~/lib/nbaGameToGame'
@@ -185,9 +183,6 @@ export default function LeagueIndex() {
 									game. Saves to your home screen for immediate access.
 								</p>
 							</div>
-							<TeamsDropdown teams={teams}>
-								<Button className="border-stone-900">Pick your team</Button>
-							</TeamsDropdown>
 						</div>
 						<div>
 							<div className="space-y-1 max-w-[400px] mx-auto">
@@ -231,6 +226,31 @@ export default function LeagueIndex() {
 										: 'Kansas City Chiefs'}{' '}
 									countdown in action.
 								</p>
+							</div>
+						</div>
+						<div className="space-y-3">
+							<h3 className="text-xl">Choose your team:</h3>
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+								{teams.map((team) => (
+									<a
+										key={team.abbreviation}
+										href={`/${LEAGUE.toLowerCase()}/${team.abbreviation.toLowerCase()}`}
+										className="flex items-center gap-4 py-2 content-link stone group"
+									>
+										<img
+											src={`/logos/${
+												LEAGUE === 'NFL'
+													? ''
+													: `${LEAGUE.toLowerCase()}/`
+											}${team.abbreviation.toLowerCase()}.svg`}
+											alt={`${team.fullName} logo`}
+											className="h-10 w-10 object-contain flex-shrink-0"
+										/>
+										<div className="text-base font-semibold text-stone-900">
+											{team.fullName}
+										</div>
+									</a>
+								))}
 							</div>
 						</div>
 						<UpcomingGames games={upcomingGames} league={LEAGUE} />
