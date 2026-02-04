@@ -96,13 +96,19 @@ export function countdownString({
 	team,
 	isTeamPage,
 	LEAGUE,
+	excludeSeconds = false,
 }: {
 	game?: Game
 	team?: Team
 	isTeamPage: boolean
 	LEAGUE: string
+	excludeSeconds?: boolean
 }) {
 	if (!game) return 'No upcoming games'
+
+	const units = excludeSeconds
+		? countdown.DAYS | countdown.HOURS | countdown.MINUTES
+		: undefined
 
 	const countdownString = game?.time
 		? isPast(addHours(game.time, 3))
@@ -112,7 +118,7 @@ export function countdownString({
 					end: addHours(game.time, 3),
 			  })
 			? 'Game in progress!'
-			: `${countdown(new Date(game.time)).toString()} till ${
+			: `${countdown(new Date(game.time), null, units).toString()} till ${
 					isTeamPage && team
 						? LEAGUE === 'CPL' || LEAGUE === 'MLS'
 							? `${team.nickName} play next`

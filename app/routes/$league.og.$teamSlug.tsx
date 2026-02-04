@@ -20,14 +20,17 @@ export async function loader({
 		team,
 		isTeamPage: true,
 		LEAGUE,
+		excludeSeconds: true,
 	})
+
+	const logoPath = `https://teamcountdown.com/logos/${
+		LEAGUE === 'NFL' ? '' : `${LEAGUE.toLowerCase()}/`
+	}${team.abbreviation.toLowerCase()}.svg`
 
 	return new ImageResponse(
 		(
 			<div
 				style={{
-					textAlign: 'center',
-					fontSize: '5rem',
 					display: 'flex',
 					flexDirection: 'column',
 					justifyContent: 'center',
@@ -38,7 +41,40 @@ export async function loader({
 					padding: '0 5rem',
 				}}
 			>
-				{countdownString_}
+				{/* Main content: Logo + Countdown */}
+				<div
+					style={{
+						display: 'flex',
+						alignItems: 'center',
+						gap: '1rem',
+					}}
+				>
+					{/* Team Logo */}
+					<img
+						src={logoPath}
+						width={500}
+						height={500}
+						style={{ marginLeft: '-5rem', objectFit: 'contain' }}
+						alt={`${team.fullName} logo`}
+					/>
+
+					{/* Countdown Text */}
+					<div style={{ fontSize: '4rem', textAlign: 'left' }}>
+						{countdownString_}
+					</div>
+				</div>
+
+				{/* Branding */}
+				<div
+					style={{
+						position: 'absolute',
+						bottom: '2rem',
+						right: '3rem',
+						fontSize: '2rem',
+					}}
+				>
+					Team Countdown
+				</div>
 			</div>
 		),
 		{
