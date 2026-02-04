@@ -1,0 +1,50 @@
+[
+	{
+		"team": "Atlético Ottawa",
+		"abbreviation": "ATO",
+		"color_1": "#B0392A",
+		"color_2": "#2D315F"
+	},
+	{
+		"team": "Cavalry",
+		"abbreviation": "CAV",
+		"color_1": "#BA0C2F",
+		"color_2": "#335525"
+	},
+	{
+		"team": "Forge",
+		"abbreviation": "FOR",
+		"color_1": "#53565A",
+		"color_2": "#DC4405"
+	},
+	{
+		"team": "HFX Wanderers",
+		"abbreviation": "HFX",
+		"color_1": "#002855",
+		"color_2": "#41B6E6"
+	},
+	{
+		"team": "Inter Toronto",
+		"abbreviation": "INT",
+		"color_1": "#061f33",
+		"color_2": "#003B5C"
+	},
+	{
+		"team": "Pacific",
+		"abbreviation": "PAC",
+		"color_1": "#582C83",
+		"color_2": "#00B7BD"
+	},
+	{
+		"team": "Supra du Québec",
+		"abbreviation": "SUP",
+		"color_1": "#031747",
+		"color_2": "#031747"
+	},
+	{
+		"team": "Vancouver FC",
+		"abbreviation": "VFC",
+		"color_1": "#636569",
+		"color_2": "#202222"
+	}
+]

@@ -6,8 +6,9 @@ import { nbaTeamToTeam } from './nbaGameToGame'
 import { nflTeamToTeam } from './nflGameToGame'
 import { nhlTeamToTeam } from './nhlGameToGame'
 import { wnbaTeamToTeam } from './wnbaGameToGame'
+import { cplTeamToTeam } from './cplGameToGame'
 import { getAllGames } from './getAllGames'
-import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, Team } from './types'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, Team } from './types'
 
 export async function getTeamAndGames(
 	league: string | undefined,
@@ -16,7 +17,7 @@ export async function getTeamAndGames(
 	const LEAGUE = league?.toUpperCase() ?? 'NFL'
 
 	// Validate league
-	if (!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA'].includes(LEAGUE)) {
+	if (!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA', 'CPL'].includes(LEAGUE)) {
 		throw new Response(null, { status: 404 })
 	}
 
@@ -59,6 +60,13 @@ export async function getTeamAndGames(
 		)
 			.filter((t) => t.teamId > 0)
 			.map(wnbaTeamToTeam)
+	} else if (LEAGUE === 'CPL') {
+		const raw = await readFile('data/cpl_schedule.json', 'utf-8')
+		const cplSchedule: CplScheduleApi = JSON.parse(raw)
+		teams = uniqBy(
+			cplSchedule.matches.flatMap((m) => [m.home, m.away]),
+			'teamId'
+		).map(cplTeamToTeam)
 	}
 
 	teams = orderBy(teams, 'fullName')

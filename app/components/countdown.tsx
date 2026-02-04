@@ -1,4 +1,11 @@
-import { useContext, useState, useEffect, useRef, Suspense, Fragment } from 'react'
+import {
+	useContext,
+	useState,
+	useEffect,
+	useRef,
+	Suspense,
+	Fragment,
+} from 'react'
 import { Game, Team } from '~/lib/types'
 import TeamsDropdown from './ui/teams-dropdown'
 import { Button } from './ui/button'
@@ -107,7 +114,9 @@ export function countdownString({
 			? 'Game in progress!'
 			: `${countdown(new Date(game.time)).toString()} till ${
 					isTeamPage && team
-						? `the ${team.nickName} play next`
+						? LEAGUE === 'CPL'
+							? `${team.nickName} play next`
+							: `the ${team.nickName} play next`
 						: LEAGUE === 'NFL'
 						? 'kickoff'
 						: LEAGUE === 'MLB'
@@ -243,13 +252,13 @@ export default function Countdown({
 					src={logo}
 					className={cn(
 						'mx-auto',
-						LEAGUE === 'NHL'
+						LEAGUE === 'NHL' || LEAGUE === 'CPL'
 							? 'h-[256px] md:h-[384px] my-8'
 							: 'w-[256px] h-[256px] md:w-[384px] md:h-[384px]',
 						{ 'py-8 lg:py-16': LEAGUE === 'MLB' }
-				)}
-				alt={team ? `${team.fullName} logo` : `${LEAGUE} logo`}
-			/>
+					)}
+					alt={team ? `${team.fullName} logo` : `${LEAGUE} logo`}
+				/>
 
 				<div className="text-center space-y-2">
 					<div className="text-3xl" suppressHydrationWarning>

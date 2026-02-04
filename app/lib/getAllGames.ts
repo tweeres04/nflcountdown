@@ -4,7 +4,8 @@ import { nbaGameToGame } from './nbaGameToGame'
 import { nflGameToGame } from './nflGameToGame'
 import { nhlGameToGame } from './nhlGameToGame'
 import { wnbaGameToGame } from './wnbaGameToGame'
-import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, Game } from './types'
+import { cplGameToGame } from './cplGameToGame'
+import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, Game } from './types'
 
 /**
  * Loads all games for a given league from JSON schedule files.
@@ -52,6 +53,12 @@ export async function getAllGames(league: string, viewingTeamAbbrev?: string): P
 			.flatMap((gd) => gd.games)
 			.filter((g) => g.homeTeam.teamId > 0)
 			.map(g => wnbaGameToGame(g, viewingTeamAbbrev))
+	}
+
+	if (LEAGUE === 'CPL') {
+		const raw = await readFile('data/cpl_schedule.json', 'utf-8')
+		const cplSchedule: CplScheduleApi = JSON.parse(raw)
+		return cplSchedule.matches.map(m => cplGameToGame(m, viewingTeamAbbrev))
 	}
 
 	return []
