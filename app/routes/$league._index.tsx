@@ -10,8 +10,9 @@ import { nflTeamToTeam } from '~/lib/nflGameToGame'
 import { nhlTeamToTeam } from '~/lib/nhlGameToGame'
 import { wnbaTeamToTeam } from '~/lib/wnbaGameToGame'
 import { cplTeamToTeam } from '~/lib/cplGameToGame'
+import { mlsTeamToTeam } from '~/lib/mlsGameToGame'
 import { readFile } from 'node:fs/promises'
-import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, Team } from '~/lib/types'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, Team } from '~/lib/types'
 import {
 	generateSportsOrganizationSchema,
 	generateBreadcrumbSchema,
@@ -83,7 +84,7 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 	const LEAGUE = league!.toUpperCase()
 
 	// Validate league
-	if (!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA', 'CPL'].includes(LEAGUE)) {
+	if (!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA', 'CPL', 'MLS'].includes(LEAGUE)) {
 		throw new Response(null, { status: 404 })
 	}
 
@@ -98,6 +99,8 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 			? 'data/wnba_schedule.json'
 			: LEAGUE === 'CPL'
 			? 'data/cpl_schedule.json'
+			: LEAGUE === 'MLS'
+			? 'data/mls_schedule.json'
 			: 'data/nfl_schedule.json'
 
 	const scheduleRaw = await readFile(scheduleFile, 'utf-8')
@@ -134,6 +137,13 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 					(scheduleParsed as CplScheduleApi).matches.flatMap((m) => [m.home, m.away]),
 					'teamId'
 			  ).map(cplTeamToTeam)
+			: LEAGUE === 'MLS'
+			? uniqBy(
+					(scheduleParsed as MlsScheduleApi).events.flatMap((e) => 
+						e.competitions[0].competitors.map(c => c.team)
+					),
+					'id'
+			  ).map(mlsTeamToTeam)
 			: uniqBy(
 					(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),
 					'id'
@@ -198,6 +208,8 @@ export default function LeagueIndex() {
 										? 'Indiana Fever'
 										: LEAGUE === 'CPL'
 										? 'Cavalry FC'
+										: LEAGUE === 'MLS'
+										? 'Inter Miami CF'
 										: 'Kansas City Chiefs'
 								} countdown in action.`}
 									className="rounded-sm"
@@ -214,6 +226,8 @@ export default function LeagueIndex() {
 										? 'Indiana Fever'
 										: LEAGUE === 'CPL'
 										? 'Cavalry FC'
+										: LEAGUE === 'MLS'
+										? 'Inter Miami CF'
 										: 'Kansas City Chiefs'}{' '}
 									countdown in action.
 								</p>

@@ -7,8 +7,9 @@ import { nflTeamToTeam } from './nflGameToGame'
 import { nhlTeamToTeam } from './nhlGameToGame'
 import { wnbaTeamToTeam } from './wnbaGameToGame'
 import { cplTeamToTeam } from './cplGameToGame'
+import { mlsTeamToTeam } from './mlsGameToGame'
 import { getAllGames } from './getAllGames'
-import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, Team } from './types'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, Team } from './types'
 
 export async function getTeamAndGames(
 	league: string | undefined,
@@ -17,7 +18,7 @@ export async function getTeamAndGames(
 	const LEAGUE = league?.toUpperCase() ?? 'NFL'
 
 	// Validate league
-	if (!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA', 'CPL'].includes(LEAGUE)) {
+	if (!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA', 'CPL', 'MLS'].includes(LEAGUE)) {
 		throw new Response(null, { status: 404 })
 	}
 
@@ -67,6 +68,15 @@ export async function getTeamAndGames(
 			cplSchedule.matches.flatMap((m) => [m.home, m.away]),
 			'teamId'
 		).map(cplTeamToTeam)
+	} else if (LEAGUE === 'MLS') {
+		const raw = await readFile('data/mls_schedule.json', 'utf-8')
+		const mlsSchedule: MlsScheduleApi = JSON.parse(raw)
+		teams = uniqBy(
+			mlsSchedule.events.flatMap((e) => 
+				e.competitions[0].competitors.map(c => c.team)
+			),
+			'id'
+		).map(mlsTeamToTeam)
 	}
 
 	teams = orderBy(teams, 'fullName')

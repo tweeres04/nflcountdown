@@ -48,7 +48,7 @@ export default function TeamsDropdown({
 					More leagues
 				</DropdownMenuSubTrigger>
 				<DropdownMenuSubContent className={contentClasses}>
-					{['NFL', 'MLB', 'NBA', 'WNBA', 'NHL'].map((league) =>
+					{['NFL', 'MLB', 'NBA', 'WNBA', 'NHL', 'MLS'].map((league) =>
 						LEAGUE !== league ? (
 							<DropdownMenuItem asChild key={league}>
 								<a href={`/${league.toLowerCase()}`}>{league}</a>

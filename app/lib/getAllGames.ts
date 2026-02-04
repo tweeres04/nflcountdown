@@ -5,7 +5,8 @@ import { nflGameToGame } from './nflGameToGame'
 import { nhlGameToGame } from './nhlGameToGame'
 import { wnbaGameToGame } from './wnbaGameToGame'
 import { cplGameToGame } from './cplGameToGame'
-import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, Game } from './types'
+import { mlsGameToGame } from './mlsGameToGame'
+import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, Game } from './types'
 
 /**
  * Loads all games for a given league from JSON schedule files.
@@ -59,6 +60,12 @@ export async function getAllGames(league: string, viewingTeamAbbrev?: string): P
 		const raw = await readFile('data/cpl_schedule.json', 'utf-8')
 		const cplSchedule: CplScheduleApi = JSON.parse(raw)
 		return cplSchedule.matches.map(m => cplGameToGame(m, viewingTeamAbbrev))
+	}
+
+	if (LEAGUE === 'MLS') {
+		const raw = await readFile('data/mls_schedule.json', 'utf-8')
+		const mlsSchedule: MlsScheduleApi = JSON.parse(raw)
+		return mlsSchedule.events.map(e => mlsGameToGame(e, viewingTeamAbbrev))
 	}
 
 	return []

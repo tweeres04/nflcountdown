@@ -40,7 +40,7 @@ export default function Footer({ league, countdown = false }: FooterProps) {
 					<p className="text-xs text-stone-600">
 						Team names, logos, and trademarks are the property of their
 						respective owners. This site is not affiliated with or endorsed by
-						the NFL, NBA, WNBA, MLB, NHL, or any team.
+						the NFL, NBA, WNBA, MLB, NHL, MLS, or any team.
 					</p>
 					</div>
 				)}

@@ -1,0 +1,182 @@
+[
+  {
+    "abbreviation": "ATL",
+    "primaryColor": "#9d2235",
+    "secondaryColor": "#aa9767",
+    "name": "Atlanta United FC"
+  },
+  {
+    "abbreviation": "ATX",
+    "primaryColor": "#00b140",
+    "secondaryColor": "#000000",
+    "name": "Austin FC"
+  },
+  {
+    "abbreviation": "MTL",
+    "primaryColor": "#003da6",
+    "secondaryColor": "#c1c5c8",
+    "name": "CF Montréal"
+  },
+  {
+    "abbreviation": "CLT",
+    "primaryColor": "#0085ca",
+    "secondaryColor": "#000000",
+    "name": "Charlotte FC"
+  },
+  {
+    "abbreviation": "CHI",
+    "primaryColor": "#7ccdef",
+    "secondaryColor": "#ff0000",
+    "name": "Chicago Fire FC"
+  },
+  {
+    "abbreviation": "COL",
+    "primaryColor": "#8a2432",
+    "secondaryColor": "#8ab7e9",
+    "name": "Colorado Rapids"
+  },
+  {
+    "abbreviation": "CLB",
+    "primaryColor": "#000000",
+    "secondaryColor": "#fedd00",
+    "name": "Columbus Crew"
+  },
+  {
+    "abbreviation": "DC",
+    "primaryColor": "#000000",
+    "secondaryColor": "#d61018",
+    "name": "D.C. United"
+  },
+  {
+    "abbreviation": "CIN",
+    "primaryColor": "#003087",
+    "secondaryColor": "#fe5000",
+    "name": "FC Cincinnati"
+  },
+  {
+    "abbreviation": "DAL",
+    "primaryColor": "#c6093b",
+    "secondaryColor": "#001f5b",
+    "name": "FC Dallas"
+  },
+  {
+    "abbreviation": "HOU",
+    "primaryColor": "#ff6b00",
+    "secondaryColor": "#101820",
+    "name": "Houston Dynamo FC"
+  },
+  {
+    "abbreviation": "MIA",
+    "primaryColor": "#231f20",
+    "secondaryColor": "#f7b5cd",
+    "name": "Inter Miami CF"
+  },
+  {
+    "abbreviation": "LA",
+    "primaryColor": "#00245D",
+    "secondaryColor": "#FFD200",
+    "name": "LA Galaxy"
+  },
+  {
+    "abbreviation": "LAFC",
+    "primaryColor": "#000000",
+    "secondaryColor": "#c7a36f",
+    "name": "LAFC"
+  },
+  {
+    "abbreviation": "MIN",
+    "primaryColor": "#000000",
+    "secondaryColor": "#9bcde4",
+    "name": "Minnesota United FC"
+  },
+  {
+    "abbreviation": "NSH",
+    "primaryColor": "#ece83a",
+    "secondaryColor": "#1f1646",
+    "name": "Nashville SC"
+  },
+  {
+    "abbreviation": "NE",
+    "primaryColor": "#022166",
+    "secondaryColor": "#ce0e2d",
+    "name": "New England Revolution"
+  },
+  {
+    "abbreviation": "NYC",
+    "primaryColor": "#9fd2ff",
+    "secondaryColor": "#000229",
+    "name": "New York City FC"
+  },
+  {
+    "abbreviation": "NY",
+    "primaryColor": "#ba0c2f",
+    "secondaryColor": "#ffc72c",
+    "name": "New York Red Bulls"
+  },
+  {
+    "abbreviation": "ORL",
+    "primaryColor": "#60269e",
+    "secondaryColor": "#f0d283",
+    "name": "Orlando City SC"
+  },
+  {
+    "abbreviation": "PHI",
+    "primaryColor": "#051f31",
+    "secondaryColor": "#e0d0a6",
+    "name": "Philadelphia Union"
+  },
+  {
+    "abbreviation": "POR",
+    "primaryColor": "#2c5234",
+    "secondaryColor": "#c99700",
+    "name": "Portland Timbers"
+  },
+  {
+    "abbreviation": "RSL",
+    "primaryColor": "#a32035",
+    "secondaryColor": "#daa900",
+    "name": "Real Salt Lake"
+  },
+  {
+    "abbreviation": "SD",
+    "primaryColor": "#697a7C",
+    "secondaryColor": "#F89E1A",
+    "name": "San Diego FC"
+  },
+  {
+    "abbreviation": "SJ",
+    "primaryColor": "#000000",
+    "secondaryColor": "#0067B1",
+    "name": "San Jose Earthquakes"
+  },
+  {
+    "abbreviation": "SEA",
+    "primaryColor": "#2dc84d",
+    "secondaryColor": "#0033a0",
+    "name": "Seattle Sounders FC"
+  },
+  {
+    "abbreviation": "SKC",
+    "primaryColor": "#a7c6ed",
+    "secondaryColor": "#0a2240",
+    "name": "Sporting Kansas City"
+  },
+  {
+    "abbreviation": "STL",
+    "primaryColor": "#ec1458",
+    "secondaryColor": "#001544",
+    "name": "St. Louis CITY SC"
+  },
+  {
+    "abbreviation": "TOR",
+    "primaryColor": "#aa182c",
+    "secondaryColor": "#a2a9ad",
+    "name": "Toronto FC"
+  },
+  {
+    "abbreviation": "VAN",
+    "primaryColor": "#00245E",
+    "secondaryColor": "#9DC2EA",
+    "name": "Vancouver Whitecaps"
+  }
+]

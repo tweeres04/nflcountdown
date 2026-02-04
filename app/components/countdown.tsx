@@ -114,7 +114,7 @@ export function countdownString({
 			? 'Game in progress!'
 			: `${countdown(new Date(game.time)).toString()} till ${
 					isTeamPage && team
-						? LEAGUE === 'CPL'
+						? LEAGUE === 'CPL' || LEAGUE === 'MLS'
 							? `${team.nickName} play next`
 							: `the ${team.nickName} play next`
 						: LEAGUE === 'NFL'
@@ -252,7 +252,7 @@ export default function Countdown({
 					src={logo}
 					className={cn(
 						'mx-auto',
-						LEAGUE === 'NHL' || LEAGUE === 'CPL'
+						LEAGUE === 'NHL' || LEAGUE === 'CPL' || LEAGUE === 'MLS'
 							? 'h-[256px] md:h-[384px] my-8'
 							: 'w-[256px] h-[256px] md:w-[384px] md:h-[384px]',
 						{ 'py-8 lg:py-16': LEAGUE === 'MLB' }

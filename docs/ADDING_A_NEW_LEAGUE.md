@@ -42,6 +42,9 @@ Before starting, gather:
 | `app/routes/_index.tsx` | Add league to homepage picker |
 | `app/routes/sitemap[.]xml.ts` | Add league to sitemap generation |
 | `app/root.tsx` | Add legacy redirects (if migrating from old domain) |
+| `app/components/ui/teams-dropdown.tsx` | Add league to "More leagues" dropdown |
+| `app/components/countdown.tsx` | Add league-specific text (e.g., soccer uses "play next" without "the") |
+| `app/components/footer.tsx` | Add league to trademark disclaimer (if publicly launching) |
 | `tailwind.config.ts` | Add team colors to Tailwind safelist |
 | `cron/package.json` | Add schedule fetch script |
 | `cron/crontab` | Add cron entry for schedule updates |
@@ -66,7 +69,17 @@ Create `{league}_colors.json` at project root:
 ]
 ```
 
-**Important:** Avoid `#FFFFFF` for `color_2` - use a darker shade or official alternate color instead.
+**Note:** Color file format can vary. Common patterns:
+- `color_1` / `color_2` (MLB, NBA, NHL, WNBA, CPL)
+- `primaryColor` / `secondaryColor` (MLS)
+
+If using a different format, update `tailwind.config.ts` accordingly to map to `DEFAULT` and `secondary`.
+
+**Critical:** All hex color values MUST include the `#` prefix:
+- ✅ Correct: `"#9d2235"`
+- ❌ Wrong: `"9d2235"` (produces invalid CSS like `--tw-gradient-from: 9d2235`)
+
+**Important:** Avoid `#FFFFFF` for `color_2` or `secondaryColor` - use a darker shade or official alternate color instead. Check teamcolorcodes.com for official alternatives.
 
 ---
 
@@ -320,6 +333,9 @@ npm run dev
 - [ ] `app/routes/_index.tsx` updated (homepage)
 - [ ] `app/routes/sitemap[.]xml.ts` updated
 - [ ] `app/root.tsx` updated (legacy redirects if needed)
+- [ ] `app/components/ui/teams-dropdown.tsx` updated
+- [ ] `app/components/countdown.tsx` updated (league-specific text if needed)
+- [ ] `app/components/footer.tsx` updated (add league to disclaimer if publicly launching)
 - [ ] `tailwind.config.ts` updated
 - [ ] `cron/crontab` updated
 - [ ] `cron/Dockerfile` updated
@@ -330,10 +346,19 @@ npm run dev
 
 ## League-Specific Notes
 
-### MLS / NWSL
-- API: Likely ESPN or official MLS/NWSL API
+### MLS (Major League Soccer)
+- **API**: ESPN API (`site.api.espn.com/apis/site/v2/sports/soccer/usa.1/scoreboard`)
+- **Logos**: Official MLS CDN at `https://images.mlssoccer.com/image/upload/assets/logos/{ABBR}.svg`
+  - Exception: NY Red Bulls uses `RBNY` in URL but `NY` as abbreviation
+- **Season**: February - November
+- **30 teams** (includes 3 Canadian teams)
+- **Countdown text**: No "the" prefix - "till Seattle play next" (like CPL)
+- **Color format**: Uses `primaryColor`/`secondaryColor` instead of `color_1`/`color_2`
+
+### NWSL (National Women's Soccer League)
+- API: Likely ESPN or official NWSL API
 - Consider handling different season structure (March-October)
-- MLS has ~30 teams, NWSL has ~14 teams
+- ~14 teams
 
 ### EPL (English Premier League)
 - API: football-data.org or similar
@@ -355,18 +380,25 @@ npm run dev
 
 ## Common Pitfalls
 
-1. **White Secondary Colors** - Always check for `#FFFFFF` in secondary colors and replace with darker alternatives
-2. **Logo Variants** - Use logos designed for dark backgrounds (typically `_dark` or `_light` variants)
-3. **PNG Generation** - PWA manifests require PNG versions, not just SVG
-4. **Timezone Handling** - Ensure game times are in UTC or properly converted
-5. **API Rate Limiting** - Add delays between requests when fetching large datasets
-6. **Team ID Uniqueness** - Ensure team IDs are unique when using `uniqBy`
+1. **White Secondary Colors** - Always check for `#FFFFFF` in secondary colors and replace with darker alternatives from teamcolorcodes.com
+2. **Missing `#` in hex colors** - Colors must be `"#123456"` not `"123456"` for valid CSS gradients
+3. **Logo Variants** - Use logos designed for dark backgrounds (typically `_dark` or `_light` variants)
+4. **Logo URL exceptions** - Some teams may use different abbreviations in logo URLs (e.g., NY Red Bulls uses `RBNY` in URL but `NY` as team abbreviation)
+5. **PNG Generation** - PWA manifests require PNG versions, not just SVG
+6. **Navigation dropdowns** - Don't forget to add the league to `teams-dropdown.tsx` for the "More leagues" menu
+7. **Footer disclaimer** - Add the league to `footer.tsx` trademark disclaimer when publicly launching (keep in "stealth mode" until launch if desired)
+8. **Soccer countdown text** - Soccer leagues typically omit "the" before team names ("till Seattle play next" not "till the Seattle play next")
+9. **Timezone Handling** - Ensure game times are in UTC or properly converted
+10. **API Rate Limiting** - Add delays between requests when fetching large datasets
+11. **Team ID Uniqueness** - Ensure team IDs are unique when using `uniqBy`
 
 ---
 
-## NHL Implementation Reference
+## Implementation References
 
-For a complete real-world example, see the NHL implementation documented in `docs/NHL_IMPLEMENTATION_PLAN.md`.
+### NHL Implementation
+
+For a complete hockey league example, see the NHL implementation documented in `docs/NHL_IMPLEMENTATION_PLAN.md`.
 
 Key commits:
 - Initial implementation: `860d516`
@@ -374,3 +406,24 @@ Key commits:
 - PNG generation: `3b2574e`
 - Color fixes: `38d7916`
 - Sitemap addition: `d7ce64e`
+
+### MLS Implementation
+
+For a complete soccer league example, see the MLS implementation:
+
+**Key files:**
+- Color file: `mls_colors.json` (uses `primaryColor`/`secondaryColor` format)
+- Schedule fetcher: `cron/getMlsSchedule.ts`
+- Transformation: `app/lib/mlsGameToGame.ts`
+- Logos: Downloaded from `https://images.mlssoccer.com/image/upload/assets/logos/{ABBR}.svg`
+
+**Key lessons learned:**
+1. **Color format validation** - Always verify hex colors have `#` prefix before committing
+2. **White color replacement** - Found 3 teams (LA Galaxy, San Jose, Vancouver) with white colors that needed replacement using official alternatives from teamcolorcodes.com:
+   - LA Galaxy: Navy → Gold instead of Navy → White
+   - San Jose: Black → Blue instead of Blue → White
+   - Vancouver: Deep Sea Blue → Light Blue instead of White → Navy
+3. **Logo URL exceptions** - NY Red Bulls uses `RBNY` in logo URL but `NY` as team abbreviation
+4. **Soccer-specific text** - Uses "play next" without "the" prefix (in `countdown.tsx`)
+5. **Navigation** - Added to both homepage and teams dropdown component
+6. **Footer disclaimer** - Added MLS to the trademark disclaimer in `footer.tsx` for public launch

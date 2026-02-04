@@ -124,3 +124,42 @@ export interface CplMatchApi {
 export interface CplScheduleApi {
 	matches: CplMatchApi[]
 }
+
+export interface MlsTeamApi {
+	id: string
+	abbreviation: string
+	displayName: string
+	shortDisplayName: string
+	name: string
+	color: string
+	alternateColor: string
+	logo: string
+}
+
+export interface MlsCompetitorApi {
+	id: string
+	type: string
+	homeAway: 'home' | 'away'
+	team: MlsTeamApi
+}
+
+export interface MlsCompetitionApi {
+	id: string
+	date: string
+	broadcasts?: Array<{
+		market: string
+		names: string[]
+	}>
+	competitors: MlsCompetitorApi[]
+}
+
+export interface MlsEventApi {
+	id: string
+	date: string
+	name: string
+	competitions: MlsCompetitionApi[]
+}
+
+export interface MlsScheduleApi {
+	events: MlsEventApi[]
+}
