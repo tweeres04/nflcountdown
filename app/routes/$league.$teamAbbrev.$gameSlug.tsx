@@ -59,7 +59,7 @@ export async function loader({
 		: ''
 
 	const breadcrumbItems = [
-		{ label: 'Home', href: '/' },
+		{ label: 'Team Countdown', href: '/' },
 		{ label: LEAGUE, href: `/${LEAGUE.toLowerCase()}` },
 		{
 			label: team.fullName,

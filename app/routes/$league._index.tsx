@@ -45,7 +45,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	const url = `https://teamcountdown.com/${lowercaseLeague}`
 
 	const breadcrumbItems = [
-		{ label: 'Home', href: '/' },
+		{ label: 'Team Countdown', href: '/' },
 		{ label: LEAGUE }, // No href = current page
 	]
 

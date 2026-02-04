@@ -15,11 +15,18 @@ export default function Footer({ league, countdown = false }: FooterProps) {
 			<div className="p-4 max-w-[500px] lg:max-w-[750px] mx-auto text-sm">
 				<p>
 					<a
+						href="/"
+						className={cn('content-link', countdown ? null : 'stone')}
+					>
+						Team Countdown
+					</a>
+					{' · '}
+					<a
 						href="https://tweeres.ca"
 						className={cn('content-link', countdown ? null : 'stone')}
 					>
 						By Tyler Weeres
-			</a>
+					</a>
 		</p>
 		{countdown ? null : (
 					<div className="space-y-2 mt-5">

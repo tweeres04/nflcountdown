@@ -12,7 +12,7 @@ export function meta() {
 	const url = 'https://teamcountdown.com/nfl/season'
 
 	const breadcrumbItems = [
-		{ label: 'Home', href: '/' },
+		{ label: 'Team Countdown', href: '/' },
 		{ label: 'NFL', href: '/nfl' },
 		{ label: 'Season Countdown' },
 	]
@@ -72,7 +72,7 @@ export async function loader() {
 	const { teams } = await getTeamAndGames('nfl', 'KC') // Todo: Shouldn't need to pass a team here
 
 	const breadcrumbItems = [
-		{ label: 'Home', href: '/' },
+		{ label: 'Team Countdown', href: '/' },
 		{ label: 'NFL', href: '/nfl' },
 		{ label: 'Season Countdown' }, // No href = current page
 	]
