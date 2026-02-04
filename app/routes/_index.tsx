@@ -66,12 +66,26 @@ export default function Index() {
 							</div>
 							<div className="space-y-3">
 								<h3 className="text-xl">Choose your league:</h3>
-								<div className="flex flex-col gap-2">
+								<div className="flex flex-col gap-3">
 									{leagues.map((league) => (
-										<a key={league.code} href={`/${league.code}`}>
-											<Button className="border-stone-900 w-full">
-												{league.name} - {league.fullName}
-											</Button>
+										<a
+											key={league.code}
+											href={`/${league.code}`}
+											className="flex items-center gap-4 py-2 content-link stone group"
+										>
+											<img
+												src={`/logos/${league.code}.png`}
+												alt={`${league.name} logo`}
+												className="h-10 w-10 object-contain flex-shrink-0"
+											/>
+											<div className="flex flex-col items-start gap-0.5">
+												<div className="text-base font-semibold text-stone-900">
+													{league.name}
+												</div>
+												<div className="text-sm font-normal text-stone-600">
+													{league.fullName}
+												</div>
+											</div>
 										</a>
 									))}
 								</div>
