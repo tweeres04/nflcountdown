@@ -34,25 +34,25 @@ export default function TeamsDropdown({
 
 	return (
 		<>
-			{/* Hidden navigation for SEO - includes all team and league links */}
-			<nav className="sr-only" aria-hidden="true">
-				{LEAGUE === 'NFL' && <a href="/nfl/season">2026 NFL Season</a>}
-				{teams.map((t) => (
-					<a
-						key={t.abbreviation}
-						href={`/${lowercaseLeague}/${t.abbreviation.toLowerCase()}`}
-					>
-						{t.fullName}
+		{/* Hidden navigation for SEO and screen readers - includes all team and league links */}
+		<nav className="sr-only" aria-label="All teams and leagues">
+			{LEAGUE === 'NFL' && <a href="/nfl/season">2026 NFL Season</a>}
+			{teams.map((t) => (
+				<a
+					key={t.abbreviation}
+					href={`/${lowercaseLeague}/${t.abbreviation.toLowerCase()}`}
+				>
+					{t.fullName}
+				</a>
+			))}
+			{['NFL', 'MLB', 'NBA', 'WNBA', 'NHL', 'MLS'].map((league) =>
+				LEAGUE !== league ? (
+					<a key={league} href={`/${league.toLowerCase()}`}>
+						{league}
 					</a>
-				))}
-				{['NFL', 'MLB', 'NBA', 'WNBA', 'NHL', 'MLS'].map((league) =>
-					LEAGUE !== league ? (
-						<a key={league} href={`/${league.toLowerCase()}`}>
-							{league}
-						</a>
-					) : null
-				)}
-			</nav>
+				) : null
+			)}
+		</nav>
 
 			{/* Visible dropdown menu for users */}
 			<DropdownMenu>
