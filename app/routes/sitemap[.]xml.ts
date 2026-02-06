@@ -39,6 +39,20 @@ export async function loader() {
         <loc>https://teamcountdown.com</loc>
     </url>`)
 
+	// Add legal and info pages
+	allUrls.push(`    <url>
+        <loc>https://teamcountdown.com/about</loc>
+    </url>`)
+	allUrls.push(`    <url>
+        <loc>https://teamcountdown.com/contact</loc>
+    </url>`)
+	allUrls.push(`    <url>
+        <loc>https://teamcountdown.com/privacy</loc>
+    </url>`)
+	allUrls.push(`    <url>
+        <loc>https://teamcountdown.com/terms</loc>
+    </url>`)
+
 	for (const LEAGUE of leagues) {
 		const lowercaseLeague = LEAGUE.toLowerCase()
 
