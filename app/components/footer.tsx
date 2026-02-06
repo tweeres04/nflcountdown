@@ -27,29 +27,48 @@ export default function Footer({ league, countdown = false }: FooterProps) {
 						By Tyler Weeres
 					</a>
 				</p>
-				{countdown ? null : (
-					<div className="space-y-2 mt-5">
-						{/* <p className="text-xs text-stone-600">
-							This site contains affiliate links. We may earn a commission if
-							you make a purchase through these links at no additional cost to
-							you.
-						</p>
-						<p className="text-xs text-stone-600">
-							21+ for betting links. Gambling problem? Call{' '}
-							<a
-								href="tel:1-800-GAMBLER"
-								className={cn('content-link', countdown ? null : 'stone')}
-							>
-								1-800-GAMBLER
-							</a>
-						</p> */}
-						<p className="text-xs text-stone-600">
-							Team names, logos, and trademarks are the property of their
-							respective owners. This site is not affiliated with or endorsed by
-							the NFL, NBA, WNBA, MLB, NHL, MLS, or any team.
-						</p>
+				<div className="space-y-2 mt-5">
+					<div className={cn('flex flex-wrap gap-x-3 gap-y-1', countdown ? 'justify-center' : '')}>
+						<a href="/about" className={cn('content-link text-xs', countdown ? null : 'stone')}>
+							About
+						</a>
+						<a href="/contact" className={cn('content-link text-xs', countdown ? null : 'stone')}>
+							Contact
+						</a>
+						<a href="/privacy" className={cn('content-link text-xs', countdown ? null : 'stone')}>
+							Privacy
+						</a>
+						<a href="/terms" className={cn('content-link text-xs', countdown ? null : 'stone')}>
+							Terms
+						</a>
 					</div>
-				)}
+					{countdown ? null : (
+						<>
+							<p className="text-xs text-stone-600">
+								This site contains affiliate links. I may earn a commission if
+								you make a purchase through these links at no additional cost to
+								you.
+							</p>
+							<p className="text-xs text-stone-600">
+								21+ for betting links. Gambling problem? Call{' '}
+								<a
+									href="tel:1-800-GAMBLER"
+									className="content-link stone"
+								>
+									1-800-GAMBLER
+								</a>
+							</p>
+						</>
+					)}
+					<p className="text-xs text-stone-600">
+						Team names, logos, and trademarks are the property of their
+						respective owners. This site is not affiliated with or endorsed by
+						the NFL, NBA, WNBA, MLB, NHL, MLS, or any team.
+					</p>
+					<p className="text-xs text-stone-500">
+						© 2026 Team Countdown
+					</p>
+				</div>
 			</div>
 		</footer>
 	)

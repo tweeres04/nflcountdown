@@ -1,7 +1,8 @@
 # Monetization Plan for Team Countdown
 
 **Created:** January 28, 2026  
-**Status:** Planning Phase  
+**Status:** On hold - addressing MPUA rejection  
+**Updated:** February 6, 2026  
 **Estimated Effort:** 4-6 hours (AI-assisted)
 
 ---
@@ -58,6 +59,24 @@
 ## Overview
 
 This document outlines the monetization strategy for teamcountdown.com, focusing on affiliate marketing as the primary revenue source. The approach prioritizes user intent alignment and non-intrusive implementation while maximizing revenue potential.
+
+### Update (February 6, 2026)
+
+**Impact.com Application Status:** Rejected with reason "Does not meet MPUA standards"
+
+**MPUA** stands for **Minimum Publisher Underwriting Assessment**. It's Impact.com's quality checklist for evaluating whether a publisher site is legitimate and trustworthy enough to join their affiliate marketplace.
+
+**Root cause:** The site was missing essential trust and legal pages that affiliate networks require:
+- No Privacy Policy page
+- No Terms of Service page
+- No About page
+- No Contact page
+- No affiliate disclosure in footer
+- No copyright notice
+
+**Resolution:** All missing pages have been created and the footer has been updated with proper legal links, affiliate disclosure, and copyright notice. The site now meets standard MPUA requirements and is ready for reapplication.
+
+**Next steps:** Wait a reasonable period (7-14 days) before reapplying to Impact.com to demonstrate the improvements have been live and stable.
 
 ---
 
