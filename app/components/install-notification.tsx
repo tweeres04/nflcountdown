@@ -32,26 +32,59 @@ export default function InstallNotification({
 	countdownName: string
 	className: string
 }) {
-	const [showInstallNotification, setShowInstallNotification] = useState(false)
+	const [isVisible, setIsVisible] = useState(false)
 	const [isIos, setIsIos] = useState(false)
 	const deferredInstallPrompt = useContext(DeferredInstallPromptContext)
 
 	useEffect(() => {
-		const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-		setShowInstallNotification(!isStandalone)
+		// 1. Check if dismissed (with 7-day expiry)
+		const dismissedData = localStorage.getItem('tc_install_banner_dismissed')
+		if (dismissedData) {
+			try {
+				const { timestamp } = JSON.parse(dismissedData)
+				const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000
+				if (Date.now() - timestamp < sevenDaysInMs) {
+					return // Still within 7-day snooze period
+				}
+			} catch {
+				// Invalid JSON, ignore and continue
+			}
+		}
+
+		// 2. Check page view count
+		const pageViews = parseInt(localStorage.getItem('tc_page_view_count') || '0', 10)
+		const newPageViews = pageViews + 1
+		localStorage.setItem('tc_page_view_count', newPageViews.toString())
+
+		if (newPageViews < 2) {
+			return // Need at least 2 page views
+		}
+
+		// 3. Detect iOS for instructions variant
+		const userAgent = window.navigator.userAgent
+		const isIosDevice =
+			/Mobi/.test(userAgent) &&
+			/AppleWebKit/.test(userAgent) &&
+			!/Chrom/.test(userAgent)
+		setIsIos(isIosDevice)
+
+		// 4. Show the banner
+		setIsVisible(true)
 	}, [])
 
-	useEffect(() => {
-		// From https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
-		setIsIos(
-			/Mobi/.test(window.navigator.userAgent) &&
-				/AppleWebKit/.test(window.navigator.userAgent) &&
-				!/Chrom/.test(window.navigator.userAgent)
+	const handleDismiss = () => {
+		// Set dismiss timestamp in localStorage
+		localStorage.setItem(
+			'tc_install_banner_dismissed',
+			JSON.stringify({ timestamp: Date.now() })
 		)
-	}, [])
 
-	return showInstallNotification ? (
-		<div className="fixed bottom-0 w-full">
+		setIsVisible(false)
+		mixpanel.track('click close install notification')
+	}
+
+	return isVisible ? (
+		<div className="fixed bottom-0 w-full lg:hidden [@media(display-mode:standalone)]:hidden">
 			<div
 				className={cn(
 					`relative p-4 text-white max-w-[500px] lg:max-w-[750px] mx-auto`,
@@ -60,10 +93,7 @@ export default function InstallNotification({
 			>
 				<button
 					className="absolute top-0 right-0 p-1"
-					onClick={() => {
-						setShowInstallNotification(false)
-						mixpanel.track('click close install notification')
-					}}
+					onClick={handleDismiss}
 				>
 					<svg // x-mark icon
 						xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +111,7 @@ export default function InstallNotification({
 					</svg>
 				</button>
 				<p className="text-center">
-					Install {countdownName} Countdown to your home screen for quick access
+					Never miss a {countdownName} game. One tap from your home screen.
 				</p>
 				{deferredInstallPrompt ? (
 					<Button
