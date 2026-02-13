@@ -1,9 +1,9 @@
 # Monetization Plan for Team Countdown
 
 **Created:** January 28, 2026  
-**Status:** On hold - addressing MPUA rejection  
-**Updated:** February 6, 2026  
-**Estimated Effort:** 4-6 hours (AI-assisted)
+**Status:** Waiting on affiliate approvals  
+**Updated:** February 13, 2026  
+**Estimated Effort:** 4-6 hours (AI-assisted) for Phase 1; 12-20 hours for Phase 5
 
 ---
 
@@ -119,6 +119,7 @@ This document outlines the monetization strategy for teamcountdown.com, focusing
 | Phase 2 | 10K+ traffic | Add display ads (single unit) | $250+ total |
 | Phase 3 | 50K+ traffic | Premium ad networks (Mediavine) | $1,000+ total |
 | Phase 4 | 100K+ traffic | Direct sponsorships | $3,000+ total |
+| Phase 5 | When SDK stable | ChatGPT App distribution channel | TBD (affiliate + PWA installs) |
 
 **Growth Strategy:** Monetization works best alongside traffic growth. The recent pSEO improvements (structured data, breadcrumbs, internal linking) should drive organic traffic from 3K → 10K over 3-6 months. Focus on validating affiliate performance now, then scale revenue as traffic grows.
 
@@ -851,6 +852,99 @@ Most affiliate programs look for:
 - [ ] Premium ad network (Mediavine at 50K+ traffic)
 - [ ] League-specific sponsorships
 - [ ] Player pages with fantasy sports affiliates
+
+### Phase 5: ChatGPT App Distribution Channel (Future)
+
+**Overview:** Build a ChatGPT App using OpenAI's Apps SDK that renders countdown widgets directly in ChatGPT conversations. The app serves as both a monetization channel (affiliate links in widget UI) and a growth channel (PWA install funnel).
+
+**User Flow:**
+1. User asks ChatGPT: "When is the next Seahawks game?"
+2. ChatGPT calls Team Countdown's MCP server
+3. Widget renders in ChatGPT with:
+   - Team name, logo, colors
+   - Game date, time, opponent
+   - Countdown timer (client-side)
+   - "Get tickets" / "Bet" / "Shop gear" buttons (affiliate links)
+   - "Add to your home screen in one tap" CTA → links to teamcountdown.com/nfl/sea
+
+**Monetization Channels:**
+- **Affiliate conversions** - Users click affiliate buttons directly in ChatGPT widget
+- **PWA installs** - Users click through to site and install the home screen app (long-term retention)
+- **Brand awareness** - Discovery through ChatGPT app store
+
+**Prerequisites:**
+- [ ] At least one affiliate program approved (tickets or betting)
+- [ ] Apps SDK publicly available and stable (currently in gated beta - docs behind auth)
+- [ ] Submission guidelines reviewed - confirm affiliate links are allowed in widget UI
+- [ ] MCP server hosting plan (Node.js server required)
+
+**Technical Requirements:**
+
+1. **Public JSON API endpoint** (add to Remix site):
+   - Route: `/api/next-game` 
+   - Params: `team` (e.g., "sea"), `league` (e.g., "nfl")
+   - Returns: JSON with team info, next game details, affiliate links
+   - Example response:
+     ```json
+     {
+       "team": { "name": "Seattle Seahawks", "abbrev": "sea", "logo": "https://...", "primaryColor": "#002244" },
+       "game": { "opponent": "San Francisco 49ers", "date": "2026-03-05T13:00:00-08:00", "broadcast": "FOX" },
+       "affiliateLinks": { "tickets": "https://...", "betting": "https://...", "merch": "https://..." },
+       "installUrl": "https://teamcountdown.com/nfl/sea"
+     }
+     ```
+
+2. **MCP Server** (separate Node.js project):
+   - Exposes "get_next_game" tool to ChatGPT
+   - Calls Team Countdown API endpoint
+   - Returns data in MCP protocol format
+   - Hosting: Deploy to same VPS or separate service (Render, Railway, Fly.io)
+
+3. **React Widget UI** (separate React app):
+   - Built with `@openai/apps-sdk-ui` (official component library)
+   - Uses React 18/19 + Tailwind 4 (same stack as main site)
+   - Components available: Badge, Button, ButtonLink, TextLink, Icons
+   - Renders countdown card with team branding
+   - Affiliate buttons use `ButtonLink` component for external links
+   - PWA install CTA uses `Button` component
+
+**Development Effort:** 
+- API endpoint: 2-4 hours
+- MCP server: 4-6 hours (first time with MCP)
+- React widget UI: 4-6 hours
+- Testing & submission: 2-4 hours
+- **Total: 12-20 hours (1.5-2.5 AI-assisted days)**
+
+**Revenue Potential:**
+- Unknown at this stage - depends on:
+  - ChatGPT app store discovery/ranking
+  - Affiliate link click-through rates in widget UI
+  - PWA install conversion rates
+- Early mover advantage: Platform is very new (Apps SDK v0.2.1, Dec 2025), less competition
+
+**Open Questions (require Apps SDK access to answer):**
+- Are affiliate links explicitly allowed in widget UI? (check `/apps-sdk/build/monetization` and `/apps-sdk/app-submission-guidelines` docs)
+- Does OpenAI take a revenue share from affiliate conversions?
+- What are the app review/approval timelines?
+- Can widgets update dynamically (e.g., live countdown timer)?
+
+**Next Steps:**
+1. Sign up for Apps SDK beta access at platform.openai.com/apps-sdk
+2. Read monetization and submission guidelines
+3. Build API endpoint (useful for other integrations too)
+4. Wait for SDK to stabilize before committing to full build
+
+**Risk Assessment:**
+- **Platform risk:** Apps SDK is very new (2 months old), could have breaking changes or deprecation
+- **Approval risk:** App might be rejected if affiliate links violate submission guidelines
+- **Maintenance burden:** Requires separate MCP server deployment and ongoing maintenance
+- **Low traffic risk:** Current ChatGPT referrals (2 users/month) don't justify investment yet
+
+**Go/No-Go Decision Criteria:**
+- ✅ Apps SDK docs confirm affiliate links are allowed
+- ✅ At least one affiliate program approved
+- ✅ ChatGPT referral traffic grows to 20+ users/month (demonstrates demand)
+- ✅ Apps SDK reaches v1.0 or shows production-readiness signals
 
 ---
 
