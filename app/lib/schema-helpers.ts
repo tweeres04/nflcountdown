@@ -11,8 +11,16 @@ export function getSportName(league: string): string {
 			return 'American Football'
 		case 'NBA':
 			return 'Basketball'
+		case 'WNBA':
+			return 'Basketball'
 		case 'MLB':
 			return 'Baseball'
+		case 'NHL':
+			return 'Ice Hockey'
+		case 'MLS':
+			return 'Soccer'
+		case 'CPL':
+			return 'Soccer'
 		default:
 			return 'Sports'
 	}
@@ -24,8 +32,16 @@ export function getLeagueFullName(league: string): string {
 			return 'National Football League'
 		case 'NBA':
 			return 'National Basketball Association'
+		case 'WNBA':
+			return 'Women\'s National Basketball Association'
 		case 'MLB':
 			return 'Major League Baseball'
+		case 'NHL':
+			return 'National Hockey League'
+		case 'MLS':
+			return 'Major League Soccer'
+		case 'CPL':
+			return 'Canadian Premier League'
 		default:
 			return league
 	}
@@ -35,7 +51,11 @@ export function getLeagueSameAs(league: string): string {
 	const officialUrls: Record<string, string> = {
 		NFL: 'https://www.nfl.com',
 		NBA: 'https://www.nba.com',
+		WNBA: 'https://www.wnba.com',
 		MLB: 'https://www.mlb.com',
+		NHL: 'https://www.nhl.com',
+		MLS: 'https://www.mlssoccer.com',
+		CPL: 'https://canpl.ca',
 	}
 	return officialUrls[league] || ''
 }
@@ -130,13 +150,11 @@ export function generateSportsEventSchema(
 
 export function generateSportsOrganizationSchema(league: string, url: string) {
 	const lowercaseLeague = league.toLowerCase()
-	const logoFile =
-		league === 'NFL'
-			? 'football'
-			: lowercaseLeague === 'nba'
-			? 'basketball'
-			: 'baseball'
-
+	
+	// Most leagues have SVG logos, but MLS only has PNG
+	const logoExtension = league === 'MLS' ? 'png' : 'svg'
+	const logoUrl = `https://teamcountdown.com/logos/${lowercaseLeague}.${logoExtension}`
+	
 	return {
 		'@context': 'https://schema.org',
 		'@type': 'SportsOrganization',
@@ -144,7 +162,7 @@ export function generateSportsOrganizationSchema(league: string, url: string) {
 		alternateName: league,
 		sport: getSportName(league),
 		url,
-		logo: `https://teamcountdown.com/${logoFile}.svg`,
+		logo: logoUrl,
 		sameAs: [getLeagueSameAs(league)],
 	}
 }
@@ -156,7 +174,7 @@ export function generateWebSiteSchema() {
 		name: 'Team Countdown',
 		url: 'https://teamcountdown.com',
 		description:
-			'The fastest and prettiest way to check the next NFL, NBA, or MLB game. Launches instantly from your home screen.',
+			'The fastest and prettiest way to check the next NFL, NBA, MLB, NHL, WNBA, or MLS game. Launches instantly from your home screen.',
 		about: [
 			{
 				'@type': 'SportsOrganization',
@@ -169,6 +187,18 @@ export function generateWebSiteSchema() {
 			{
 				'@type': 'SportsOrganization',
 				name: 'Major League Baseball',
+			},
+			{
+				'@type': 'SportsOrganization',
+				name: 'National Hockey League',
+			},
+			{
+				'@type': 'SportsOrganization',
+				name: 'Women\'s National Basketball Association',
+			},
+			{
+				'@type': 'SportsOrganization',
+				name: 'Major League Soccer',
 			},
 		],
 	}
