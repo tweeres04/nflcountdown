@@ -24,19 +24,6 @@ export default function handleRequest(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   loadContext: AppLoadContext
 ) {
-  // Strip trailing slashes (except for homepage "/")
-  const url = new URL(request.url)
-  if (url.pathname !== '/' && url.pathname.endsWith('/')) {
-    const newPathname = url.pathname.slice(0, -1)
-    url.pathname = newPathname
-    return new Response(null, {
-      status: 301,
-      headers: {
-        Location: url.toString(),
-      },
-    })
-  }
-
   return isbot(request.headers.get("user-agent") || "")
     ? handleBotRequest(
         request,

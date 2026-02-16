@@ -60,12 +60,12 @@ export default function Footer({ league, countdown = false }: FooterProps) {
 							</p>
 						</>
 					)}
-					<p className="text-xs text-stone-600">
+					<p className={cn('text-xs', countdown ? 'text-white/70' : 'text-stone-600')}>
 						Team names, logos, and trademarks are the property of their
 						respective owners. This site is not affiliated with or endorsed by
 						the NFL, NBA, WNBA, MLB, NHL, MLS, or any team.
 					</p>
-					<p className="text-xs text-stone-500">
+					<p className={cn('text-xs', countdown ? 'text-white/70' : 'text-stone-500')}>
 						© 2026 Team Countdown
 					</p>
 				</div>
