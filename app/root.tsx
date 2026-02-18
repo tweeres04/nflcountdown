@@ -197,7 +197,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Links />
 				<meta
 					name="impact-site-verification"
-					content="f3298dd7-eba2-4d11-ad59-973b722b00cf"
+					value="5464c54d-4d05-44e5-b0e8-fee1cd731188"
 				></meta>
 			</head>
 			<body
