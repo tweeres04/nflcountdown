@@ -13,6 +13,7 @@ const buttonVariants = cva(
 					'w-full lg:w-auto justify-center border-2 rounded-sm border-white',
 				affiliate:
 					'w-full lg:w-auto justify-center rounded-sm hover:bg-white/20',
+				secondary: 'justify-start rounded-sm hover:bg-stone-200 text-stone-900',
 			},
 			size: {
 				default: 'px-5 py-2',
