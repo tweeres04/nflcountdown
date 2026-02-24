@@ -16,7 +16,8 @@ const THREE_MONTHS_MS = 90 * 24 * 60 * 60 * 1000
 
 const ANSWER_OPTIONS = [
 	'Google search',
-	'Typed the URL / bookmark',
+	'Typed the URL directly',
+	'Bookmark',
 	'Home screen app',
 	'Chrome suggestion',
 	'Someone shared it with me',
