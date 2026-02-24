@@ -105,6 +105,7 @@ export default function SeasonCountdown() {
 			game={seasonGame}
 			isTeamPage={false}
 			breadcrumbItems={breadcrumbItems}
+			teamPickerTeams={teams}
 		/>
 	)
 }

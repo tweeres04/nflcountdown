@@ -76,6 +76,7 @@ interface CountdownProps {
 	breadcrumbItems?: BreadcrumbItemType[]
 	suggestedGames?: Game[]
 	affiliateLinks?: AffiliateLinks
+	teamPickerTeams?: Team[]
 }
 
 function useUpdateTime() {
@@ -146,6 +147,7 @@ export default function Countdown({
 	breadcrumbItems,
 	suggestedGames = [],
 	affiliateLinks,
+	teamPickerTeams,
 }: CountdownProps) {
 	const LEAGUE = useContext(LeagueContext)
 	useUpdateTime()
@@ -447,9 +449,38 @@ export default function Countdown({
 
 				{showFullSchedule && team && <GameList games={games} team={team} />}
 
-				{affiliateLinks?.tickets ||
-				affiliateLinks?.betting ||
-				affiliateLinks?.merch ? (
+			{teamPickerTeams && teamPickerTeams.length > 0 && (
+				<div className="mt-10 space-y-3">
+					<h2 className="text-xl">Pick your team. Get your countdown.</h2>
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+						{teamPickerTeams.map((t) => (
+							<Link
+								key={t.abbreviation}
+								to={`/${LEAGUE.toLowerCase()}/${t.abbreviation.toLowerCase()}`}
+								className="flex items-center gap-4 py-2 content-link group"
+								onClick={() =>
+									mixpanel.track('click team from season page', {
+										team: t.fullName,
+									})
+								}
+							>
+								<img
+									src={`/logos/${LEAGUE === 'NFL' ? '' : `${LEAGUE.toLowerCase()}/`}${t.abbreviation.toLowerCase()}.svg`}
+									alt={`${t.fullName} logo`}
+									className="h-10 w-10 object-contain flex-shrink-0"
+								/>
+								<div className="text-base font-semibold text-white">
+									{t.fullName}
+								</div>
+							</Link>
+						))}
+					</div>
+				</div>
+			)}
+
+			{affiliateLinks?.tickets ||
+			affiliateLinks?.betting ||
+			affiliateLinks?.merch ? (
 					<div className="flex gap-3 mt-10 justify-center">
 						{affiliateLinks.tickets && (
 							<Button variant="affiliate" asChild size="sm">
