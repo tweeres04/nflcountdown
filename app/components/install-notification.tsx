@@ -69,6 +69,7 @@ export default function InstallNotification({
 		setIsIos(isIosDevice)
 
 		// 4. Show the banner
+		mixpanel.track('install notification shown')
 		setIsVisible(true)
 	}, [])
 
