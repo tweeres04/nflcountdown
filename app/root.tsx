@@ -168,7 +168,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 	const location = useLocation()
 
-	const isSeasonCountdown = location.pathname.match(/\/nfl\/season\/?/)
+	const isSeasonCountdown = location.pathname.match(/\/[a-z]+\/season\/?/)
 
 	return (
 		<html lang="en" className="text-[20px]">
@@ -187,7 +187,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 						href={`/${league.toLowerCase()}/${teamAbbrev.toLowerCase()}/manifest`}
 					/>
 				) : null}
-				{isSeasonCountdown ? (
+				{location.pathname.match(/\/nfl\/season\/?/) ? (
 					<link rel="manifest" href="/nfl-season-manifest.json" />
 				) : null}
 				<link rel="preconnect" href="https://fonts.googleapis.com" />

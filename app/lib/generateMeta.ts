@@ -56,12 +56,12 @@ export const generateMeta: MetaFunction = ({ data, params }) => {
 		{ title },
 		{ name: 'description', content: description },
 		{ name: 'theme-color', content: team.primaryColor },
-		{ name: 'og:title', content: title },
-		{ name: 'og:type', content: 'website' },
-		{ name: 'og:url', content: url },
-		{ name: 'og:image', content: ogImage },
-		{ name: 'og:description', content: description },
-		{ name: 'og:site_name', content: 'Team Countdown' },
+		{ property: 'og:title', content: title },
+		{ property: 'og:type', content: 'website' },
+		{ property: 'og:url', content: url },
+		{ property: 'og:image', content: ogImage },
+		{ property: 'og:description', content: description },
+		{ property: 'og:site_name', content: 'Team Countdown' },
 		{ tagName: 'link', rel: 'canonical', href: url },
 	]
 

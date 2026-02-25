@@ -124,11 +124,13 @@ export function countdownString({
 						? LEAGUE === 'CPL' || LEAGUE === 'MLS'
 							? `${team.nickName} play next`
 							: `the ${team.nickName} play next`
-						: LEAGUE === 'NFL'
+						: LEAGUE === 'NFL' || LEAGUE === 'MLS' || LEAGUE === 'CPL'
 						? 'kickoff'
 						: LEAGUE === 'MLB'
 						? 'first pitch'
-						: 'tipoff'
+						: LEAGUE === 'NHL'
+						? 'puck drop'
+						: 'tip-off'
 			  }`
 		: 'Game time TBD'
 	return countdownString

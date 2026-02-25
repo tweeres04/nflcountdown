@@ -126,12 +126,10 @@ export async function loader() {
         <loc>https://teamcountdown.com/${lowercaseLeague}</loc>
     </url>`)
 
-		// Add season page for NFL
-		if (LEAGUE === 'NFL') {
-			allUrls.push(`    <url>
-        <loc>https://teamcountdown.com/nfl/season</loc>
+		// Add season countdown page for all leagues
+		allUrls.push(`    <url>
+        <loc>https://teamcountdown.com/${lowercaseLeague}/season</loc>
     </url>`)
-		}
 
 		teams.forEach((t) => {
 			const teamAbbrev = t.abbreviation.toLowerCase()

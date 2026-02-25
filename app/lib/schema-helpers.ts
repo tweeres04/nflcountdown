@@ -151,9 +151,7 @@ export function generateSportsEventSchema(
 export function generateSportsOrganizationSchema(league: string, url: string) {
 	const lowercaseLeague = league.toLowerCase()
 	
-	// Most leagues have SVG logos, but MLS only has PNG
-	const logoExtension = league === 'MLS' ? 'png' : 'svg'
-	const logoUrl = `https://teamcountdown.com/logos/${lowercaseLeague}.${logoExtension}`
+	const logoUrl = `https://teamcountdown.com/logos/${lowercaseLeague}.svg`
 	
 	return {
 		'@context': 'https://schema.org',
