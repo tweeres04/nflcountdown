@@ -7,7 +7,7 @@ import { getTeamAndGames } from '~/lib/getTeamAndGames'
 import { generateMeta } from '~/lib/generateMeta'
 import { getCachedGamePreview } from '~/lib/gemini-service'
 import { getSuggestedGames } from '~/lib/getSuggestedGames'
-import { getAffiliateLinks } from '~/lib/affiliate-links'
+import { getAffiliateLinks } from '~/lib/cj-service'
 import { Game } from '~/lib/types'
 import Footer from '~/components/footer'
 
@@ -45,8 +45,11 @@ export async function loader({
 		{ label: team.fullName }, // No href = current page
 	]
 
-	// Generate affiliate links
-	const affiliateLinks = getAffiliateLinks(team, LEAGUE)
+	// Generate affiliate links (deferred)
+	const affiliateLinksPromise =
+		LEAGUE !== 'CPL'
+			? getAffiliateLinks(team, LEAGUE, nextGame).catch(() => null)
+			: Promise.resolve(null)
 
 	return defer({
 		LEAGUE,
@@ -57,7 +60,7 @@ export async function loader({
 		gamePreview: gamePreviewPromise,
 		suggestedGames,
 		breadcrumbItems,
-		affiliateLinks,
+		affiliateLinks: affiliateLinksPromise,
 	})
 }
 
@@ -66,14 +69,12 @@ export default function TeamCountdown() {
 		teams,
 		team,
 		games,
+		nextGame,
 		gamePreview,
 		suggestedGames,
 		breadcrumbItems,
 		affiliateLinks,
 	} = useLoaderData<typeof loader>()
-	const nextGame = games.find(
-		(g: Game) => g.time && isFuture(addHours(g.time, 3))
-	)
 
 	return (
 		<>

@@ -12,6 +12,33 @@ Welcome agent! This file provides essential information for working effectively 
 
 ---
 
+## Product Positioning & Guardrails
+
+**Core value proposition:** Team Countdown is about the *feeling* of anticipation -- "get pumped for the next game." It's emotional and experiential, not informational.
+
+**What we are:**
+- A countdown timer that builds excitement for the next game
+- Instant home screen access (PWA) so fans can check in with one tap
+- Beautiful, team-branded design that feels like putting on your jersey
+
+**What we are NOT:**
+- A schedule site (ESPN, team sites already do this)
+- A scores/stats site (big companies own this space)
+- A sports news aggregator
+
+**Guardrails for feature decisions:**
+- Every feature should amplify the "get pumped" feeling, not just deliver information
+- If a feature exists primarily to provide schedules, scores, or stats, we don't build it
+- Copy and UX should feel like a fan talking to a fan, not a database serving results
+- When in doubt, ask: "Does this make someone more excited for the next game?"
+
+**Guardrails for copy/framing:**
+- Lean into emotion and anticipation, not utility and information
+- Example: "Get hyped on game day" not "Get schedule reminders"
+- Example: "Never miss kickoff" not "View upcoming games"
+
+---
+
 ## 1. Development & Build Commands
 
 ### Essential Commands

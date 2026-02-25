@@ -28,15 +28,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from './ui/dialog'
-import {
-	Eye,
-	ThumbsDown,
-	ThumbsUp,
-	Ticket,
-	TrendingUp,
-	ShoppingBag,
-} from 'lucide-react'
-import { Badge } from './ui/badge'
+import { Calendar, Eye, Menu, ThumbsDown, ThumbsUp, Ticket } from 'lucide-react'
 import { Await, Link } from '@remix-run/react'
 import mixpanel from 'mixpanel-browser'
 import {
@@ -48,7 +40,13 @@ import {
 	BreadcrumbSeparator,
 } from './ui/breadcrumb'
 import type { BreadcrumbItem as BreadcrumbItemType } from '~/lib/schema-helpers'
-import type { AffiliateLinks } from '~/lib/affiliate-links'
+import type { AffiliateLinks } from '~/lib/cj-service'
+
+const AffiliateLinksLoading = () => (
+	<div className="flex gap-3 mt-10 justify-center">
+		<div className="h-9 w-24" />
+	</div>
+)
 
 // Simple inline loading skeleton for Dialog
 const GamePreviewLoading = () => (
@@ -75,7 +73,7 @@ interface CountdownProps {
 	isTeamPage?: boolean
 	breadcrumbItems?: BreadcrumbItemType[]
 	suggestedGames?: Game[]
-	affiliateLinks?: AffiliateLinks
+	affiliateLinks?: Promise<AffiliateLinks | null>
 	teamPickerTeams?: Team[]
 }
 
@@ -240,20 +238,7 @@ export default function Countdown({
 					>
 						<button className="px-3 py-2 flex gap-1">
 							<span className="hidden lg:inline">Teams</span>{' '}
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								fill="none"
-								viewBox="0 0 24 24"
-								strokeWidth={1.5}
-								stroke="currentColor"
-								className="size-6"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-								/>
-							</svg>
+							<Menu className="size-6" />
 						</button>
 					</TeamsDropdown>
 				</div>
@@ -341,7 +326,7 @@ export default function Countdown({
 									) : null}
 								</DialogTitle>
 								<Suspense fallback={<GamePreviewLoading />}>
-									<Await resolve={gamePreview}>
+									<Await resolve={gamePreview} errorElement={null}>
 										{(preview) =>
 											preview ? (
 												<>
@@ -388,134 +373,112 @@ export default function Countdown({
 							</DialogContent>
 						</Dialog>
 					)}
-				{games.length > 0 ? (
-					<>
-						<Button
-							onClick={() => {
-								mixpanel.track(
-									showFullSchedule
-										? 'click hide full schedule'
-										: 'click show full schedule'
-								)
-								setShowFullSchedule((v) => !v)
-							}}
-						>
-							{showFullSchedule ? 'Hide schedule' : 'Show full schedule'}
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								fill="none"
-								viewBox="0 0 24 24"
-								strokeWidth={1.5}
-								stroke="currentColor"
-								className="size-5"
+					{games.length > 0 ? (
+						<>
+							<Button
+								onClick={() => {
+									mixpanel.track(
+										showFullSchedule
+											? 'click hide full schedule'
+											: 'click show full schedule'
+									)
+									setShowFullSchedule((v) => !v)
+								}}
 							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
-								/>
-							</svg>
-						</Button>
+								{showFullSchedule ? 'Hide schedule' : 'Show full schedule'}
+								<Calendar className="size-5" />
+							</Button>
 
-			{/* Hidden navigation for SEO and screen readers - includes all game schedule links */}
-			{team && (
-				<nav className="sr-only" aria-label="Full schedule">
-					{games
-						.filter((g) => g.time && new Date(g.time) > new Date())
-						.map((g) => {
-							const gameSlug = getGameSlug(g, team.abbreviation)
-							const gameDate = g.time
-								? new Intl.DateTimeFormat('en-US', {
-										month: 'short',
-										day: 'numeric',
-										year: 'numeric',
-								  }).format(new Date(g.time))
-								: ''
-							return gameSlug ? (
-								<a
-									key={g.id}
-									href={`/${LEAGUE.toLowerCase()}/${team.abbreviation.toLowerCase()}/${gameSlug}`}
-								>
-									{g.homeTeam?.fullName} vs {g.awayTeam?.fullName}
-									{gameDate && ` - ${gameDate}`}
-								</a>
-							) : null
-						})}
-				</nav>
-			)}
-					</>
-				) : null}
+							{/* Hidden navigation for SEO and screen readers - includes all game schedule links */}
+							{team && (
+								<nav className="sr-only" aria-label="Full schedule">
+									{games
+										.filter((g) => g.time && new Date(g.time) > new Date())
+										.map((g) => {
+											const gameSlug = getGameSlug(g, team.abbreviation)
+											const gameDate = g.time
+												? new Intl.DateTimeFormat('en-US', {
+														month: 'short',
+														day: 'numeric',
+														year: 'numeric',
+												  }).format(new Date(g.time))
+												: ''
+											return gameSlug ? (
+												<a
+													key={g.id}
+													href={`/${LEAGUE.toLowerCase()}/${team.abbreviation.toLowerCase()}/${gameSlug}`}
+												>
+													{g.homeTeam?.fullName} vs {g.awayTeam?.fullName}
+													{gameDate && ` - ${gameDate}`}
+												</a>
+											) : null
+										})}
+								</nav>
+							)}
+						</>
+					) : null}
 				</div>
 
 				{showFullSchedule && team && <GameList games={games} team={team} />}
 
-			{teamPickerTeams && teamPickerTeams.length > 0 && (
-				<div className="mt-10 space-y-3">
-					<h2 className="text-xl">Pick your team. Get your countdown.</h2>
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-						{teamPickerTeams.map((t) => (
-							<Link
-								key={t.abbreviation}
-								to={`/${LEAGUE.toLowerCase()}/${t.abbreviation.toLowerCase()}`}
-								className="flex items-center gap-4 py-2 content-link group"
-								onClick={() =>
-									mixpanel.track('click team from season page', {
-										team: t.fullName,
-									})
-								}
-							>
-								<img
-									src={`/logos/${LEAGUE === 'NFL' ? '' : `${LEAGUE.toLowerCase()}/`}${t.abbreviation.toLowerCase()}.svg`}
-									alt={`${t.fullName} logo`}
-									className="h-10 w-10 object-contain flex-shrink-0"
-								/>
-								<div className="text-base font-semibold text-white">
-									{t.fullName}
-								</div>
-							</Link>
-						))}
+				{teamPickerTeams && teamPickerTeams.length > 0 && (
+					<div className="mt-10 space-y-3">
+						<h2 className="text-xl">Pick your team. Get your countdown.</h2>
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+							{teamPickerTeams.map((t) => (
+								<Link
+									key={t.abbreviation}
+									to={`/${LEAGUE.toLowerCase()}/${t.abbreviation.toLowerCase()}`}
+									className="flex items-center gap-4 py-2 content-link group"
+									onClick={() =>
+										mixpanel.track('click team from season page', {
+											team: t.fullName,
+										})
+									}
+								>
+									<img
+										src={`/logos/${
+											LEAGUE === 'NFL' ? '' : `${LEAGUE.toLowerCase()}/`
+										}${t.abbreviation.toLowerCase()}.svg`}
+										alt={`${t.fullName} logo`}
+										className="h-10 w-10 object-contain flex-shrink-0"
+									/>
+									<div className="text-base font-semibold text-white">
+										{t.fullName}
+									</div>
+								</Link>
+							))}
+						</div>
 					</div>
-				</div>
-			)}
+				)}
 
-			{affiliateLinks?.tickets ||
-			affiliateLinks?.betting ||
-			affiliateLinks?.merch ? (
-					<div className="flex gap-3 mt-10 justify-center">
-						{affiliateLinks.tickets && (
-							<Button variant="affiliate" asChild size="sm">
-								<a
-									href={affiliateLinks.tickets}
-									target="_blank"
-									rel="noopener noreferrer sponsored"
-								>
-									Tickets <Ticket className="size-4" />
-								</a>
-							</Button>
-						)}
-						{affiliateLinks.betting && (
-							<Button variant="affiliate" asChild size="sm">
-								<a
-									href={affiliateLinks.betting}
-									target="_blank"
-									rel="noopener noreferrer sponsored"
-								>
-									Bet <TrendingUp className="size-4" />
-								</a>
-							</Button>
-						)}
-						{affiliateLinks.merch && (
-							<Button variant="affiliate" asChild size="sm">
-								<a
-									href={affiliateLinks.merch}
-									target="_blank"
-									rel="noopener noreferrer sponsored"
-								>
-									Gear <ShoppingBag className="size-4" />
-								</a>
-							</Button>
-						)}
-					</div>
+				{affiliateLinks ? (
+					<Suspense fallback={<AffiliateLinksLoading />}>
+						<Await resolve={affiliateLinks} errorElement={null}>
+							{(links) =>
+							links?.tickets ? (
+								<div className="flex gap-3 mt-10 justify-center animate-in fade-in duration-300">
+										<Button variant="affiliate" asChild size="sm">
+											<a
+												href={links.tickets}
+												target="_blank"
+												rel="noopener noreferrer sponsored"
+												onClick={() => {
+													mixpanel.track('click ticket link', {
+														team: team?.fullName,
+														opponent: opposingTeam?.fullName,
+														page: isTeamPage ? 'team' : 'game',
+													})
+												}}
+											>
+												Tickets <Ticket className="size-4" />
+											</a>
+										</Button>
+									</div>
+								) : null
+							}
+						</Await>
+					</Suspense>
 				) : null}
 
 				{suggestedGames.length > 0 && (
