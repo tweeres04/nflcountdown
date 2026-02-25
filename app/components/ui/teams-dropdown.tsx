@@ -36,7 +36,6 @@ export default function TeamsDropdown({
 		<>
 		{/* Hidden navigation for SEO and screen readers - includes all team and league links */}
 		<nav className="sr-only" aria-label="All teams and leagues">
-			{LEAGUE && <a href={`/${lowercaseLeague}/season`}>{LEAGUE} Season Countdown</a>}
 			{teams.map((t) => (
 				<a
 					key={t.abbreviation}
@@ -58,11 +57,6 @@ export default function TeamsDropdown({
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
 				<DropdownMenuContent className={contentClasses}>
-				{LEAGUE ? (
-					<DropdownMenuItem asChild>
-						<a href={`/${lowercaseLeague}/season`}>{LEAGUE} Season Countdown</a>
-					</DropdownMenuItem>
-				) : null}
 					<DropdownMenuSub>
 						<DropdownMenuSubTrigger
 							className={`data-[state=open]:bg-${color} focus:bg-${color}`}

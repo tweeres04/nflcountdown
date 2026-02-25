@@ -90,7 +90,7 @@ export default function TeamCountdown() {
 				suggestedGames={suggestedGames}
 				affiliateLinks={affiliateLinks}
 			/>
-			<Footer countdown />
+			<Footer dark />
 		</>
 	)
 }

@@ -26,14 +26,14 @@ export default function UpcomingGames({ games, league }: UpcomingGamesProps) {
 							<div className="text-sm">
 								<Link
 									to={`/${lowercaseLeague}/${homeAbbrev}`}
-									className="content-link stone"
+									className="content-link"
 								>
 									{game.homeTeam!.fullName}
 								</Link>
 								{' vs '}
 								<Link
 									to={`/${lowercaseLeague}/${awayAbbrev}`}
-									className="content-link stone"
+									className="content-link"
 								>
 									{game.awayTeam!.fullName}
 								</Link>

@@ -51,7 +51,7 @@ export default function Index() {
 	return (
 		<>
 			<div className="flex flex-col min-h-screen md:h-auto">
-				<div className="p-4 max-w-[500px] lg:max-w-[750px] mx-auto space-y-12 min-h-[600px] grow pb-20">
+				<div className="font-sans text-white p-4 max-w-[500px] lg:max-w-[750px] mx-auto space-y-12 min-h-[600px] grow pb-20">
 					<h1 className="text-3xl">Team Countdown</h1>
 					<div className="flex flex-col gap-10">
 						<div className="space-y-5">
@@ -59,7 +59,7 @@ export default function Index() {
 								<h2 className="text-2xl">
 									Get pumped for game day
 								</h2>
-								<p>
+								<p className="text-white/80">
 									Pick your team. Add it to your home screen. Watch the days, hours, and minutes tick away until kickoff.
 								</p>
 							</div>
@@ -70,7 +70,7 @@ export default function Index() {
 										<a
 											key={league.code}
 											href={`/${league.code}`}
-											className="flex items-center gap-4 py-2 content-link stone group"
+											className="flex items-center gap-4 py-2 content-link group"
 										>
 											<img
 												src={`/logos/${league.code}.png`}
@@ -78,10 +78,10 @@ export default function Index() {
 												className="h-10 w-10 object-contain flex-shrink-0"
 											/>
 											<div className="flex flex-col items-start gap-0.5">
-												<div className="text-base font-semibold text-stone-900">
+												<div className="text-base font-semibold text-white">
 													{league.name}
 												</div>
-												<div className="text-sm font-normal text-stone-600">
+												<div className="text-sm font-normal text-white/60">
 													{league.fullName}
 												</div>
 											</div>
@@ -92,7 +92,7 @@ export default function Index() {
 						</div>
 					</div>
 				</div>
-				<Footer />
+				<Footer dark />
 			</div>
 		</>
 	)

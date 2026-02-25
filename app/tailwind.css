@@ -12,6 +12,13 @@ h1, h2, h3, h4, h5, h6 {
 	letter-spacing: -0.02em;
 }
 
+@layer utilities {
+	.bg-dark-vignette {
+		background: radial-gradient(ellipse at 50% 0%, #3a3a3a 0%, #0f0f0f 70%);
+	}
+
+}
+
 @layer components {
 	.content-link {
 		@apply underline decoration-white/50 hover:decoration-white transition-colors;

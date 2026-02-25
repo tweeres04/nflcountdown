@@ -121,7 +121,7 @@ export default function GameCountdown() {
 				suggestedGames={suggestedGames}
 				affiliateLinks={affiliateLinks}
 			/>
-			<Footer countdown />
+			<Footer dark />
 		</>
 	)
 }

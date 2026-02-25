@@ -168,7 +168,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 	const location = useLocation()
 
-	const isSeasonCountdown = location.pathname.match(/\/[a-z]+\/season\/?/)
+	const isStaticPage = ['/about', '/privacy', '/terms', '/contact'].some(
+		(p) => location.pathname.startsWith(p)
+	)
+
+
 
 	return (
 		<html lang="en" className="text-[20px]">
@@ -187,7 +191,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 						href={`/${league.toLowerCase()}/${teamAbbrev.toLowerCase()}/manifest`}
 					/>
 				) : null}
-				{location.pathname.match(/\/nfl\/season\/?/) ? (
+				{location.pathname.match(/^\/nfl\/?$/) ? (
 					<link rel="manifest" href="/nfl-season-manifest.json" />
 				) : null}
 				<link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -201,14 +205,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				></meta>
 			</head>
 			<body
-				className={cn(
-					'font-sans',
-					teamAbbrev
-						? gradientClass_
-						: isSeasonCountdown
-						? 'bg-stone-900'
-						: 'bg-stone-100'
-				)}
+			className={cn(
+				'font-sans',
+				teamAbbrev
+					? gradientClass_
+					: isStaticPage
+					? 'bg-stone-100'
+					: 'bg-dark-vignette'
+			)}
 			>
 				<script
 					dangerouslySetInnerHTML={{
