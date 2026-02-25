@@ -1,13 +1,82 @@
+import fs from 'fs'
+import path from 'path'
 import { GoogleGenAI } from '@google/genai'
 import { Game, Team } from './types'
 
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_AI_API_KEY })
 
-// Simple in-memory cache to avoid repeated API calls
-const previewCache = new Map<
-	string,
-	{ preview: string | null; timestamp: number }
->()
+const CACHE_FILE = path.join(
+	process.cwd(),
+	'data',
+	'cache',
+	'gemini-previews.json'
+)
+const CACHE_TTL_MS = 1000 * 60 * 60 * 24 // 24 hours
+const CLEANUP_PROBABILITY = 0.05 // ~5% chance of cleanup on each cache write
+
+interface CacheEntry {
+	preview: string | null
+	cachedAt: string
+}
+
+interface CacheFile {
+	[gameId: string]: CacheEntry
+}
+
+function readCacheFile(): CacheFile {
+	try {
+		if (!fs.existsSync(CACHE_FILE)) return {}
+		const raw = fs.readFileSync(CACHE_FILE, 'utf-8')
+		return JSON.parse(raw) as CacheFile
+	} catch {
+		return {}
+	}
+}
+
+function writeCacheFile(cache: CacheFile): void {
+	try {
+		const dir = path.dirname(CACHE_FILE)
+		if (!fs.existsSync(dir)) {
+			fs.mkdirSync(dir, { recursive: true })
+		}
+		fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2))
+	} catch (err) {
+		console.error('[gemini-service] Failed to write cache:', err)
+	}
+}
+
+function purgeExpiredEntries(cache: CacheFile): CacheFile {
+	const now = Date.now()
+	const pruned: CacheFile = {}
+	for (const [key, entry] of Object.entries(cache)) {
+		const t = new Date(entry.cachedAt).getTime()
+		if (!isNaN(t) && now - t <= CACHE_TTL_MS) {
+			pruned[key] = entry
+		}
+	}
+	return pruned
+}
+
+function getCachedPreview(gameId: string): string | null | undefined {
+	const cache = readCacheFile()
+	const entry = cache[gameId]
+	if (!entry) return undefined
+	const t = new Date(entry.cachedAt).getTime()
+	if (isNaN(t) || Date.now() - t > CACHE_TTL_MS) return undefined
+	return entry.preview
+}
+
+function setCachedPreview(gameId: string, preview: string | null): void {
+	let cache = readCacheFile()
+
+	cache[gameId] = { preview, cachedAt: new Date().toISOString() }
+
+	if (Math.random() < CLEANUP_PROBABILITY) {
+		cache = purgeExpiredEntries(cache)
+	}
+
+	writeCacheFile(cache)
+}
 
 export async function generateGamePreview(
 	league: string,
@@ -58,32 +127,12 @@ export async function getCachedGamePreview(
 	game: Game,
 	team: Team
 ): Promise<string | null> {
-	const now = Date.now()
-	const CACHE_TTL = 1000 * 60 * 60 * 24 // 24 hours
+	const cached = getCachedPreview(game.id)
+	if (cached !== undefined) return cached
 
-	// Cleanup old entries occasionally (simple garbage collection)
-	// Wrapped in setTimeout to unblock the request flow
-	if (previewCache.size > 100) {
-		setTimeout(() => {
-			for (const [key, value] of previewCache.entries()) {
-				if (Date.now() - value.timestamp > CACHE_TTL) {
-					previewCache.delete(key)
-				}
-			}
-		}, 0)
-	}
-
-	// Check cache first (24 hour cache)
-	const cached = previewCache.get(game.id)
-	if (cached && now - cached.timestamp < CACHE_TTL) {
-		return cached.preview
-	}
-
-	// Generate new preview
 	const preview = await generateGamePreview(league, game, team)
 
-	// Cache the result
-	previewCache.set(game.id, { preview, timestamp: now })
+	setCachedPreview(game.id, preview)
 
 	return preview
 }

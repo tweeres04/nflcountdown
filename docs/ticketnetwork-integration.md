@@ -1,20 +1,26 @@
-# TicketNetwork affiliate integration plan
+# TicketNetwork affiliate integration
 
 ## Table of contents
+- [Status](#status)
 - [Context](#context)
 - [CJ API details](#cj-api-details)
+- [Query strategy](#query-strategy)
 - [Data structure](#data-structure)
 - [Keyword strategy](#keyword-strategy)
+- [Category filtering](#category-filtering)
 - [Game matching strategy](#game-matching-strategy)
-- [Implementation steps](#implementation-steps)
 - [Caching strategy](#caching-strategy)
 - [Edge cases](#edge-cases)
 
+## Status
+
+**Shipped.** Live on all leagues except CPL.
+
 ## Context
 
-TicketNetwork is a ticket marketplace. We're approved as a publisher through CJ Affiliate (Commission Junction). CJ provides a GraphQL Product Search API that returns TicketNetwork's event listings with pre-built tracked affiliate links (`clickUrl`). We don't need to construct tracking URLs ourselves — CJ handles domain rotation and tracking parameters.
+TicketNetwork is a ticket marketplace. We're approved as a publisher through CJ Affiliate (Commission Junction). CJ provides a GraphQL API that returns TicketNetwork's event listings with pre-built tracked affiliate links (`clickUrl`). We don't need to construct tracking URLs ourselves — CJ handles domain rotation and tracking parameters.
 
-Verified that all four leagues we support have events in the catalog: NFL, MLB, NBA, WNBA. NFL offseason events exist with "(Date: TBD)" titles and placeholder dates.
+All leagues confirmed working: NFL, MLB, NBA, NHL, WNBA, MLS. CPL has no coverage (expected) and is explicitly excluded.
 
 ## CJ API details
 
@@ -37,36 +43,40 @@ Verified that all four leagues we support have events in the catalog: NFL, MLB, 
 
 | Value | Description |
 |---|---|
-| `1621` | TicketNetwork's catalog ID |
 | `13378336` | CJ ad/link ID — appears in all generated clickUrls, set by CJ |
 
-**Rate limits:** 500 calls per 5 minutes.
+**Rate limits:** 500 calls per 5 minutes. With per-event caching, we rarely hit the API for the same game twice.
+
+## Query strategy
+
+We use the `travelExperienceProducts` query (not the generic `products` query). Key differences:
+
+- Returns only `TravelExperience` type products (events, travel) — already scoped to our use case
+- `categoryName` field is available directly (not as an inline fragment field)
+- Same `limit`, `keywords`, `partnerIds` arguments
 
 **GraphQL query:**
 
 ```graphql
 {
-    products(
-        companyId: "${CJ_COMPANY_ID}",
-        partnerIds: ["${CJ_TICKETNETWORK_PARTNER_ID}"],
-        keywords: ["Seattle", "Seahawks"],
-        limit: 100
-    ) {
-        resultList {
-            id
-            title
-            price { amount, currency }
-            customLabel0
-            customLabel1
-            linkCode(pid: "${CJ_WEBSITE_PID}") { clickUrl }
-            ... on TravelExperience {
-                travelStartDate
-                travelType
-                performers
-                locationName
-            }
-        }
+  travelExperienceProducts(
+    companyId: "${CJ_COMPANY_ID}",
+    partnerIds: ["${CJ_TICKETNETWORK_PARTNER_ID}"],
+    keywords: ["Toronto Blue Jays", "Blue Jays", "Oakland Athletics", "Athletics"],
+    limit: 100
+  ) {
+    resultList {
+      id
+      title
+      linkCode(pid: "${CJ_WEBSITE_PID}") { clickUrl }
+      ... on TravelExperience {
+        travelStartDate
+        performers
+        locationName
+        categoryName
+      }
     }
+  }
 }
 ```
 
@@ -77,103 +87,86 @@ Each product in the response:
 | Field | Type | Example | Description |
 |---|---|---|---|
 | `id` | string | `"7274990"` | TicketNetwork event ID |
-| `title` | string | `"Edmonton Oilers vs. Vancouver Canucks"` | Game title |
-| `performers` | string | `"Edmonton Oilers\|Vancouver Canucks"` | Pipe-delimited team names |
-| `travelStartDate` | ISO 8601 | `"2026-04-16T08:00:00Z"` | Game date (time portion is not game time) |
-| `travelType` | string | `"events"` | Always "events" for tickets |
-| `locationName` | string | `"Rogers Place"` | Venue name |
-| `customLabel0` | string | `"07:00:00 PM"` | Local game time |
-| `customLabel1` | string | `"103.4 - 1485.0"` | Price range (low - high) |
-| `price.amount` | string | `"103.40"` | Lowest ticket price (USD) |
+| `title` | string | `"Toronto Blue Jays vs. The Athletics"` | Game title |
+| `performers` | string | `"The Athletics\|Toronto Blue Jays"` | Pipe-delimited team names |
+| `categoryName` | string | `"Sports \| Baseball \| Professional (MLB)"` | TicketNetwork category hierarchy |
+| `travelStartDate` | ISO 8601 | `"2026-03-27T08:00:00Z"` | Game date (time portion is midnight UTC, not game time) |
+| `locationName` | string | `"Rogers Centre"` | Venue name |
 | `linkCode.clickUrl` | string | Full CJ URL | Ready-to-use tracked affiliate link |
 
 **clickUrl format:** `https://www.{cj-domain}.com/click-101691187-13378336?url=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F{eventId}&cjsku={eventId}`
 
-CJ rotates between domains: `kqzyfj.com`, `anrdoezrs.net`, `tkqlhce.com`, `dpbolvw.net`
-
-**Fields that are always null/empty for TicketNetwork:** `brand`, `destinationCity`, `destinationName`, `locationId`, `imageLink` (generic placeholder), `availabilityStart`, `availabilityEnd`, `salePriceEffectiveDateStart`, `salePriceEffectiveDateEnd`, `salePrice`
+CJ rotates between domains: `kqzyfj.com`, `anrdoezrs.net`, `tkqlhce.com`, `dpbolvw.net` — never hardcode these.
 
 ## Keyword strategy
 
-The `keywords` parameter accepts an array of strings. Using the full team name split into words prevents false positives:
+We pass `[team.fullName, team.nickName, opponent.fullName, opponent.nickName]` as keywords. This handles two problems:
 
-| Query | Risk |
+**Problem 1 — Name mismatches:** TicketNetwork doesn't always use our team's `fullName`. For example, `"Oakland Athletics"` returns zero results because TicketNetwork calls them `"The Athletics"`. But `"Athletics"` (the nickName) does find them. Sending both ensures coverage.
+
+**Problem 2 — Relevance:** Including the opponent's names significantly improves result relevance. The top results are almost always the exact matchup we're looking for.
+
+| Keyword array | Result |
 |---|---|
-| `keywords: "seahawks"` | Matches Wagner Seahawks (college) |
-| `keywords: ["Seattle", "Seahawks"]` | Matches only Seattle Seahawks |
+| `["Oakland Athletics"]` | Oakland Ballet, World Athletics Championships — 0 MLB games |
+| `["Athletics"]` | World Athletics Championships, then MLB games |
+| `["Oakland Athletics", "Athletics"]` | MLB Athletics games (World Athletics filtered by categoryName) |
+| `["Toronto Blue Jays", "Blue Jays", "Oakland Athletics", "Athletics"]` | Athletics vs Blue Jays games appear first |
 
-**Implementation:** Split `team.fullName` by spaces and pass as the keywords array.
+If no opponent is available (TBD game), we fall back to just `[team.fullName, team.nickName]`.
 
-**Edge case:** Teams with short/common city names (e.g., "New York") appear in multiple leagues. The `performers` field in the response lets us filter to the exact team after the query returns.
+## Category filtering
+
+TicketNetwork's `categoryName` field is a pipe-delimited hierarchy, e.g.:
+- `"Sports | Baseball | Professional (MLB)"`
+- `"Sports | Football | NFL"`
+- `"Sports | Basketball | Professional (NBA)"`
+- `"Theater | Ballet"`
+
+We filter results to only include products where `categoryName` contains the league string. This eliminates noise like Oakland Ballet or World Athletics Championships that keyword search alone can't prevent.
+
+| League | Filter string | Example categoryName |
+|---|---|---|
+| NFL | `NFL` | `Sports \| Football \| NFL` |
+| MLB | `MLB` | `Sports \| Baseball \| Professional (MLB)` |
+| NBA | `NBA` | `Sports \| Basketball \| Professional (NBA)` |
+| NHL | `NHL` | `Sports \| Hockey \| Professional (NHL)` |
+| WNBA | `WNBA` | `Sports \| Basketball \| Professional (WNBA)` |
+| MLS | `MLS` | `Sports \| Soccer \| Professional (MLS)` |
+
+We also filter out season ticket packages by requiring two performers (the `performers` string must contain `|`).
 
 ## Game matching strategy
 
-For a given `Game` object on our site:
-
-1. Query CJ with `keywords` from `team.fullName` split into words
-2. Filter results where `performers` (pipe-split) contains our team's full name
-3. Match by `travelStartDate` (compare date portion only) to our game's date
-4. If matched, use that product's `clickUrl`
-5. If no date match (e.g., TBD games), match by opponent name from `performers`
-6. If still no match, fall back to no ticket link (don't show broken links)
-
-## Implementation steps
-
-### Step 1: CJ API service module (~15 min)
-
-**New file:** `app/lib/cj-service.ts`
-
-- `searchTicketNetworkEvents(teamFullName: string): Promise<CJProduct[]>`
-- Sends GraphQL query to CJ API
-- Parses response into typed array
-- Handles errors gracefully (returns empty array, logs server-side)
-- File-based JSON cache with 7-day TTL (survives server restarts and deploys)
-
-### Step 2: Update affiliate-links.ts (~20 min)
-
-- Make `getAffiliateLinks()` async
-- Add TicketNetwork as the ticket provider (replacing StubHub placeholder)
-- Accept optional `Game` parameter for game-specific matching
-- Call `searchTicketNetworkEvents()` and match to game by date + opponent
-- Return `clickUrl` as the `tickets` link
-
-### Step 3: Update route loaders (~10 min)
-
-- `app/routes/$league.$teamAbbrev_.tsx` — `await` the now-async `getAffiliateLinks()`
-- `app/routes/$league.$teamAbbrev.$gameSlug.tsx` — Same, pass game for specific matching
-
-### Step 4: UI/copy verification (~10 min)
-
-- Verify affiliate button copy works for TicketNetwork context
-- Ensure Mixpanel tracking fires on click
-- Test with real links in dev
-
-### Step 5: Environment setup (~5 min)
-
-- Add all four CJ env vars to production environment: `CJ_ACCESS_TOKEN`, `CJ_COMPANY_ID`, `CJ_WEBSITE_PID`, `CJ_TICKETNETWORK_PARTNER_ID`
-- Verify `.env.local` is in `.gitignore`
-
-**Total estimated time:** ~1 hour
+1. Check per-event cache (`data/cache/cj-tickets.json`, key `team-slug|YYYY-MM-DD`) — return immediately on hit
+2. On cache miss, query `travelExperienceProducts` with `[team.fullName, team.nickName, opponent.fullName, opponent.nickName]`
+3. Filter results by `categoryName` containing the league string
+4. Filter to products with two performers (has `|`)
+5. Sort by `travelStartDate` ascending
+6. Match by date (`travelStartDate.slice(0,10) === gameDate.slice(0,10)`)
+7. Fall back to next future game chronologically
+8. If no future games, return null (no link shown)
+9. Cache the resulting `clickUrl` for this game
 
 ## Caching strategy
 
-- **Storage:** JSON file on disk (e.g., `data/cache/cj-{teamSlug}.json`)
-- **TTL:** 7 days — schedules are stable week-to-week, and even if a price changes, the link still works
-- **Key:** Team full name slug
-- **Structure:** `{ cachedAt: ISO string, products: CJProduct[] }`
-- **Invalidation:** On read, check if `cachedAt` is older than 7 days; if so, re-fetch
-- **Survives:** Server restarts, deploys — unlike in-memory caching which resets every time
+- **Storage:** Single JSON file at `data/cache/cj-tickets.json` — all leagues, all teams, all games in one flat object
+- **Cache key:** `"team-slug|YYYY-MM-DD"` e.g. `"toronto-blue-jays|2026-03-27"`
+- **Per-entry TTL:** 7 days — each entry has its own `cachedAt` timestamp
+- **Probabilistic cleanup:** ~5% chance on each write to purge expired entries (no cron needed)
+- **Granularity:** Per-event, not per-team. Each game is cached independently so one stale entry doesn't invalidate an entire team's cache.
+- **Survives:** Server restarts and deploys (disk-based, not in-memory)
 
 ## Edge cases
 
-1. **NFL offseason / TBD dates:** Events exist with placeholder dates (all in Aug 2026). Titles contain "(Date: TBD)". We can still show ticket links — users land on the TicketNetwork event page which has current info.
+1. **"The Athletics" name mismatch:** Solved by keyword strategy — `nickName` "Athletics" finds them even though `fullName` "Oakland Athletics" doesn't.
 
-2. **Same opponent twice:** A team may play the same opponent multiple times (e.g., division rivals). Match by date + opponent name together for uniqueness.
+2. **NFL offseason / TBD dates:** Events exist with placeholder dates. No date match, so falls back to next future game. Still shows a valid ticket link.
 
-3. **CJ API down:** Return empty/undefined affiliate links. Never break the page. Log server-side.
+3. **CPL:** No TicketNetwork coverage. Explicitly excluded in both route loaders — `affiliateLinksPromise` resolves to `null` immediately without hitting the API.
 
-4. **Rate limiting:** 500 calls per 5 minutes. With 7-day file caching per team, we'd only re-fetch a team's events once a week. Well under any reasonable limit.
+4. **CJ API down / timeout:** 8-second `AbortSignal.timeout`. `searchTicketNetworkEvents` wraps everything in try/catch and returns `[]`. Route loaders add `.catch(() => null)`. Page always loads cleanly.
 
-5. **Missing teams:** If a team has no TicketNetwork events (unlikely but possible), `resultList` will be empty. No ticket link shown.
+5. **No tickets available:** `getAffiliateLinks` returns `null`. The `<Await>` renders nothing. No button shown.
 
-6. **NHL/MLS:** TicketNetwork has NHL events (confirmed with Vancouver Canucks). MLS untested but likely available. Can extend later — the same implementation works for any league.
+6. **No date filter on CJ API:** The `travelExperienceProducts` query has no date range argument. We rely on keyword + categoryName filtering to get relevant results, then match by date client-side.
