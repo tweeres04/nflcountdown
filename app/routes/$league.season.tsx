@@ -329,6 +329,27 @@ export function meta({
 				},
 			},
 		},
+		...(!isMidSeason
+			? [
+					{
+						'script:ld+json': {
+							'@context': 'https://schema.org',
+							'@type': 'SportsEvent',
+							name: `${seasonYear} ${meta.fullName} Season`,
+							startDate: seasonStartDate,
+							location: {
+								'@type': 'Place',
+								name: 'North America',
+							},
+							organizer: {
+								'@type': 'SportsOrganization',
+								name: meta.fullName,
+							},
+							url,
+						},
+					},
+				]
+			: []),
 		{
 			'script:ld+json': generateBreadcrumbSchema(breadcrumbItems),
 		},

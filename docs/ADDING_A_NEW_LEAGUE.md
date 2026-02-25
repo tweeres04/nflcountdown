@@ -41,6 +41,8 @@ Before starting, gather:
 | `app/routes/$league.$teamAbbrev.manifest.ts` | Add manifest support for PWA icons |
 | `app/routes/_index.tsx` | Add league to homepage picker |
 | `app/routes/sitemap[.]xml.ts` | Add league to sitemap generation |
+| `app/routes/$league.season.tsx` | Add league to `SUPPORTED_LEAGUES` and `LEAGUE_META` (season countdown page) |
+| `app/lib/getSeasonStartDate.ts` | Add calculated season start date fallback rule for the league |
 | `app/root.tsx` | Add legacy redirects (if migrating from old domain) |
 | `app/components/ui/teams-dropdown.tsx` | Add league to "More leagues" dropdown |
 | `app/components/countdown.tsx` | Add league-specific text (e.g., soccer uses "play next" without "the") |
@@ -299,7 +301,46 @@ cd cron && npm run get-{league}-schedule
 
 ---
 
-### 11. Verify Implementation
+### 11. Add Season Countdown Page Support
+
+The `/$league/season` route is parameterized and supports all leagues automatically, but requires two additions per new league:
+
+**`app/routes/$league.season.tsx`** — Add to `SUPPORTED_LEAGUES` array and `LEAGUE_META` record:
+```typescript
+const SUPPORTED_LEAGUES = ['NFL', 'MLB', ..., 'NEWLEAGUE']
+
+const LEAGUE_META = {
+  // ...
+  NEWLEAGUE: {
+    fullName: 'New League Full Name',
+    shortName: 'NEWLEAGUE',
+    seasonTerm: 'kickoff', // or 'opening day', 'tip-off', 'puck drop'
+    titleKeyword: 'New League Season',
+    crossYear: false, // true if season spans two calendar years (e.g. NBA, NHL)
+  },
+}
+```
+
+Also add a case to `getTeamsForLeague()` so the team picker renders on the season page.
+
+**`app/lib/getSeasonStartDate.ts`** — Add a calculated fallback rule for when no schedule is loaded yet (offseason):
+```typescript
+if (LEAGUE === 'NEWLEAGUE') {
+  // e.g. Last Saturday of February
+  date = lastWeekdayOfMonth(year, 1, isSaturday, nextSaturday)
+  date.setUTCHours(18, 0, 0, 0)
+  return date
+}
+```
+
+**Season page behavior:**
+- **Offseason** (no schedule or all games in past): shows countdown to calculated next season start date
+- **Mid-season** (schedule has past + future games): shows "season is underway" UI with team picker
+- `crossYear: true` leagues (NBA, NHL) display as "2025-26 Season"; others display as "2026 Season"
+
+---
+
+### 12. Verify Implementation
 
 ```bash
 # Run typecheck
@@ -312,6 +353,7 @@ npm run dev
 # - /{league} - League page
 # - /{league}/{team} - Team page
 # - /{league}/{team}/manifest.webmanifest - PWA manifest
+# - /{league}/season - Season countdown page
 ```
 
 ---
@@ -332,6 +374,8 @@ npm run dev
 - [ ] `app/routes/$league.$teamAbbrev.manifest.ts` updated
 - [ ] `app/routes/_index.tsx` updated (homepage)
 - [ ] `app/routes/sitemap[.]xml.ts` updated
+- [ ] `app/routes/$league.season.tsx` updated (`SUPPORTED_LEAGUES` + `LEAGUE_META` + `getTeamsForLeague`)
+- [ ] `app/lib/getSeasonStartDate.ts` updated (add calculated fallback rule)
 - [ ] `app/root.tsx` updated (legacy redirects if needed)
 - [ ] `app/components/ui/teams-dropdown.tsx` updated
 - [ ] `app/components/countdown.tsx` updated (league-specific text if needed)
