@@ -1,8 +1,8 @@
 # Monetization Plan for Team Countdown
 
 **Created:** January 28, 2026  
-**Status:** Waiting on affiliate approvals  
-**Updated:** February 13, 2026  
+**Status:** Phase 1 (tickets) shipped. Betting and merch not yet implemented.  
+**Updated:** February 25, 2026  
 **Estimated Effort:** 4-6 hours (AI-assisted) for Phase 1; 12-20 hours for Phase 5
 
 ---
@@ -131,11 +131,13 @@ This document outlines the monetization strategy for teamcountdown.com, focusing
 
 #### 1. Ticket Affiliates
 
+**Status: Shipped** via TicketNetwork through CJ Affiliate. See `docs/ticketnetwork-integration.md` for full implementation details.
+
 | Program | Commission | Cookie | Apply At | Priority |
 |---------|------------|--------|----------|----------|
-| **StubHub** | 4-6% | 7 days | stubhub.com/affiliates (via Partnerize) | High |
-| **SeatGeek** | 5% | 30 days | CJ Affiliate network | High |
-| **Vivid Seats** | 6% | 30 days | Impact/Rakuten network | Medium |
+| **TicketNetwork (via CJ)** ✅ | CJ-negotiated | 7 days | CJ Affiliate — approved | **Live** |
+| StubHub | 4-6% | 7 days | stubhub.com/affiliates (via Partnerize) | Fallback |
+| SeatGeek | 5% | 30 days | CJ Affiliate network | Fallback |
 
 **Why tickets:**
 - Perfect user intent match (researching game → buy tickets)
@@ -143,20 +145,22 @@ This document outlines the monetization strategy for teamcountdown.com, focusing
 - Average order value: $50-200
 - Best UX fit (natural next action)
 
-**Link strategy:**
-- Link to team ticket search page (e.g., `stubhub.com/philadelphia-eagles-tickets`)
-- Simpler than linking to specific games (no API required)
-- Works for both team and game pages
+**Implementation:**
+- `app/lib/cj-service.ts` — queries TicketNetwork via CJ GraphQL API, matches by game date, caches per-event to `data/cache/cj-tickets.json` (7-day TTL)
+- Links are game-specific (not generic team search) — deferred/streamed via Remix `defer()` with Suspense
+- All leagues live: NFL, MLB, NBA, NHL, WNBA, MLS. CPL excluded (no coverage).
 
 ---
 
 #### 2. Sports Betting Affiliates
 
-| Program | Payout Model | Amount | Apply At | Priority |
-|---------|--------------|--------|----------|----------|
-| **DraftKings** | CPA (Cost Per Acquisition) | $25-100 | draftkings.com/affiliates | High |
-| **FanDuel** | CPA | $25-100 | fanduel.com/affiliates | High |
-| **BetMGM** | CPA | $25-75 | betmgm.com/affiliates | Medium |
+| Program | Payout Model | Amount | Network | Status |
+|---------|--------------|--------|---------|--------|
+| **BetMGM** | CPA | up to $50 | CJ #6218491 | Pending |
+| **UKLG_FanDual** | Lead | $1.75/lead | CJ #4601118 | Pending |
+| **UKLG_William Hill** | Lead | $0–4.80/lead | CJ #5353892 | Pending |
+| DraftKings | CPA | $25-100 | draftkings.com/affiliates | Pending |
+| FanDuel | CPA | $25-100 | fanduel.com/affiliates | Not applied |
 
 **Why betting:**
 - Highest payout per conversion ($25-100 vs $2-10 for tickets)
@@ -179,12 +183,12 @@ This document outlines the monetization strategy for teamcountdown.com, focusing
 
 #### 3. Sports Merchandise Affiliates
 
-| Program | Commission | Cookie | Apply At | Priority |
-|---------|------------|--------|----------|----------|
-| **Fanatics** | 1-10% (varies) | 7 days | Impact Affiliate network | High |
-| **NFL Shop** | 4% | 7 days | Rakuten/CJ Affiliate | Medium |
-| **NBA Store** | 4% | 7 days | Rakuten/CJ Affiliate | Medium |
-| **MLB Shop** | 4% | 7 days | Rakuten/CJ Affiliate | Medium |
+| Program | Commission | Network | Status |
+|---------|------------|---------|--------|
+| **DICK'S Sporting Goods** | 2% | CJ #7345657 | Pending |
+| **PUMA US** | 2–5% | CJ #5881002 | Pending |
+| Fanatics | 1-10% (varies) | Impact | Not applied |
+| NFL Shop | 4% | Rakuten/CJ | Not applied |
 
 **Why merchandise:**
 - Team loyalty drives purchases
@@ -243,345 +247,40 @@ This document outlines the monetization strategy for teamcountdown.com, focusing
 ### Architecture Overview
 
 ```
-Route Loaders
-  ↓ Generate affiliate links for team/game
-  ↓ Pass to Countdown component
+Route Loaders (defer)
+  ↓ getAffiliateLinks() → Promise<AffiliateLinks | null>
+  ↓ passed to defer() as unresolved promise
   ↓
 Countdown Component
-  ↓ Receives affiliateLinks prop
-  ↓ Renders inline CTA buttons
+  ↓ <Suspense> + <Await> — invisible placeholder while loading
+  ↓ Fades in button when promise resolves
   ↓
-User clicks → External affiliate site
+User clicks → TicketNetwork (via CJ tracked link)
 ```
 
-### Files to Create/Modify
+### Key files
 
-#### 1. `app/lib/affiliate-links.ts` (New file to create)
+| File | Purpose |
+|------|---------|
+| `app/lib/cj-service.ts` | CJ GraphQL API client, game matching, disk cache |
+| `app/components/countdown.tsx` | Suspense/Await wrapper, ticket button UI |
+| `app/routes/$league.$teamAbbrev_.tsx` | Team page — deferred affiliate links |
+| `app/routes/$league.$teamAbbrev.$gameSlug.tsx` | Game page — deferred affiliate links |
+| `data/cache/cj-tickets.json` | Per-event disk cache (7-day TTL) |
 
-**Purpose:** Generate affiliate URLs with proper tracking
-
-```typescript
-interface AffiliateLinks {
-  tickets: string      // StubHub/SeatGeek
-  betting: string      // DraftKings/FanDuel
-  merch: string        // Fanatics/Official Shop
-  watch?: string       // Future: ESPN+/streaming
-}
-
-interface AffiliateConfig {
-  stubhub: {
-    affiliateId: string
-    baseUrl: string
-  }
-  draftkings: {
-    referralCode: string
-    baseUrl: string
-  }
-  fanatics: {
-    affiliateId: string
-    baseUrl: string
-  }
-}
-
-function getAffiliateLinks(
-  team: Team, 
-  league: string, 
-  config: AffiliateConfig
-): AffiliateLinks {
-  return {
-    tickets: generateTicketLink(team, config.stubhub),
-    betting: generateBettingLink(config.draftkings),
-    merch: generateMerchLink(team, league, config.fanatics),
-  }
-}
-
-function generateTicketLink(team: Team, config): string {
-  // Example: https://www.stubhub.com/philadelphia-eagles-tickets?affid=YOUR_ID
-  return `${config.baseUrl}/${team.slug}-tickets?affid=${config.affiliateId}`
-}
-
-function generateBettingLink(config): string {
-  // Example: https://sportsbook.draftkings.com?referral=YOUR_CODE
-  return `${config.baseUrl}?referral=${config.referralCode}`
-}
-
-function generateMerchLink(team: Team, league: string, config): string {
-  // Example: https://www.fanatics.com/nfl/philadelphia-eagles?_ref=YOUR_ID
-  return `${config.baseUrl}/${league.toLowerCase()}/${team.slug}?_ref=${config.affiliateId}`
-}
-```
-
-**Team slug mapping:**
-- Most teams: lowercase abbreviation (`phi`, `dal`, `bos`)
-- May need custom mappings for special cases
-- Can use existing `team.abbreviation.toLowerCase()` as starting point
-
----
-
-#### 2. Update `app/components/ui/button.tsx` to Add Affiliate Variant
-
-**Purpose:** Add an `affiliate` variant to the existing Button component for affiliate links
-
-**Why use Button component with variants:**
-- Consistent with existing design system
-- Uses Radix Slot pattern (`asChild`) to render as `<a>` tag
-- Follows same pattern as `badge.tsx` (uses `class-variance-authority`)
-- Reusable across the site if needed elsewhere
-
-**Implementation:**
-
-```tsx
-import * as React from 'react'
-import { Slot } from '@radix-ui/react-slot'
-import { cva, type VariantProps } from 'class-variance-authority'
-import { cn } from '~/lib/utils'
-
-const buttonVariants = cva(
-  // Base styles (shared across all variants)
-  'flex items-center gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-950 focus-visible:ring-offset-2 transition-colors',
-  {
-    variants: {
-      variant: {
-        default: 
-          'w-full lg:w-auto justify-center border-2 rounded-sm border-white px-5 py-2',
-        affiliate: 
-          'inline-flex gap-1.5 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-sm font-medium',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
-    },
-  }
-)
-
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean
-}
-
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : 'button'
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant }), className)}
-        ref={ref}
-        {...props}
-      />
-    )
-  }
-)
-Button.displayName = 'Button'
-
-export { Button, buttonVariants }
-```
-
-**Usage in `countdown.tsx`:**
-
-```tsx
-{/* Affiliate CTAs */}
-{affiliateLinks && (
-  <div className="flex flex-wrap gap-3 mt-6 justify-center">
-    <Button variant="affiliate" asChild>
-      <a 
-        href={affiliateLinks.tickets}
-        target="_blank"
-        rel="noopener noreferrer sponsored"
-      >
-        🎟️ Tickets
-      </a>
-    </Button>
-    <Button variant="affiliate" asChild>
-      <a 
-        href={affiliateLinks.betting}
-        target="_blank"
-        rel="noopener noreferrer sponsored"
-      >
-        🎰 Bet
-      </a>
-    </Button>
-    <Button variant="affiliate" asChild>
-      <a 
-        href={affiliateLinks.merch}
-        target="_blank"
-        rel="noopener noreferrer sponsored"
-      >
-        👕 Gear
-      </a>
-    </Button>
-  </div>
-)}
-```
-
-**Styling notes:**
-- `variant="default"` - Existing button style (border-2, border-white) - maintains backward compatibility
-- `variant="affiliate"` - New pill-shaped style for affiliate links
-- `asChild` prop renders as `<a>` tag using Radix Slot (semantic HTML)
-- `bg-white/10` - Subtle on team-colored backgrounds
-- `hover:bg-white/20` - Clear hover state
-- `rounded-full` - Pill shape, more subtle than default's `rounded-sm border-2`
-- Exports `buttonVariants` for consistency with shadcn patterns (like `badgeVariants`)
-
----
-
-### Files to Modify
-
-#### 1. `app/components/countdown.tsx`
-
-**Add prop:**
-```typescript
-interface CountdownProps {
-  // ... existing props
-  affiliateLinks?: AffiliateLinks
-}
-```
-
-**Add to JSX (after countdown display, before "You might like"):**
-```tsx
-{/* Affiliate CTAs */}
-{affiliateLinks && (
-  <div className="flex flex-wrap gap-3 mt-6 justify-center">
-    <a href={affiliateLinks.tickets} 
-       target="_blank" 
-       rel="noopener noreferrer sponsored"
-       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-sm font-medium transition-colors">
-      🎟️ Tickets
-    </a>
-    <a href={affiliateLinks.betting}
-       target="_blank"
-       rel="noopener noreferrer sponsored"  
-       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-sm font-medium transition-colors">
-      🎰 Bet
-    </a>
-    <a href={affiliateLinks.merch}
-       target="_blank"
-       rel="noopener noreferrer sponsored"
-       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-sm font-medium transition-colors">
-      👕 Gear
-    </a>
-  </div>
-)}
-```
-
-**Why `rel="noopener noreferrer sponsored"`:**
-- `noopener` - Security best practice for `target="_blank"`
-- `noreferrer` - Privacy consideration
-- `sponsored` - Signals to Google that this is a paid/affiliate link (SEO best practice)
-
----
-
-#### 3. `app/components/ui/button.tsx` (Modify to add affiliate variant)
-
-**Add variant support using `class-variance-authority`** (same pattern as `badge.tsx`)
-
-See detailed implementation above in "Files to Create/Modify" section.
-
----
-
-#### 4. `app/routes/$league.$teamAbbrev_.tsx` (Team Pages)
-
-**In loader:**
-```typescript
-export async function loader({ params }: LoaderFunctionArgs) {
-  // ... existing code ...
-  
-  const affiliateLinks = getAffiliateLinks(team, LEAGUE, affiliateConfig)
-  
-  return json({
-    // ... existing data
-    affiliateLinks,
-  })
-}
-```
-
-**Pass to Countdown:**
-```tsx
-<Countdown
-  // ... existing props
-  affiliateLinks={affiliateLinks}
-/>
-```
-
----
-
-#### 5. `app/routes/$league.$teamAbbrev.$gameSlug.tsx` (Game Pages)
-
-**Same as team pages:**
-```typescript
-export async function loader({ params }: LoaderFunctionArgs) {
-  // ... existing code ...
-  
-  const affiliateLinks = getAffiliateLinks(team, LEAGUE, affiliateConfig)
-  
-  return json({
-    // ... existing data
-    affiliateLinks,
-  })
-}
-```
-
----
-
-#### 6. `app/root.tsx` (Add Affiliate Disclosure to Footer)
-
-**Add to footer:**
-```tsx
-<footer className="text-center text-xs text-stone-500 py-8">
-  <p>
-    Some links on this site are affiliate links. We may earn a commission if you make a purchase.
-  </p>
-  <p className="mt-2">
-    21+ for betting links. Gambling problem? Call{' '}
-    <a href="tel:1-800-GAMBLER" className="underline">
-      1-800-GAMBLER
-    </a>
-  </p>
-</footer>
-```
-
-**Or create separate disclosure page:**
-- `app/routes/affiliate-disclosure.tsx`
-- Link from footer: "Affiliate Disclosure"
-- More detailed explanation of partnerships
-
----
-
-### Configuration Management
-
-**Option 1: Environment Variables (Recommended)**
+### Environment variables
 
 ```bash
-# .env
-STUBHUB_AFFILIATE_ID=your_id_here
-DRAFTKINGS_REFERRAL_CODE=your_code_here
-FANATICS_AFFILIATE_ID=your_id_here
+CJ_ACCESS_TOKEN=...
+CJ_COMPANY_ID=...
+CJ_WEBSITE_PID=...
+CJ_TICKETNETWORK_PARTNER_ID=...
 ```
 
-**Option 2: Config File**
+### Not yet implemented
 
-```typescript
-// app/lib/affiliate-config.ts
-export const affiliateConfig = {
-  stubhub: {
-    affiliateId: process.env.STUBHUB_AFFILIATE_ID || 'PLACEHOLDER',
-    baseUrl: 'https://www.stubhub.com',
-  },
-  draftkings: {
-    referralCode: process.env.DRAFTKINGS_REFERRAL_CODE || 'PLACEHOLDER',
-    baseUrl: 'https://sportsbook.draftkings.com',
-  },
-  fanatics: {
-    affiliateId: process.env.FANATICS_AFFILIATE_ID || 'PLACEHOLDER',
-    baseUrl: 'https://www.fanatics.com',
-  },
-}
-```
-
-**Benefits of env vars:**
-- Keep affiliate IDs out of version control
-- Easy to change without code deployment
-- Can have different IDs for staging/production
+- **Betting affiliates** (DraftKings, FanDuel) — highest per-conversion payout, next priority
+- **Merch affiliates** (Fanatics) — lower priority, smaller payout
 
 ---
 
@@ -797,38 +496,37 @@ Most affiliate programs look for:
 
 ## Rollout Plan
 
-### Phase 1: Preparation (Week 1)
-- [ ] Sign up for affiliate programs (StubHub, DraftKings, Fanatics)
-- [ ] Wait for approvals (1-2 weeks)
-- [ ] Receive affiliate IDs and tracking links
+### Phase 1: Tickets (Complete)
+- [x] Apply to CJ Affiliate / TicketNetwork
+- [x] Receive CJ credentials and partner ID
+- [x] Build `app/lib/cj-service.ts` — CJ GraphQL API, game matching, disk cache
+- [x] Add deferred affiliate links to team and game page loaders
+- [x] Update `countdown.tsx` with Suspense/Await, invisible placeholder, fade-in
+- [x] Add affiliate disclosure to footer
+- [x] Deploy to production
 
-### Phase 2: Development (Week 2-3)
-- [ ] Create `app/lib/affiliate-links.ts` with config
-- [ ] Add affiliate IDs to `.env` file
-- [ ] Update `app/components/ui/button.tsx` to add `affiliate` variant
-- [ ] Update `countdown.tsx` to use `<Button variant="affiliate">` for affiliate links
-- [ ] Update team page route to pass affiliate links
-- [ ] Update game page route to pass affiliate links
-- [ ] Add affiliate disclosure to footer
-- [ ] Test all links on local environment
+### Phase 2: Betting (Pending approval)
+- [x] Apply to BetMGM (CJ #6218491) — pending
+- [x] Apply to DraftKings — pending (applied directly, no response yet)
+- [x] Apply to UKLG_FanDual (CJ #4601118) — pending, Lead: $1.75
+- [x] Apply to UKLG_William Hill (CJ #5353892) — pending, Lead: $0–4.80
+- [ ] Once approved: add betting link to `AffiliateLinks` interface and `countdown.tsx`
+- [ ] Include 21+ disclaimer and 1-800-GAMBLER hotline near betting button
+- [ ] Deploy
 
-### Phase 3: Testing (Week 3)
-- [ ] Verify links work for all teams
-- [ ] Test on mobile devices
-- [ ] Check button styling on different team colors
-- [ ] Confirm legal disclosures visible
-- [ ] Test affiliate tracking (click links, check dashboards)
+### Phase 3: Merch (Pending approval)
+- [x] Apply to DICK'S Sporting Goods (CJ #7345657) — pending, Sale: 2%
+- [x] Apply to PUMA US (CJ #5881002) — pending, Sale: 2–5%
+- [ ] Once approved: add merch link to `AffiliateLinks` interface and `countdown.tsx`
+- [ ] Deploy
 
-### Phase 4: Launch (Week 4)
-- [ ] Deploy to production
-- [ ] Monitor first 24 hours for issues
-- [ ] Check Google Analytics for click data
-- [ ] Verify affiliate tracking working
+### Phase 3b: Second ticket provider (Pending approval)
+- [x] Apply to TicketSmarter (CJ #5346842) — pending, Sale: 3%, 7-day EPC: $91.24
+- [ ] If approved and TicketNetwork coverage is insufficient: integrate as fallback
 
-### Phase 5: Optimization (Ongoing)
-- [ ] Review weekly revenue reports
+### Phase 4: Optimization (Ongoing)
+- [ ] Review weekly revenue reports from CJ dashboard
 - [ ] A/B test button copy/order
-- [ ] Add more affiliate programs if needed
 - [ ] Consider adding streaming affiliates (ESPN+, etc.)
 
 ---
@@ -1093,5 +791,5 @@ Most affiliate programs look for:
 
 ---
 
-**Last Updated:** January 28, 2026  
-**Next Review:** After 30 days of live data
+**Last Updated:** February 25, 2026  
+**Next Review:** After betting affiliate approved and live
