@@ -146,15 +146,7 @@ Follow these rules strictly. They are enforced by ESLint and the project's `.pre
 
 ---
 
-## 5. Pending Action Items
-
-**Important:** Check this section at the start of each session and remind the user of any upcoming or overdue items.
-
-- **After February 20, 2026:** Reapply to Impact.com affiliate program. The MPUA (Minimum Publisher Underwriting Assessment) rejection was addressed on Feb 6, 2026 by adding legal/trust pages (Privacy, Terms, About, Contact) and updating the footer with proper disclosures. Pages should be live and indexed by search engines by now. See `docs/monetization-plan.md` for full context on the rejection and resolution.
-
----
-
-## 6. Proactive Guidelines for Agents
+## 5. Proactive Guidelines for Agents
 
 - **Modularity:** Keep components small and focused. Extract logic into hooks or utility functions in `app/lib/` if it can be reused.
 - **Verification:** Always run `npm run typecheck` after modifying types or complex logic.
