@@ -315,7 +315,7 @@ export default function Countdown({
 						</Button>
 					)}
 					{affiliateLinks && (
-						<Suspense fallback={null}>
+						<Suspense fallback={<Button disabled>Tickets <Ticket className="size-5" /></Button>}>
 							<Await resolve={affiliateLinks} errorElement={null}>
 								{(links) =>
 									links?.tickets ? (
