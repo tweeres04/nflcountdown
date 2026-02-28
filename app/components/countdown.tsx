@@ -42,12 +42,6 @@ import {
 import type { BreadcrumbItem as BreadcrumbItemType } from '~/lib/schema-helpers'
 import type { AffiliateLinks } from '~/lib/cj-service'
 
-const AffiliateLinksLoading = () => (
-	<div className="flex gap-3 mt-10 justify-center">
-		<div className="h-9 w-24" />
-	</div>
-)
-
 // Simple inline loading skeleton for Dialog
 const GamePreviewLoading = () => (
 	<div className="space-y-2">
@@ -281,49 +275,78 @@ export default function Countdown({
 				</div>
 
 				<div className="mt-8 [&_button]:min-w-[275px] flex flex-col gap-3 items-center">
-				{canShare && (
-					<Button
-						onClick={() => {
-							const shareUrl = `${document.location.href}?utm_source=teamcountdown&utm_medium=share_button`
-							const trackingProps = {
-								team: team?.fullName ?? null,
-								league: LEAGUE,
-								page_type: isTeamPage ? 'team' : 'game',
-								method: hasShareAPI ? 'native_share' : 'copy_link',
-							}
-							mixpanel.track('click share button', trackingProps)
-							if (hasShareAPI) {
-								navigator
-									.share({
-										title: shareTitle,
-										url: shareUrl,
-									})
-									.then(() => {
-										mixpanel.track('share completed', trackingProps)
-									})
-									.catch(() => {})
-							} else {
-								navigator.clipboard
-									.writeText(shareUrl)
-									.then(() => {
-										setCopied(true)
-										setTimeout(() => setCopied(false), 2000)
-										mixpanel.track('share completed', trackingProps)
-									})
-									.catch(() => {})
-							}
-						}}
-					>
-						{hasShareAPI ? (
-							<>Share <IosShareIcon className="size-5" /></>
-						) : copied ? 'Copied!' : 'Copy link'}
-					</Button>
-				)}
-					<FeedbackButton />
+					{/* Tier 1 — primary actions */}
+					{canShare && (
+						<Button
+							onClick={() => {
+								const shareUrl = `${document.location.href}?utm_source=teamcountdown&utm_medium=share_button`
+								const trackingProps = {
+									team: team?.fullName ?? null,
+									league: LEAGUE,
+									page_type: isTeamPage ? 'team' : 'game',
+									method: hasShareAPI ? 'native_share' : 'copy_link',
+								}
+								mixpanel.track('click share button', trackingProps)
+								if (hasShareAPI) {
+									navigator
+										.share({
+											title: shareTitle,
+											url: shareUrl,
+										})
+										.then(() => {
+											mixpanel.track('share completed', trackingProps)
+										})
+										.catch(() => {})
+								} else {
+									navigator.clipboard
+										.writeText(shareUrl)
+										.then(() => {
+											setCopied(true)
+											setTimeout(() => setCopied(false), 2000)
+											mixpanel.track('share completed', trackingProps)
+										})
+										.catch(() => {})
+								}
+							}}
+						>
+							{hasShareAPI ? (
+								<>Share <IosShareIcon className="size-5" /></>
+							) : copied ? 'Copied!' : 'Copy link'}
+						</Button>
+					)}
+					{affiliateLinks && (
+						<Suspense fallback={null}>
+							<Await resolve={affiliateLinks} errorElement={null}>
+								{(links) =>
+									links?.tickets ? (
+										<Button asChild>
+											<a
+												href={links.tickets}
+												target="_blank"
+												rel="noopener noreferrer sponsored"
+												onClick={() => {
+													mixpanel.track('click ticket link', {
+														team: team?.fullName,
+														opponent: opposingTeam?.fullName,
+														page: isTeamPage ? 'team' : 'game',
+													})
+												}}
+											>
+												Tickets <Ticket className="size-5" />
+											</a>
+										</Button>
+									) : null
+								}
+							</Await>
+						</Suspense>
+					)}
+
+					{/* Tier 2 — secondary actions */}
 					{gamePreview && (
 						<Dialog>
 							<DialogTrigger asChild>
 								<Button
+									variant="ghost"
 									onClick={() => {
 										mixpanel.track('Click game preview button')
 									}}
@@ -410,6 +433,7 @@ export default function Countdown({
 					{games.length > 0 ? (
 						<>
 							<Button
+								variant="ghost"
 								onClick={() => {
 									mixpanel.track(
 										showFullSchedule
@@ -449,11 +473,11 @@ export default function Countdown({
 										})}
 								</nav>
 							)}
+						{showFullSchedule && team && <GameList games={games} team={team} />}
 						</>
 					) : null}
+					<FeedbackButton />
 				</div>
-
-				{showFullSchedule && team && <GameList games={games} team={team} />}
 
 				{teamPickerTeams && teamPickerTeams.length > 0 && (
 					<div className="mt-10 space-y-3">
@@ -486,35 +510,7 @@ export default function Countdown({
 					</div>
 				)}
 
-				{affiliateLinks ? (
-					<Suspense fallback={<AffiliateLinksLoading />}>
-						<Await resolve={affiliateLinks} errorElement={null}>
-							{(links) =>
-							links?.tickets ? (
-								<div className="flex gap-3 mt-10 justify-center animate-in fade-in duration-300">
-										<Button variant="affiliate" asChild size="sm">
-											<a
-												href={links.tickets}
-												target="_blank"
-												rel="noopener noreferrer sponsored"
-												onClick={() => {
-													mixpanel.track('click ticket link', {
-														team: team?.fullName,
-														opponent: opposingTeam?.fullName,
-														page: isTeamPage ? 'team' : 'game',
-													})
-												}}
-											>
-												Tickets <Ticket className="size-4" />
-											</a>
-										</Button>
-									</div>
-								) : null
-							}
-						</Await>
-					</Suspense>
-				) : null}
-
+	
 				{suggestedGames.length > 0 && (
 					<YouMightLike games={suggestedGames} league={LEAGUE} />
 				)}

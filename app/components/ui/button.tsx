@@ -10,9 +10,8 @@ const buttonVariants = cva(
 		variants: {
 			variant: {
 				default:
-					'w-full lg:w-auto justify-center border-2 rounded-sm border-white',
-				affiliate:
-					'w-full lg:w-auto justify-center rounded-sm hover:bg-white/20',
+					'w-full lg:w-auto justify-center border-2 rounded-sm border-white hover:bg-white/20',
+				ghost: 'w-full lg:w-auto justify-center rounded-sm hover:bg-white/20',
 				secondary: 'justify-start rounded-sm hover:bg-stone-200 text-stone-900',
 			},
 			size: {

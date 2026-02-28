@@ -50,7 +50,7 @@ export default function GameList({ games, team }: GameListProps) {
 										? `/${league}/${team.abbreviation.toLowerCase()}` // Show the next game view if it's the next game
 										: `/${league}/${team.abbreviation.toLowerCase()}/${gameSlug}`
 								}
-								className="hover:text-white/80 transition-colors"
+								className="hover:text-white/80 hover:underline transition-colors"
 							>
 								{linkContent}
 							</Link>

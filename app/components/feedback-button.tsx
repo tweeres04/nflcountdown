@@ -40,7 +40,7 @@ export default function FeedbackButton() {
 	) : (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button>
+				<Button variant="ghost">
 					Feedback <FeedbackIcon />
 				</Button>
 			</DialogTrigger>
