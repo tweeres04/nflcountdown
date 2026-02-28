@@ -154,11 +154,21 @@ export default function Countdown({
 	const [feedbackGiven, setFeedbackGiven] = useState(false)
 
 	const [hasShareAPI, setHasShareAPI] = useState(true)
+	const [copied, setCopied] = useState(false)
 	useEffect(() => {
 		setHasShareAPI(Boolean(navigator?.share))
 	}, [])
 
 	const countdownString_ = countdownString({ game, isTeamPage, LEAGUE, team })
+	const shareTitle = countdownString({
+		game,
+		isTeamPage,
+		LEAGUE,
+		team,
+		excludeSeconds: true,
+	})
+	const UNSHAREABLE = ['Game completed', 'No upcoming games', 'Game time TBD']
+	const canShare = !UNSHAREABLE.includes(shareTitle)
 
 	const [showFullSchedule, setShowFullSchedule] = useState(false)
 	const lowercaseAbbreviation = team?.abbreviation?.toLowerCase()
@@ -271,22 +281,44 @@ export default function Countdown({
 				</div>
 
 				<div className="mt-8 [&_button]:min-w-[275px] flex flex-col gap-3 items-center">
-					{hasShareAPI && (
-						<Button
-							onClick={() => {
+				{canShare && (
+					<Button
+						onClick={() => {
+							const shareUrl = `${document.location.href}?utm_source=teamcountdown&utm_medium=share_button`
+							const trackingProps = {
+								team: team?.fullName ?? null,
+								league: LEAGUE,
+								page_type: isTeamPage ? 'team' : 'game',
+								method: hasShareAPI ? 'native_share' : 'copy_link',
+							}
+							mixpanel.track('click share button', trackingProps)
+							if (hasShareAPI) {
 								navigator
 									.share({
-										title: `${team?.fullName ?? 'NFL Season'} Countdown`,
-										text: countdownString_,
-										url: `${document.location.href}?utm_source=teamcountdown&utm_medium=share_button`,
+										title: shareTitle,
+										url: shareUrl,
+									})
+									.then(() => {
+										mixpanel.track('share completed', trackingProps)
 									})
 									.catch(() => {})
-								mixpanel.track('click share button')
-							}}
-						>
-							Share <IosShareIcon className="size-5" />
-						</Button>
-					)}
+							} else {
+								navigator.clipboard
+									.writeText(shareUrl)
+									.then(() => {
+										setCopied(true)
+										setTimeout(() => setCopied(false), 2000)
+										mixpanel.track('share completed', trackingProps)
+									})
+									.catch(() => {})
+							}
+						}}
+					>
+						{hasShareAPI ? (
+							<>Share <IosShareIcon className="size-5" /></>
+						) : copied ? 'Copied!' : 'Copy link'}
+					</Button>
+				)}
 					<FeedbackButton />
 					{gamePreview && (
 						<Dialog>
