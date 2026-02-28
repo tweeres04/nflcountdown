@@ -1,5 +1,6 @@
 import { defer, LoaderFunctionArgs } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
+import { RouteErrorBoundary } from '~/components/route-error-boundary'
 
 import { addHours, isFuture } from 'date-fns'
 import Countdown from '~/components/countdown'
@@ -62,6 +63,16 @@ export async function loader({
 		breadcrumbItems,
 		affiliateLinks: affiliateLinksPromise,
 	})
+}
+
+export function ErrorBoundary() {
+	return (
+		<RouteErrorBoundary
+			notFoundTitle="Team not found"
+			notFoundMessage="We couldn't find that team. Try picking one from the list."
+			genericMessage="We hit an unexpected error. Try refreshing, or pick a different team."
+		/>
+	)
 }
 
 export default function TeamCountdown() {

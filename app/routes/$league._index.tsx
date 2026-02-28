@@ -1,6 +1,7 @@
 import { json, type MetaFunction, LoaderFunctionArgs } from '@remix-run/node'
 import { uniqBy, orderBy } from 'lodash-es'
 import { Link, useLoaderData } from '@remix-run/react'
+import { RouteErrorBoundary } from '~/components/route-error-boundary'
 import mlbTeams from '../../mlb_teams.json'
 import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
 import { nbaTeamToTeam } from '~/lib/nbaGameToGame'
@@ -382,6 +383,15 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 		isMidSeason,
 		seasonYear,
 	})
+}
+
+export function ErrorBoundary() {
+	return (
+		<RouteErrorBoundary
+			notFoundTitle="League not found"
+			notFoundMessage="We don't have a countdown for that league yet."
+		/>
+	)
 }
 
 export default function LeagueIndex() {

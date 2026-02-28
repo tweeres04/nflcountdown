@@ -1,5 +1,6 @@
 import { defer, LoaderFunctionArgs } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
+import { RouteErrorBoundary } from '~/components/route-error-boundary'
 
 import { getGameSlug } from '~/lib/getGameSlug'
 import Countdown from '~/components/countdown'
@@ -85,6 +86,16 @@ export async function loader({
 		breadcrumbItems,
 		affiliateLinks: affiliateLinksPromise,
 	})
+}
+
+export function ErrorBoundary() {
+	return (
+		<RouteErrorBoundary
+			notFoundTitle="Game not found"
+			notFoundMessage="We couldn't find that game. It may have been rescheduled or removed."
+			genericMessage="We hit an unexpected error. Try refreshing, or go back to your team."
+		/>
+	)
 }
 
 export default function GameCountdown() {
