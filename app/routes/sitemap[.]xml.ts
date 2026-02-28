@@ -10,6 +10,7 @@ import { mlsGameToGame, mlsTeamToTeam } from '~/lib/mlsGameToGame'
 import { getGameSlug } from '~/lib/getGameSlug'
 import { readFile } from 'node:fs/promises'
 import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, Team, Game } from '~/lib/types'
+import { isFuture, addHours } from 'date-fns'
 
 export async function loader() {
 	const leagues = ['NFL', 'MLB', 'NBA', 'NHL', 'WNBA', 'CPL', 'MLS']
@@ -126,14 +127,14 @@ export async function loader() {
         <loc>https://teamcountdown.com/${lowercaseLeague}</loc>
     </url>`)
 
-		// Add season countdown page for all leagues
-		allUrls.push(`    <url>
-        <loc>https://teamcountdown.com/${lowercaseLeague}/season</loc>
-    </url>`)
+		// Only include future games (same 3-hour buffer used throughout the app)
+		const futureGames = games.filter(
+			(g) => g.time && isFuture(addHours(g.time, 3))
+		)
 
 		teams.forEach((t) => {
 			const teamAbbrev = t.abbreviation.toLowerCase()
-			const teamGames = games.filter(
+			const teamGames = futureGames.filter(
 				(g) => g.homeTeam?.id === t.id || g.awayTeam?.id === t.id
 			)
 
@@ -142,7 +143,7 @@ export async function loader() {
         <loc>https://teamcountdown.com/${lowercaseLeague}/${teamAbbrev}</loc>
     </url>`)
 
-			// Individual game pages
+			// Individual game pages (future only)
 			teamGames.forEach((g) => {
 				const gameSlug = getGameSlug(g, t.abbreviation)
 				if (!gameSlug) return

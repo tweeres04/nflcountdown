@@ -146,7 +146,16 @@ Follow these rules strictly. They are enforced by ESLint and the project's `.pre
 
 ---
 
-## 5. Proactive Guidelines for Agents
+## 5. Intentional SEO Omissions
+
+The following are **deliberate decisions**, not gaps. Do not flag these as issues:
+
+- **No `<lastmod>` in sitemap** — Google has stated they largely ignore this field because it's commonly set incorrectly. Not worth maintaining.
+- **No Twitter Card meta tags** — Platforms fall back to OG tags (`og:title`, `og:image`, etc.), which are already set on every page. Traffic is driven by SEO and direct, not social sharing. The marginal benefit doesn't justify the maintenance cost.
+
+---
+
+## 6. Proactive Guidelines for Agents
 
 - **Modularity:** Keep components small and focused. Extract logic into hooks or utility functions in `app/lib/` if it can be reused.
 - **Verification:** Always run `npm run typecheck` after modifying types or complex logic.

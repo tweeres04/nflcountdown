@@ -123,6 +123,12 @@ export function loader({ request }: LoaderFunctionArgs) {
 		}
 	}
 
+	// Strip trailing slashes (except for the root path)
+	if (url.pathname !== '/' && url.pathname.endsWith('/')) {
+		url.pathname = url.pathname.slice(0, -1)
+		return Response.redirect(url.toString(), 301)
+	}
+
 	const GTAG_ID = process.env.GTAG_ID
 	const AHREFS_KEY = process.env.AHREFS_KEY
 	const MIXPANEL_TOKEN = process.env.MIXPANEL_TOKEN
