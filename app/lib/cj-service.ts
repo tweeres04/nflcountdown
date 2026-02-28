@@ -211,11 +211,21 @@ export function findGameTicketLink(
 			new Date(b.travelStartDate).getTime()
 	)
 
-	// If we have a game date, try to match by date
+	// If we have a game date, try to match by date.
+	// game.time is stored as UTC, but TicketNetwork uses local (ET) dates.
+	// A late ET game (e.g. 8pm ET = 1am UTC next day) will have a UTC date
+	// one day ahead of the TicketNetwork date, so we check both the UTC date
+	// and the day before.
 	if (gameDate) {
-		const gameDateStr = gameDate.slice(0, 10) // "YYYY-MM-DD"
-		const match = sorted.find(
-			(p) => p.travelStartDate.slice(0, 10) === gameDateStr
+		const gameDateUTC = new Date(gameDate)
+		const candidates = new Set([
+			gameDateUTC.toISOString().slice(0, 10),
+			new Date(gameDateUTC.getTime() - 24 * 60 * 60 * 1000)
+				.toISOString()
+				.slice(0, 10),
+		])
+		const match = sorted.find((p) =>
+			candidates.has(p.travelStartDate.slice(0, 10))
 		)
 		if (match) return match.clickUrl
 	}
