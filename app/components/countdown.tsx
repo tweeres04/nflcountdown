@@ -29,7 +29,7 @@ import {
 	DialogTrigger,
 } from './ui/dialog'
 import { Calendar, Eye, Menu, ThumbsDown, ThumbsUp, Ticket } from 'lucide-react'
-import { Await, Link } from '@remix-run/react'
+import { Await, Link, useFetcher } from '@remix-run/react'
 import mixpanel from 'mixpanel-browser'
 import {
 	Breadcrumb,
@@ -57,13 +57,125 @@ const GamePreviewLoading = () => (
 	</div>
 )
 
+interface GamePreviewDialogProps {
+	game: Game
+	team: Team
+	LEAGUE: string
+	lowercaseAbbreviation: string | undefined
+}
+
+function GamePreviewDialog({
+	game,
+	team,
+	LEAGUE,
+	lowercaseAbbreviation,
+}: GamePreviewDialogProps) {
+	const [feedbackGiven, setFeedbackGiven] = useState(false)
+	const previewFetcher = useFetcher<{ preview: string | null }>()
+	const previewFetchedRef = useRef(false)
+
+	function fetchPreview() {
+		if (previewFetchedRef.current) return
+		previewFetchedRef.current = true
+		previewFetcher.load(
+			`/api/game-preview?league=${LEAGUE}&gameId=${encodeURIComponent(game.id)}&teamAbbrev=${encodeURIComponent(team.abbreviation)}`
+		)
+	}
+
+	return (
+		<Dialog>
+			<DialogTrigger asChild>
+				<Button
+					variant="ghost"
+					onMouseEnter={fetchPreview}
+					onClick={() => {
+						fetchPreview()
+						mixpanel.track('Click game preview button')
+					}}
+				>
+					Quick preview <Eye className="size-5" />
+				</Button>
+			</DialogTrigger>
+			<DialogContent
+				className={cn(
+					'p-4 text-white [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-3 border-0 rounded-lg',
+					lowercaseAbbreviation
+						? LEAGUE === 'NFL'
+							? `bg-${lowercaseAbbreviation}`
+							: `bg-${LEAGUE.toLowerCase()}-${lowercaseAbbreviation}`
+						: 'bg-[#013369]'
+				)}
+			>
+				<DialogTitle>
+					<div>
+						{game.homeTeam && game.awayTeam
+							? `${game.homeTeam.fullName} vs ${game.awayTeam.fullName}`
+							: 'Game preview'}
+					</div>
+					{game.time ? (
+						<div className="text-sm">
+							{new Intl.DateTimeFormat('en-US', {
+								month: 'short',
+								weekday: 'short',
+								day: 'numeric',
+								hour: game.startTimeTbd ? undefined : 'numeric',
+								minute: game.startTimeTbd ? undefined : 'numeric',
+							}).format(new Date(game.time))}
+						</div>
+					) : null}
+				</DialogTitle>
+				{previewFetcher.state === 'loading' ? (
+					<GamePreviewLoading />
+				) : previewFetcher.data?.preview ? (
+					<>
+						<Markdown>{previewFetcher.data.preview}</Markdown>
+						<DialogFooter>
+							{feedbackGiven ? (
+								<div>
+									<p className="text-center font-medium">
+										Thanks for your feedback!
+									</p>
+									<p className="text-[.75rem]">
+										If you want to tell me more, use the Feedback button
+									</p>
+								</div>
+							) : (
+								<>
+									<Button
+										onClick={() => {
+											mixpanel.track('click thumbs down')
+											setFeedbackGiven(true)
+										}}
+									>
+										<ThumbsDown />
+									</Button>
+									<Button
+										onClick={() => {
+											mixpanel.track('click thumbs up')
+											setFeedbackGiven(true)
+										}}
+									>
+										<ThumbsUp />
+									</Button>
+								</>
+							)}
+						</DialogFooter>
+					</>
+				) : previewFetcher.state === 'idle' && previewFetcher.data ? (
+					<p>Game preview unavailable</p>
+				) : null}
+			</DialogContent>
+		</Dialog>
+	)
+}
+
 interface CountdownProps {
 	team?: Team
 	teams: Team[]
 	games?: Game[]
 	pageTitle: React.ReactNode
 	game?: Game
-	gamePreview?: Promise<string | null>
+	canShowPreview?: boolean
 	isTeamPage?: boolean
 	breadcrumbItems?: BreadcrumbItemType[]
 	suggestedGames?: Game[]
@@ -139,7 +251,7 @@ export default function Countdown({
 	games = [],
 	pageTitle,
 	game,
-	gamePreview,
+	canShowPreview,
 	isTeamPage = false,
 	breadcrumbItems,
 	suggestedGames = [],
@@ -148,8 +260,6 @@ export default function Countdown({
 }: CountdownProps) {
 	const LEAGUE = useContext(LeagueContext)
 	useUpdateTime()
-	const [feedbackGiven, setFeedbackGiven] = useState(false)
-
 	const [hasShareAPI, setHasShareAPI] = useState(true)
 	const [copied, setCopied] = useState(false)
 	useEffect(() => {
@@ -360,93 +470,14 @@ export default function Countdown({
 					)}
 
 					{/* Tier 2 — secondary actions */}
-					{gamePreview && (
-						<Dialog>
-							<DialogTrigger asChild>
-								<Button
-									variant="ghost"
-									onClick={() => {
-										mixpanel.track('Click game preview button')
-									}}
-								>
-									Quick preview <Eye className="size-5" />
-								</Button>
-							</DialogTrigger>
-							<DialogContent
-								className={cn(
-									'p-4 text-white [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-3 border-0 rounded-lg',
-									lowercaseAbbreviation
-										? LEAGUE === 'NFL'
-											? `bg-${lowercaseAbbreviation}`
-											: `bg-${LEAGUE.toLowerCase()}-${lowercaseAbbreviation}`
-										: 'bg-[#013369]'
-								)}
-							>
-								<DialogTitle>
-									<div>
-										{game?.homeTeam && game?.awayTeam
-											? `${game?.homeTeam?.fullName} vs ${game?.awayTeam?.fullName}`
-											: 'Game preview'}
-									</div>
-									{game?.time ? (
-										<div className="text-sm">
-											{new Intl.DateTimeFormat('en-US', {
-												month: 'short',
-												weekday: 'short',
-												day: 'numeric',
-												hour: game.startTimeTbd ? undefined : 'numeric',
-												minute: game.startTimeTbd ? undefined : 'numeric',
-											}).format(new Date(game.time))}
-										</div>
-									) : null}
-								</DialogTitle>
-								<Suspense fallback={<GamePreviewLoading />}>
-									<Await resolve={gamePreview} errorElement={null}>
-										{(preview) =>
-											preview ? (
-												<>
-													<Markdown>{preview}</Markdown>
-													<DialogFooter>
-														{feedbackGiven ? (
-															<div>
-																<p className="text-center font-medium">
-																	Thanks for your feedback!
-																</p>
-																<p className="text-[.75rem]">
-																	If you want to tell me more, use the Feedback
-																	button
-																</p>
-															</div>
-														) : (
-															<>
-																<Button
-																	onClick={() => {
-																		mixpanel.track('click thumbs down')
-																		setFeedbackGiven(true)
-																	}}
-																>
-																	<ThumbsDown />
-																</Button>
-																<Button
-																	onClick={() => {
-																		mixpanel.track('click thumbs up')
-																		setFeedbackGiven(true)
-																	}}
-																>
-																	<ThumbsUp />
-																</Button>
-															</>
-														)}
-													</DialogFooter>
-												</>
-											) : (
-												<p>Game preview unavailable</p>
-											)
-										}
-									</Await>
-								</Suspense>
-							</DialogContent>
-						</Dialog>
+					{canShowPreview && game && team && (
+						<GamePreviewDialog
+							key={game.id}
+							game={game}
+							team={team}
+							LEAGUE={LEAGUE}
+							lowercaseAbbreviation={lowercaseAbbreviation}
+						/>
 					)}
 					{games.length > 0 ? (
 						<>

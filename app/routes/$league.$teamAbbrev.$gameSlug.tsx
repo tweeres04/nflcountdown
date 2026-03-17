@@ -6,7 +6,6 @@ import { getGameSlug } from '~/lib/getGameSlug'
 import Countdown from '~/components/countdown'
 import { getTeamAndGames } from '~/lib/getTeamAndGames'
 import { generateMeta } from '~/lib/generateMeta'
-import { getCachedGamePreview } from '~/lib/gemini-service'
 import { getSuggestedGames } from '~/lib/getSuggestedGames'
 import { getAffiliateLinks } from '~/lib/cj-service'
 import { Game } from '~/lib/types'
@@ -32,13 +31,10 @@ export async function loader({
 		throw new Response(null, { status: 404 })
 	}
 
-	// Deferred AI preview generation
-	const gamePreviewPromise =
-		process.env.GOOGLE_AI_API_KEY &&
-		currentGame.homeTeam &&
-		currentGame.awayTeam
-			? getCachedGamePreview(LEAGUE, currentGame, team)
-			: Promise.resolve(null)
+	const canShowPreview =
+		!!process.env.GOOGLE_AI_API_KEY &&
+		!!currentGame.homeTeam &&
+		!!currentGame.awayTeam
 
 	// Get suggested games (other teams' games happening now/soon)
 	const suggestedGames = await getSuggestedGames(
@@ -81,7 +77,7 @@ export async function loader({
 		team,
 		game: currentGame,
 		games,
-		gamePreview: gamePreviewPromise,
+		canShowPreview,
 		suggestedGames,
 		breadcrumbItems,
 		affiliateLinks: affiliateLinksPromise,
@@ -104,7 +100,7 @@ export default function GameCountdown() {
 		team,
 		game,
 		games,
-		gamePreview,
+		canShowPreview,
 		suggestedGames,
 		breadcrumbItems,
 		affiliateLinks,
@@ -122,7 +118,7 @@ export default function GameCountdown() {
 				teams={teams}
 				games={games}
 				game={game}
-				gamePreview={gamePreview}
+				canShowPreview={canShowPreview}
 				pageTitle={
 					<>
 						{team.fullName} vs {opposingTeam?.fullName ?? 'TBD'}

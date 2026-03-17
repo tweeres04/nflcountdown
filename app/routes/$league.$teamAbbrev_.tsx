@@ -6,7 +6,6 @@ import { addHours, isFuture } from 'date-fns'
 import Countdown from '~/components/countdown'
 import { getTeamAndGames } from '~/lib/getTeamAndGames'
 import { generateMeta } from '~/lib/generateMeta'
-import { getCachedGamePreview } from '~/lib/gemini-service'
 import { getSuggestedGames } from '~/lib/getSuggestedGames'
 import { getAffiliateLinks } from '~/lib/cj-service'
 import { Game } from '~/lib/types'
@@ -26,14 +25,10 @@ export async function loader({
 		(g: Game) => g.time && isFuture(addHours(g.time, 3))
 	)
 
-	// Deferred AI preview generation
-	const gamePreviewPromise =
-		process.env.GOOGLE_AI_API_KEY &&
-		nextGame &&
-		nextGame.homeTeam &&
-		nextGame.awayTeam
-			? getCachedGamePreview(LEAGUE, nextGame, team)
-			: Promise.resolve(null)
+	const canShowPreview =
+		!!process.env.GOOGLE_AI_API_KEY &&
+		!!nextGame?.homeTeam &&
+		!!nextGame?.awayTeam
 
 	// Get suggested games (other teams' games happening now/soon)
 	const suggestedGames = nextGame
@@ -58,7 +53,7 @@ export async function loader({
 		team,
 		games,
 		nextGame, // Pass to meta for SportsEvent schema on team pages
-		gamePreview: gamePreviewPromise,
+		canShowPreview,
 		suggestedGames,
 		breadcrumbItems,
 		affiliateLinks: affiliateLinksPromise,
@@ -81,7 +76,7 @@ export default function TeamCountdown() {
 		team,
 		games,
 		nextGame,
-		gamePreview,
+		canShowPreview,
 		suggestedGames,
 		breadcrumbItems,
 		affiliateLinks,
@@ -95,7 +90,7 @@ export default function TeamCountdown() {
 				teams={teams}
 				games={games}
 				game={nextGame}
-				gamePreview={gamePreview}
+				canShowPreview={canShowPreview}
 				isTeamPage={true}
 				breadcrumbItems={breadcrumbItems}
 				suggestedGames={suggestedGames}
