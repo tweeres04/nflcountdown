@@ -1,0 +1,98 @@
+[
+	{
+		"team": "Angel City FC",
+		"abbreviation": "LA",
+		"color_1": "#3B3B37",
+		"color_2": "#B38E5D"
+	},
+	{
+		"team": "Bay FC",
+		"abbreviation": "BAY",
+		"color_1": "#0D2032",
+		"color_2": "#FF5049"
+	},
+	{
+		"team": "Boston Legacy FC",
+		"abbreviation": "BOS",
+		"color_1": "#1A3D6B",
+		"color_2": "#C8102E"
+	},
+	{
+		"team": "Chicago Stars FC",
+		"abbreviation": "CHI",
+		"color_1": "#C7102E",
+		"color_2": "#3AB5E8"
+	},
+	{
+		"team": "Denver Summit FC",
+		"abbreviation": "DEN",
+		"color_1": "#20604E",
+		"color_2": "#E4B83E"
+	},
+	{
+		"team": "Gotham FC",
+		"abbreviation": "GFC",
+		"color_1": "#009CDE",
+		"color_2": "#231F20"
+	},
+	{
+		"team": "Houston Dash",
+		"abbreviation": "HOU",
+		"color_1": "#FF6900",
+		"color_2": "#7EBBE3"
+	},
+	{
+		"team": "Kansas City Current",
+		"abbreviation": "KC",
+		"color_1": "#CF3339",
+		"color_2": "#62CBC9"
+	},
+	{
+		"team": "North Carolina Courage",
+		"abbreviation": "NC",
+		"color_1": "#AB0033",
+		"color_2": "#00416B"
+	},
+	{
+		"team": "Orlando Pride",
+		"abbreviation": "ORL",
+		"color_1": "#6A2C8C",
+		"color_2": "#7EC8D4"
+	},
+	{
+		"team": "Portland Thorns FC",
+		"abbreviation": "POR",
+		"color_1": "#99242B",
+		"color_2": "#211E1E"
+	},
+	{
+		"team": "Racing Louisville FC",
+		"abbreviation": "LOU",
+		"color_1": "#7B4F9E",
+		"color_2": "#3D1A6E"
+	},
+	{
+		"team": "San Diego Wave FC",
+		"abbreviation": "SD",
+		"color_1": "#032E62",
+		"color_2": "#21C6D9"
+	},
+	{
+		"team": "Seattle Reign FC",
+		"abbreviation": "SEA",
+		"color_1": "#2D5EA8",
+		"color_2": "#1A1F36"
+	},
+	{
+		"team": "Utah Royals",
+		"abbreviation": "UTA",
+		"color_1": "#AE122A",
+		"color_2": "#FDB71A"
+	},
+	{
+		"team": "Washington Spirit",
+		"abbreviation": "WAS",
+		"color_1": "#1E3A5F",
+		"color_2": "#EDE939"
+	}
+]

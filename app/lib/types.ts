@@ -163,3 +163,10 @@ export interface MlsEventApi {
 export interface MlsScheduleApi {
 	events: MlsEventApi[]
 }
+
+// NWSL uses the same ESPN API format as MLS
+export type NwslTeamApi = MlsTeamApi
+export type NwslCompetitorApi = MlsCompetitorApi
+export type NwslCompetitionApi = MlsCompetitionApi
+export type NwslEventApi = MlsEventApi
+export type NwslScheduleApi = MlsScheduleApi

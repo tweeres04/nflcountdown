@@ -1,6 +1,6 @@
 import { json, type MetaFunction, LoaderFunctionArgs } from '@remix-run/node'
 import { uniqBy, orderBy } from 'lodash-es'
-import { Link, useLoaderData } from '@remix-run/react'
+import { useLoaderData } from '@remix-run/react'
 import { RouteErrorBoundary } from '~/components/route-error-boundary'
 import mlbTeams from '../../mlb_teams.json'
 import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
@@ -10,6 +10,7 @@ import { nhlTeamToTeam } from '~/lib/nhlGameToGame'
 import { wnbaTeamToTeam } from '~/lib/wnbaGameToGame'
 import { cplTeamToTeam } from '~/lib/cplGameToGame'
 import { mlsTeamToTeam } from '~/lib/mlsGameToGame'
+import { nwslTeamToTeam } from '~/lib/nwslGameToGame'
 import { readFile } from 'node:fs/promises'
 import {
 	NbaScheduleApi,
@@ -18,6 +19,7 @@ import {
 	WnbaScheduleApi,
 	CplScheduleApi,
 	MlsScheduleApi,
+	NwslScheduleApi,
 	Team,
 } from '~/lib/types'
 import {
@@ -119,6 +121,16 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		teamCount: 8,
 		seasonLength: '28 games per team',
 		seasonMonths: 'April to October',
+	},
+	NWSL: {
+		fullName: "National Women's Soccer League",
+		shortName: 'NWSL',
+		seasonTerm: 'kickoff',
+		titleKeyword: 'NWSL Season',
+		crossYear: false,
+		teamCount: 16,
+		seasonLength: '30 games per team',
+		seasonMonths: 'March to November',
 	},
 }
 
@@ -291,7 +303,9 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 export async function loader({ params: { league } }: LoaderFunctionArgs) {
 	const LEAGUE = league!.toUpperCase()
 
-	if (!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA', 'CPL', 'MLS'].includes(LEAGUE)) {
+	if (
+		!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA', 'CPL', 'MLS', 'NWSL'].includes(LEAGUE)
+	) {
 		throw new Response(null, { status: 404 })
 	}
 
@@ -308,6 +322,8 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 			? 'data/cpl_schedule.json'
 			: LEAGUE === 'MLS'
 			? 'data/mls_schedule.json'
+			: LEAGUE === 'NWSL'
+			? 'data/nwsl_schedule.json'
 			: 'data/nfl_schedule.json'
 
 	const scheduleRaw = await readFile(scheduleFile, 'utf-8')
@@ -354,6 +370,13 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 					),
 					'id'
 			  ).map(mlsTeamToTeam)
+			: LEAGUE === 'NWSL'
+			? uniqBy(
+					(scheduleParsed as NwslScheduleApi).events.flatMap((e) =>
+						e.competitions[0].competitors.map((c) => c.team)
+					),
+					'id'
+			  ).map(nwslTeamToTeam)
 			: uniqBy(
 					(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),
 					'id'
@@ -484,6 +507,8 @@ export default function LeagueIndex() {
 												? 'Cavalry FC'
 												: LEAGUE === 'MLS'
 												? 'Inter Miami CF'
+												: LEAGUE === 'NWSL'
+												? 'Gotham FC'
 												: 'Kansas City Chiefs'
 										} countdown in action.`}
 										className="rounded-sm"
@@ -502,6 +527,8 @@ export default function LeagueIndex() {
 											? 'Cavalry FC'
 											: LEAGUE === 'MLS'
 											? 'Inter Miami CF'
+											: LEAGUE === 'NWSL'
+											? 'Gotham FC'
 											: 'Kansas City Chiefs'}{' '}
 										countdown in action.
 									</p>

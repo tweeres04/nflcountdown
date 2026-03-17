@@ -46,6 +46,7 @@ export default function Index() {
 		{ code: 'mlb', name: 'MLB', fullName: 'Major League Baseball' },
 		{ code: 'nhl', name: 'NHL', fullName: 'National Hockey League' },
 		{ code: 'mls', name: 'MLS', fullName: 'Major League Soccer' },
+		{ code: 'nwsl', name: 'NWSL', fullName: "National Women's Soccer League" },
 	]
 
 	return (

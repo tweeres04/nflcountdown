@@ -44,13 +44,13 @@ export default function TeamsDropdown({
 					{t.fullName}
 				</a>
 			))}
-			{['NFL', 'MLB', 'NBA', 'WNBA', 'NHL', 'MLS'].map((league) =>
-				LEAGUE !== league ? (
-					<a key={league} href={`/${league.toLowerCase()}`}>
-						{league}
-					</a>
-				) : null
-			)}
+		{['NFL', 'MLB', 'NBA', 'WNBA', 'NHL', 'MLS', 'NWSL'].map((league) =>
+			LEAGUE !== league ? (
+				<a key={league} href={`/${league.toLowerCase()}`}>
+					{league}
+				</a>
+			) : null
+		)}
 		</nav>
 
 			{/* Visible dropdown menu for users */}
@@ -64,13 +64,13 @@ export default function TeamsDropdown({
 							More leagues
 						</DropdownMenuSubTrigger>
 						<DropdownMenuSubContent className={contentClasses}>
-							{['NFL', 'MLB', 'NBA', 'WNBA', 'NHL', 'MLS'].map((league) =>
-								LEAGUE !== league ? (
-									<DropdownMenuItem asChild key={league}>
-										<a href={`/${league.toLowerCase()}`}>{league}</a>
-									</DropdownMenuItem>
-								) : null
-							)}
+						{['NFL', 'MLB', 'NBA', 'WNBA', 'NHL', 'MLS', 'NWSL'].map((league) =>
+							LEAGUE !== league ? (
+								<DropdownMenuItem asChild key={league}>
+									<a href={`/${league.toLowerCase()}`}>{league}</a>
+								</DropdownMenuItem>
+							) : null
+						)}
 						</DropdownMenuSubContent>
 					</DropdownMenuSub>
 					{teams.map((t) => (

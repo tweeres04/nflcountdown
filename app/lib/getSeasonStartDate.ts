@@ -138,6 +138,13 @@ function calculateSeasonStartDate(league: string, year: number): Date {
 		return date
 	}
 
+	if (LEAGUE === 'NWSL') {
+		// 2nd Saturday of March
+		date = nthWeekdayOfMonth(year, 2, isSaturday, nextSaturday, 2)
+		date.setUTCHours(20, 0, 0, 0) // 4:00 PM EDT (UTC-4) = 20:00 UTC
+		return date
+	}
+
 	// Fallback: first day of next year
 	return new Date(year + 1, 0, 1)
 }

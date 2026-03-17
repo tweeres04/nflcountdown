@@ -8,8 +8,9 @@ import { nhlTeamToTeam } from '~/lib/nhlGameToGame'
 import { wnbaTeamToTeam } from '~/lib/wnbaGameToGame'
 import { cplTeamToTeam } from '~/lib/cplGameToGame'
 import { mlsTeamToTeam } from '~/lib/mlsGameToGame'
+import { nwslTeamToTeam } from '~/lib/nwslGameToGame'
 import { readFile } from 'node:fs/promises'
-import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, Team } from '~/lib/types'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, Team } from '~/lib/types'
 
 export async function loader({
 	params: { league, teamAbbrev },
@@ -27,9 +28,11 @@ export async function loader({
 			? 'data/wnba_schedule.json'
 			: LEAGUE === 'CPL'
 			? 'data/cpl_schedule.json'
-			: LEAGUE === 'MLS'
-			? 'data/mls_schedule.json'
-			: 'data/nfl_schedule.json'
+		: LEAGUE === 'MLS'
+		? 'data/mls_schedule.json'
+		: LEAGUE === 'NWSL'
+		? 'data/nwsl_schedule.json'
+		: 'data/nfl_schedule.json'
 
 	const scheduleRaw = await readFile(scheduleFile, 'utf-8')
 	const scheduleParsed = JSON.parse(scheduleRaw)
@@ -65,17 +68,24 @@ export async function loader({
 					(scheduleParsed as CplScheduleApi).matches.flatMap((m) => [m.home, m.away]),
 					'teamId'
 			  ).map(cplTeamToTeam)
-			: LEAGUE === 'MLS'
-			? uniqBy(
-					(scheduleParsed as MlsScheduleApi).events.flatMap((e) => 
-						e.competitions[0].competitors.map(c => c.team)
-					),
-					'id'
-			  ).map(mlsTeamToTeam)
-			: uniqBy(
-					(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),
-					'id'
-			  ).map(nflTeamToTeam)
+		: LEAGUE === 'MLS'
+		? uniqBy(
+				(scheduleParsed as MlsScheduleApi).events.flatMap((e) => 
+					e.competitions[0].competitors.map(c => c.team)
+				),
+				'id'
+		  ).map(mlsTeamToTeam)
+		: LEAGUE === 'NWSL'
+		? uniqBy(
+				(scheduleParsed as NwslScheduleApi).events.flatMap((e) =>
+					e.competitions[0].competitors.map(c => c.team)
+				),
+				'id'
+		  ).map(nwslTeamToTeam)
+		: uniqBy(
+				(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),
+				'id'
+		  ).map(nflTeamToTeam)
 
 	const lowercaseAbbreviation = teamAbbrev?.toLowerCase()
 

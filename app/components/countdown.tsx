@@ -115,10 +115,13 @@ export function countdownString({
 			? 'Game in progress!'
 			: `${countdown(new Date(game.time), null, units).toString()} till ${
 					isTeamPage && team
-						? LEAGUE === 'CPL' || LEAGUE === 'MLS'
+						? LEAGUE === 'CPL' || LEAGUE === 'MLS' || LEAGUE === 'NWSL'
 							? `${team.nickName} play next`
 							: `the ${team.nickName} play next`
-						: LEAGUE === 'NFL' || LEAGUE === 'MLS' || LEAGUE === 'CPL'
+						: LEAGUE === 'NFL' ||
+						  LEAGUE === 'MLS' ||
+						  LEAGUE === 'CPL' ||
+						  LEAGUE === 'NWSL'
 						? 'kickoff'
 						: LEAGUE === 'MLB'
 						? 'first pitch'
@@ -253,7 +256,10 @@ export default function Countdown({
 					src={logo}
 					className={cn(
 						'mx-auto',
-						LEAGUE === 'NHL' || LEAGUE === 'CPL' || LEAGUE === 'MLS'
+						LEAGUE === 'NHL' ||
+							LEAGUE === 'CPL' ||
+							LEAGUE === 'MLS' ||
+							LEAGUE === 'NWSL'
 							? 'h-[256px] md:h-[384px] my-8'
 							: 'w-[256px] h-[256px] md:w-[384px] md:h-[384px]',
 						{ 'py-8 lg:py-16': LEAGUE === 'MLB' }
@@ -310,12 +316,24 @@ export default function Countdown({
 							}}
 						>
 							{hasShareAPI ? (
-								<>Share <IosShareIcon className="size-5" /></>
-							) : copied ? 'Copied!' : 'Copy link'}
+								<>
+									Share <IosShareIcon className="size-5" />
+								</>
+							) : copied ? (
+								'Copied!'
+							) : (
+								'Copy link'
+							)}
 						</Button>
 					)}
 					{affiliateLinks && (
-						<Suspense fallback={<Button disabled>Tickets <Ticket className="size-5" /></Button>}>
+						<Suspense
+							fallback={
+								<Button disabled>
+									Tickets <Ticket className="size-5" />
+								</Button>
+							}
+						>
 							<Await resolve={affiliateLinks} errorElement={null}>
 								{(links) =>
 									links?.tickets ? (
@@ -473,7 +491,9 @@ export default function Countdown({
 										})}
 								</nav>
 							)}
-						{showFullSchedule && team && <GameList games={games} team={team} />}
+							{showFullSchedule && team && (
+								<GameList games={games} team={team} />
+							)}
 						</>
 					) : null}
 					<FeedbackButton />
@@ -510,7 +530,6 @@ export default function Countdown({
 					</div>
 				)}
 
-	
 				{suggestedGames.length > 0 && (
 					<YouMightLike games={suggestedGames} league={LEAGUE} />
 				)}

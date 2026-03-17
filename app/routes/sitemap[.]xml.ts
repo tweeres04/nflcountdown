@@ -7,15 +7,16 @@ import { nhlGameToGame, nhlTeamToTeam } from '~/lib/nhlGameToGame'
 import { wnbaGameToGame, wnbaTeamToTeam } from '~/lib/wnbaGameToGame'
 import { cplGameToGame, cplTeamToTeam } from '~/lib/cplGameToGame'
 import { mlsGameToGame, mlsTeamToTeam } from '~/lib/mlsGameToGame'
+import { nwslGameToGame, nwslTeamToTeam } from '~/lib/nwslGameToGame'
 import { getGameSlug } from '~/lib/getGameSlug'
 import { readFile } from 'node:fs/promises'
-import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, Team, Game } from '~/lib/types'
+import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, Team, Game } from '~/lib/types'
 import { isFuture, addHours } from 'date-fns'
 
 export async function loader() {
-	const leagues = ['NFL', 'MLB', 'NBA', 'NHL', 'WNBA', 'CPL', 'MLS']
+	const leagues = ['NFL', 'MLB', 'NBA', 'NHL', 'WNBA', 'CPL', 'MLS', 'NWSL']
 
-	const [nflScheduleRaw, mlbScheduleRaw, nbaScheduleRaw, nhlScheduleRaw, wnbaScheduleRaw, cplScheduleRaw, mlsScheduleRaw] = await Promise.all([
+	const [nflScheduleRaw, mlbScheduleRaw, nbaScheduleRaw, nhlScheduleRaw, wnbaScheduleRaw, cplScheduleRaw, mlsScheduleRaw, nwslScheduleRaw] = await Promise.all([
 		readFile('data/nfl_schedule.json', 'utf-8'),
 		readFile('data/mlb_schedule.json', 'utf-8'),
 		readFile('data/nba_schedule.json', 'utf-8'),
@@ -23,6 +24,7 @@ export async function loader() {
 		readFile('data/wnba_schedule.json', 'utf-8'),
 		readFile('data/cpl_schedule.json', 'utf-8'),
 		readFile('data/mls_schedule.json', 'utf-8'),
+		readFile('data/nwsl_schedule.json', 'utf-8'),
 	])
 
 	const nflSchedule = JSON.parse(nflScheduleRaw) as NflScheduleApi
@@ -32,6 +34,7 @@ export async function loader() {
 	const wnbaSchedule = JSON.parse(wnbaScheduleRaw) as WnbaScheduleApi
 	const cplSchedule = JSON.parse(cplScheduleRaw) as CplScheduleApi
 	const mlsSchedule = JSON.parse(mlsScheduleRaw) as MlsScheduleApi
+	const nwslSchedule = JSON.parse(nwslScheduleRaw) as NwslScheduleApi
 
 	let allUrls: string[] = []
 
@@ -88,17 +91,24 @@ export async function loader() {
 						cplSchedule.matches.flatMap((m) => [m.home, m.away]),
 						'teamId'
 				  ).map(cplTeamToTeam)
-				: LEAGUE === 'MLS'
-				? uniqBy(
-						mlsSchedule.events.flatMap((e) => 
-							e.competitions[0].competitors.map(c => c.team)
-						),
-						'id'
-				  ).map(mlsTeamToTeam)
-				: uniqBy(
-						nflSchedule.games.map((g) => g.homeTeam),
-						'id'
-				  ).map(nflTeamToTeam)
+			: LEAGUE === 'MLS'
+			? uniqBy(
+					mlsSchedule.events.flatMap((e) => 
+						e.competitions[0].competitors.map(c => c.team)
+					),
+					'id'
+			  ).map(mlsTeamToTeam)
+			: LEAGUE === 'NWSL'
+			? uniqBy(
+					nwslSchedule.events.flatMap((e) =>
+						e.competitions[0].competitors.map(c => c.team)
+					),
+					'id'
+			  ).map(nwslTeamToTeam)
+			: uniqBy(
+					nflSchedule.games.map((g) => g.homeTeam),
+					'id'
+			  ).map(nflTeamToTeam)
 
 		// Get all games for sitemap
 		const games: Game[] =
@@ -118,9 +128,11 @@ export async function loader() {
 					.map(g => wnbaGameToGame(g))
 			: LEAGUE === 'CPL'
 			? cplSchedule.matches.map(m => cplGameToGame(m))
-			: LEAGUE === 'MLS'
-			? mlsSchedule.events.map(e => mlsGameToGame(e))
-			: nflSchedule.games.map(nflGameToGame)
+		: LEAGUE === 'MLS'
+		? mlsSchedule.events.map(e => mlsGameToGame(e))
+		: LEAGUE === 'NWSL'
+		? nwslSchedule.events.map(e => nwslGameToGame(e))
+		: nflSchedule.games.map(nflGameToGame)
 
 		// Add league index page
 		allUrls.push(`    <url>
