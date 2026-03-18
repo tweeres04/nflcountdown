@@ -393,7 +393,7 @@ export default function Countdown({
 					</div>
 				</div>
 
-				<div className="mt-8 [&_button]:min-w-[275px] flex flex-col gap-3 items-center">
+				<div className="mt-8 [&_button]:min-w-[275px] [&_a]:min-w-[275px] flex flex-col gap-3 items-center">
 					{/* Tier 1 — primary actions */}
 					{canShare && (
 						<Button
