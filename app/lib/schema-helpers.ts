@@ -25,6 +25,8 @@ export function getSportName(league: string): string {
 			return 'Soccer'
 		case 'PWHL':
 			return 'Ice Hockey'
+		case 'CFB':
+			return 'American Football'
 		default:
 			return 'Sports'
 	}
@@ -50,6 +52,8 @@ export function getLeagueFullName(league: string): string {
 			return "National Women's Soccer League"
 		case 'PWHL':
 			return "Professional Women's Hockey League"
+		case 'CFB':
+			return 'College Football'
 		default:
 			return league
 	}
@@ -66,6 +70,7 @@ export function getLeagueSameAs(league: string): string {
 		CPL: 'https://canpl.ca',
 		NWSL: 'https://www.nwslsoccer.com',
 		PWHL: 'https://www.thepwhl.com',
+		CFB: 'https://www.ncaa.com/sports/football/fbs',
 	}
 	return officialUrls[league] || ''
 }
@@ -182,11 +187,15 @@ export function generateWebSiteSchema() {
 		name: 'Team Countdown',
 		url: 'https://teamcountdown.com',
 		description:
-			'The fastest and prettiest way to check the next NFL, NBA, MLB, NHL, WNBA, or MLS game. Launches instantly from your home screen.',
+			'The fastest and prettiest way to check the next NFL, CFB, NBA, MLB, NHL, WNBA, or MLS game. Launches instantly from your home screen.',
 		about: [
 			{
 				'@type': 'SportsOrganization',
 				name: 'National Football League',
+			},
+			{
+				'@type': 'SportsOrganization',
+				name: 'College Football',
 			},
 			{
 				'@type': 'SportsOrganization',

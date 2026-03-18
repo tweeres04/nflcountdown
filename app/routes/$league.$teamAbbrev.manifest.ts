@@ -10,8 +10,9 @@ import { cplTeamToTeam } from '~/lib/cplGameToGame'
 import { mlsTeamToTeam } from '~/lib/mlsGameToGame'
 import { nwslTeamToTeam } from '~/lib/nwslGameToGame'
 import { pwhlTeamToTeam } from '~/lib/pwhlGameToGame'
+import { cfbTeamToTeam } from '~/lib/cfbGameToGame'
 import { readFile } from 'node:fs/promises'
-import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, Team } from '~/lib/types'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, Team } from '~/lib/types'
 
 export async function loader({
 	params: { league, teamAbbrev },
@@ -35,6 +36,8 @@ export async function loader({
 		? 'data/nwsl_schedule.json'
 		: LEAGUE === 'PWHL'
 		? 'data/pwhl_schedule.json'
+		: LEAGUE === 'CFB'
+		? 'data/cfb_schedule.json'
 		: 'data/nfl_schedule.json'
 
 	const scheduleRaw = await readFile(scheduleFile, 'utf-8')
@@ -92,6 +95,13 @@ export async function loader({
 		  ).map((g) =>
 				pwhlTeamToTeam(g.HomeID, g.HomeCode, g.HomeCity, g.HomeNickname, g.HomeLongName)
 		  )
+		: LEAGUE === 'CFB'
+		? uniqBy(
+				(scheduleParsed as CfbScheduleApi).events.flatMap((e) =>
+					e.competitions[0].competitors.map((c) => c.team)
+				),
+				'id'
+		  ).map(cfbTeamToTeam)
 		: uniqBy(
 				(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),
 				'id'

@@ -13,7 +13,8 @@
 		"get-cpl-schedule": "tsx getCplSchedule.ts",
 		"get-mls-schedule": "tsx getMlsSchedule.ts",
 		"get-nwsl-schedule": "tsx getNwslSchedule.ts",
-		"get-pwhl-schedule": "tsx getPwhlSchedule.ts"
+		"get-pwhl-schedule": "tsx getPwhlSchedule.ts",
+		"get-cfb-schedule": "tsx getCfbSchedule.ts"
 	},
 	"type": "module"
 }

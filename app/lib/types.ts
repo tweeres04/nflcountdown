@@ -146,6 +146,7 @@ export interface MlsCompetitorApi {
 export interface MlsCompetitionApi {
 	id: string
 	date: string
+	timeValid?: boolean
 	broadcasts?: Array<{
 		market: string
 		names: string[]
@@ -170,6 +171,13 @@ export type NwslCompetitorApi = MlsCompetitorApi
 export type NwslCompetitionApi = MlsCompetitionApi
 export type NwslEventApi = MlsEventApi
 export type NwslScheduleApi = MlsScheduleApi
+
+// CFB uses the same ESPN API format as MLS
+export type CfbTeamApi = MlsTeamApi
+export type CfbCompetitorApi = MlsCompetitorApi
+export type CfbCompetitionApi = MlsCompetitionApi
+export type CfbEventApi = MlsEventApi
+export type CfbScheduleApi = MlsScheduleApi
 
 // PWHL uses the HockeyTech API (lscluster.hockeytech.com)
 export interface PwhlGameApi {

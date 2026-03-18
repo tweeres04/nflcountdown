@@ -152,6 +152,13 @@ function calculateSeasonStartDate(league: string, year: number): Date {
 		return date
 	}
 
+	if (LEAGUE === 'CFB') {
+		// Last Saturday of August (Week 0 / opening weekend)
+		date = lastWeekdayOfMonth(year, 7, isSaturday, nextSaturday)
+		date.setUTCHours(17, 0, 0, 0) // 1:00 PM EDT (UTC-4) = 17:00 UTC
+		return date
+	}
+
 	// Fallback: first day of next year
 	return new Date(year + 1, 0, 1)
 }

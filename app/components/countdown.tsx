@@ -231,6 +231,7 @@ export function countdownString({
 							? `${team.nickName} play next`
 							: `the ${team.nickName} play next`
 						: LEAGUE === 'NFL' ||
+						  LEAGUE === 'CFB' ||
 						  LEAGUE === 'MLS' ||
 						  LEAGUE === 'CPL' ||
 						  LEAGUE === 'NWSL'
@@ -364,17 +365,18 @@ export default function Countdown({
 
 				<img
 					src={logo}
-					className={cn(
-						'mx-auto',
-						LEAGUE === 'NHL' ||
-							LEAGUE === 'CPL' ||
-							LEAGUE === 'MLS' ||
-							LEAGUE === 'NWSL' ||
-							LEAGUE === 'PWHL'
-							? 'h-[256px] md:h-[384px] my-8'
-							: 'w-[256px] h-[256px] md:w-[384px] md:h-[384px]',
-						{ 'py-8 lg:py-16': LEAGUE === 'MLB' }
-					)}
+				className={cn(
+					'mx-auto',
+					LEAGUE === 'NHL' ||
+						LEAGUE === 'CFB' ||
+						LEAGUE === 'CPL' ||
+						LEAGUE === 'MLS' ||
+						LEAGUE === 'NWSL' ||
+						LEAGUE === 'PWHL'
+						? 'h-[256px] md:h-[384px] my-8'
+						: 'w-[256px] h-[256px] md:w-[384px] md:h-[384px]',
+					{ 'py-8 lg:py-16': LEAGUE === 'MLB' }
+				)}
 					alt={team ? `${team.fullName} logo` : `${LEAGUE} logo`}
 				/>
 

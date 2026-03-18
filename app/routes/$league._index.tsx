@@ -12,6 +12,7 @@ import { cplTeamToTeam } from '~/lib/cplGameToGame'
 import { mlsTeamToTeam } from '~/lib/mlsGameToGame'
 import { nwslTeamToTeam } from '~/lib/nwslGameToGame'
 import { pwhlTeamToTeam } from '~/lib/pwhlGameToGame'
+import { cfbTeamToTeam } from '~/lib/cfbGameToGame'
 import { readFile } from 'node:fs/promises'
 import {
 	NbaScheduleApi,
@@ -22,6 +23,7 @@ import {
 	MlsScheduleApi,
 	NwslScheduleApi,
 	PwhlScheduleApi,
+	CfbScheduleApi,
 	Team,
 } from '~/lib/types'
 import {
@@ -143,6 +145,16 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		teamCount: 8,
 		seasonLength: '30 games per team',
 		seasonMonths: 'January to April',
+	},
+	CFB: {
+		fullName: 'College Football',
+		shortName: 'CFB',
+		seasonTerm: 'kickoff',
+		titleKeyword: 'College Football Season',
+		crossYear: false,
+		teamCount: 68,
+		seasonLength: '12-15 games per team',
+		seasonMonths: 'August to January',
 	},
 }
 
@@ -316,7 +328,7 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 	const LEAGUE = league!.toUpperCase()
 
 	if (
-		!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA', 'CPL', 'MLS', 'NWSL', 'PWHL'].includes(LEAGUE)
+		!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA', 'CPL', 'MLS', 'NWSL', 'PWHL', 'CFB'].includes(LEAGUE)
 	) {
 		throw new Response(null, { status: 404 })
 	}
@@ -338,6 +350,8 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 			? 'data/nwsl_schedule.json'
 			: LEAGUE === 'PWHL'
 			? 'data/pwhl_schedule.json'
+			: LEAGUE === 'CFB'
+			? 'data/cfb_schedule.json'
 			: 'data/nfl_schedule.json'
 
 	const scheduleRaw = await readFile(scheduleFile, 'utf-8')
@@ -392,16 +406,23 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 					'id'
 			  ).map(nwslTeamToTeam)
 			: LEAGUE === 'PWHL'
-			? uniqBy(
-					(scheduleParsed as PwhlScheduleApi).SiteKit.Scorebar,
-					'HomeID'
-			  ).map((g) =>
-					pwhlTeamToTeam(g.HomeID, g.HomeCode, g.HomeCity, g.HomeNickname, g.HomeLongName)
-			  )
-			: uniqBy(
-					(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),
-					'id'
-			  ).map(nflTeamToTeam)
+		? uniqBy(
+				(scheduleParsed as PwhlScheduleApi).SiteKit.Scorebar,
+				'HomeID'
+		  ).map((g) =>
+				pwhlTeamToTeam(g.HomeID, g.HomeCode, g.HomeCity, g.HomeNickname, g.HomeLongName)
+		  )
+		: LEAGUE === 'CFB'
+		? uniqBy(
+				(scheduleParsed as CfbScheduleApi).events.flatMap((e) =>
+					e.competitions[0].competitors.map((c) => c.team)
+				),
+				'id'
+		  ).map(cfbTeamToTeam)
+		: uniqBy(
+				(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),
+				'id'
+		  ).map(nflTeamToTeam)
 	teams = orderBy(teams, 'fullName')
 
 	const [upcomingGames, seasonResult] = await Promise.all([
@@ -532,6 +553,8 @@ export default function LeagueIndex() {
 										? 'Gotham FC'
 										: LEAGUE === 'PWHL'
 										? 'Minnesota Frost'
+										: LEAGUE === 'CFB'
+										? 'Indiana Hoosiers'
 										: 'Kansas City Chiefs'
 								} countdown in action.`}
 										className="rounded-sm"
@@ -554,8 +577,10 @@ export default function LeagueIndex() {
 									? 'Gotham FC'
 								: LEAGUE === 'PWHL'
 								? 'Minnesota Frost'
+							: LEAGUE === 'CFB'
+								? 'Indiana Hoosiers'
 								: 'Kansas City Chiefs'}{' '}
-							countdown in action.
+						countdown in action.
 									</p>
 								</div>
 							</div>

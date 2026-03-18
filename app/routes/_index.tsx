@@ -41,6 +41,7 @@ export const meta: MetaFunction = () => {
 export default function Index() {
 	const leagues = [
 		{ code: 'nfl', name: 'NFL', fullName: 'National Football League' },
+		{ code: 'cfb', name: 'CFB', fullName: 'College Football' },
 		{ code: 'nba', name: 'NBA', fullName: 'National Basketball Association' },
 		{ code: 'wnba', name: 'WNBA', fullName: "Women's National Basketball Association" },
 		{ code: 'mlb', name: 'MLB', fullName: 'Major League Baseball' },

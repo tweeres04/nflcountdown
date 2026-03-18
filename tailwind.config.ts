@@ -8,6 +8,7 @@ import cplColors from './cpl_colors.json'
 import mlsColors from './mls_colors.json'
 import nwslColors from './nwsl_colors.json'
 import pwhlColors from './pwhl_colors.json'
+import cfbColors from './cfb_colors.json'
 
 const teams = [...new Set(schedule.games.map((g) => g.homeTeam))]
 
@@ -102,6 +103,16 @@ const pwhlColors_ = pwhlColors.reduce(
 	}),
 	{}
 )
+const cfbColors_ = cfbColors.reduce(
+	(result, c) => ({
+		...result,
+		['cfb-' + c.abbreviation.toLowerCase()]: {
+			DEFAULT: c.color_1,
+			secondary: c.color_2,
+		},
+	}),
+	{}
+)
 
 colors = {
 	...colors,
@@ -113,6 +124,7 @@ colors = {
 	...mlsColors_,
 	...nwslColors_,
 	...pwhlColors_,
+	...cfbColors_,
 }
 
 const safelist = Object.keys(colors).flatMap((abbrev) => {
