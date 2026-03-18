@@ -9,8 +9,9 @@ import { wnbaTeamToTeam } from '~/lib/wnbaGameToGame'
 import { cplTeamToTeam } from '~/lib/cplGameToGame'
 import { mlsTeamToTeam } from '~/lib/mlsGameToGame'
 import { nwslTeamToTeam } from '~/lib/nwslGameToGame'
+import { pwhlTeamToTeam } from '~/lib/pwhlGameToGame'
 import { readFile } from 'node:fs/promises'
-import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, Team } from '~/lib/types'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, Team } from '~/lib/types'
 
 export async function loader({
 	params: { league, teamAbbrev },
@@ -32,6 +33,8 @@ export async function loader({
 		? 'data/mls_schedule.json'
 		: LEAGUE === 'NWSL'
 		? 'data/nwsl_schedule.json'
+		: LEAGUE === 'PWHL'
+		? 'data/pwhl_schedule.json'
 		: 'data/nfl_schedule.json'
 
 	const scheduleRaw = await readFile(scheduleFile, 'utf-8')
@@ -82,6 +85,13 @@ export async function loader({
 				),
 				'id'
 		  ).map(nwslTeamToTeam)
+		: LEAGUE === 'PWHL'
+		? uniqBy(
+				(scheduleParsed as PwhlScheduleApi).SiteKit.Scorebar,
+				'HomeID'
+		  ).map((g) =>
+				pwhlTeamToTeam(g.HomeID, g.HomeCode, g.HomeCity, g.HomeNickname, g.HomeLongName)
+		  )
 		: uniqBy(
 				(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),
 				'id'

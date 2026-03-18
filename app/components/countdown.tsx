@@ -237,7 +237,7 @@ export function countdownString({
 						? 'kickoff'
 						: LEAGUE === 'MLB'
 						? 'first pitch'
-						: LEAGUE === 'NHL'
+						: LEAGUE === 'NHL' || LEAGUE === 'PWHL'
 						? 'puck drop'
 						: 'tip-off'
 			  }`
@@ -369,7 +369,8 @@ export default function Countdown({
 						LEAGUE === 'NHL' ||
 							LEAGUE === 'CPL' ||
 							LEAGUE === 'MLS' ||
-							LEAGUE === 'NWSL'
+							LEAGUE === 'NWSL' ||
+							LEAGUE === 'PWHL'
 							? 'h-[256px] md:h-[384px] my-8'
 							: 'w-[256px] h-[256px] md:w-[384px] md:h-[384px]',
 						{ 'py-8 lg:py-16': LEAGUE === 'MLB' }

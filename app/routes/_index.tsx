@@ -45,6 +45,7 @@ export default function Index() {
 		{ code: 'wnba', name: 'WNBA', fullName: "Women's National Basketball Association" },
 		{ code: 'mlb', name: 'MLB', fullName: 'Major League Baseball' },
 		{ code: 'nhl', name: 'NHL', fullName: 'National Hockey League' },
+		{ code: 'pwhl', name: 'PWHL', fullName: "Professional Women's Hockey League" },
 		{ code: 'mls', name: 'MLS', fullName: 'Major League Soccer' },
 		{ code: 'nwsl', name: 'NWSL', fullName: "National Women's Soccer League" },
 	]

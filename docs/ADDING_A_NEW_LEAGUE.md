@@ -193,14 +193,26 @@ Add to `cron/package.json`:
 - `.svg` — used on the league index page and countdown page
 - `.png` — used for PWA manifests
 
+**Always check the source dimensions before resizing.** Logos are rarely square — shields tend to be portrait, wordmarks landscape. Using a plain `-resize 512x512` will squish non-square logos. Always check first and preserve the aspect ratio:
+
+```bash
+# Check dimensions of source files
+magick identify public/logos/{league}/sea.svg  # SVG
+magick identify public/logos/{league}/van.png  # PNG/WebP
+
+# Correct approach: fit within 512x512, pad the shorter dimension with transparency
+magick -density 300 -background none input.svg -resize 512x512 -gravity center -extent 512x512 output.png
+magick input.png -resize 512x512 -background none -gravity center -extent 512x512 output.png
+```
+
 **If SVGs are available from an official CDN** (preferred):
 ```bash
 mkdir -p public/logos/{league}
 curl -sL "https://example.com/logos/team.svg" > public/logos/{league}/team.svg
-# Then generate PNGs from the SVGs:
+# Then generate PNGs from the SVGs (preserving aspect ratio):
 for svg in public/logos/{league}/*.svg; do
   png="${svg%.svg}.png"
-  magick -background none -resize 512x512 "$svg" "$png"
+  magick -density 300 -background none "$svg" -resize 512x512 -gravity center -extent 512x512 "$png"
 done
 ```
 
@@ -210,9 +222,7 @@ mkdir -p public/logos/{league}
 # Download images (use lowercase filenames!)
 curl -sL "https://a.espncdn.com/i/teamlogos/soccer/500/{TEAM_ID}.png" > "public/logos/{league}/{abbr}.png"
 
-# Optionally convert to WebP for smaller file sizes:
-magick input.png -resize 500x500 output.webp
-# For non-square source images, preserve aspect ratio with transparent padding:
+# Optionally convert to WebP for smaller file sizes (preserve aspect ratio!):
 magick input.png -resize 500x500 -background none -gravity center -extent 500x500 output.webp
 
 # Create SVG wrappers with the image embedded as base64 (one per team).
@@ -501,9 +511,15 @@ npm run dev
 - Season runs August-May
 
 ### PWHL (Professional Women's Hockey League)
-- New league (2024), may have limited API options
-- 6 teams currently
-- Similar structure to NHL
+- **API**: HockeyTech (`lscluster.hockeytech.com`) — the same backend that powers `thepwhl.com`. The API key is publicly embedded in the PWHL site's page source (`var appKey = '446521baf8c38984'`). Fetch with `client_code=pwhl&league_id=1`. Filter to the current season using the `SeasonID` field (season 8 = 2025-26).
+- **Types**: Completely different format from all other leagues — HockeyTech `Scorebar` objects with `Home*`/`Visitor*` prefixed fields. Cannot reuse any existing types; requires new `PwhlGameApi`/`PwhlScheduleApi` interfaces.
+- **`pwhlTeamToTeam`**: Takes individual fields as parameters (not a single team object), since the API embeds team data inline in each game row rather than as a nested object.
+- **Logos**: Mixed sources — 4 real vector SVGs from Wikipedia (MTL, NY, OTT, TOR), 4 WebP-embedded SVG wrappers from Wikipedia PNGs (BOS, MIN, SEA, VAN). League-level logo is a real vector SVG (wordmark, 575×122 aspect ratio — regenerate PNG with aspect ratio preserved).
+- **Colors**: No teamcolorcodes.com entries. Extract hex values from SVG source files directly; for PNG-only logos use ImageMagick histogram analysis (`-colors 8 -format "%c" histogram:info:`).
+- **8 teams** (2025-26 season includes two expansion teams: Seattle Torrent, Vancouver Goldeneyes)
+- **Season**: January to April, `crossYear: true` (displays as "2025-26 Season")
+- **Season term**: "puck drop" (shared with NHL in `countdown.tsx`)
+- **Countdown text**: Uses "the" prefix — "till the Frost play next" (same as NHL)
 
 ### WNBA
 - **API**: WNBA CDN (`cdn.wnba.com/static/json/staticData/scheduleLeagueV2.json`) — same format as NBA
@@ -523,20 +539,22 @@ npm run dev
 6. **PNG Generation** - PWA manifests require PNG versions, not just SVG
 7. **Logo filename casing** - All logo filenames must be **lowercase** (e.g., `sea.svg`, not `SEA.svg`). The app constructs paths using `team.abbreviation.toLowerCase()`, so a casing mismatch causes broken images silently.
 8. **SVG required for every team** - The league index page and countdown component load `.svg` files. If the source only provides PNGs (e.g., ESPN CDN), create SVG wrappers with the image embedded as a **base64 data URI** (not an external `href`) — see Step 5. Using an external path like `href="/logos/nwsl/sea.png"` produces an empty image because browsers block external resource loads when SVGs are rendered via `<img src="..."`.
-9. **Non-square logos need aspect-ratio-safe resizing** - When converting a portrait or landscape logo to a fixed canvas, use `-resize 500x500 -background none -gravity center -extent 500x500` to fit within the box with transparent padding rather than stretching.
+9. **Non-square logos need aspect-ratio-safe resizing** - Most logos are not square (shields are portrait, wordmarks are landscape). Always check source dimensions with `magick identify` first, then use `-resize 512x512 -gravity center -background none -extent 512x512` to fit within the box with transparent padding. Plain `-resize 512x512` will squish the logo.
 10. **Logo sizing in countdown** - `countdown.tsx` has two logo sizing modes. Check which fits your league's logo shape:
-    - `h-[256px] md:h-[384px] my-8` — height-constrained, width unconstrained (NHL, CPL, MLS, NWSL). Use for tall/portrait logos or shields.
+    - `h-[256px] md:h-[384px] my-8` — height-constrained, width unconstrained (NHL, CPL, MLS, NWSL, PWHL). Use for tall/portrait logos or shields.
     - `w-[256px] h-[256px] md:w-[384px] md:h-[384px]` — fixed square (NFL, NBA, MLB, WNBA). Use for circular or square badges.
     - `py-8 lg:py-16` — extra vertical padding (MLB only). Add this if the logo needs breathing room within the square box.
 11. **League-level logos** - Don't forget `public/logos/{league}.svg` and `.png` for the homepage picker
 12. **Navigation dropdowns** - Don't forget to add the league to `teams-dropdown.tsx` for the "More leagues" menu
-9. **Footer disclaimer** - Add the league to `footer.tsx` trademark disclaimer when publicly launching (keep in "stealth mode" until launch if desired)
-10. **Schema helpers** - `app/lib/schema-helpers.ts` has four separate locations to update: `getSportName`, `getLeagueFullName`, `getLeagueSameAs`, and `generateWebSiteSchema`
-11. **Soccer countdown text** - Soccer leagues typically omit "the" before team names ("till Seattle play next" not "till the Seattle play next")
-12. **Timezone Handling** - Ensure game times are in UTC or properly converted
-13. **API Rate Limiting** - Add delays between requests when fetching large datasets
-14. **Team ID Uniqueness** - Ensure team IDs are unique when using `uniqBy`
-15. **`$league.season.tsx` is a redirect** - This file is now just a 301 redirect to `/{league}`. Do NOT add league data here. Season countdown functionality lives in `$league._index.tsx` via `LEAGUE_META`.
+13. **Footer disclaimer** - Add the league to `footer.tsx` trademark disclaimer when publicly launching (keep in "stealth mode" until launch if desired)
+14. **Schema helpers** - `app/lib/schema-helpers.ts` has four separate locations to update: `getSportName`, `getLeagueFullName`, `getLeagueSameAs`, and `generateWebSiteSchema`
+15. **Soccer countdown text** - Soccer leagues typically omit "the" before team names ("till Seattle play next" not "till the Seattle play next")
+16. **Timezone Handling** - Ensure game times are in UTC or properly converted
+17. **API Rate Limiting** - Add delays between requests when fetching large datasets
+18. **Team ID Uniqueness** - Ensure team IDs are unique when using `uniqBy`
+19. **`$league.season.tsx` is a redirect** - This file is now just a 301 redirect to `/{league}`. Do NOT add league data here. Season countdown functionality lives in `$league._index.tsx` via `LEAGUE_META`.
+20. **Don't rewrite `types.ts`** - Only append new types to the end of the file. Rewriting the file risks changing field names that existing `GameToGame` files depend on, causing cascading type errors across the whole codebase.
+21. **Homepage league ordering** - Place new leagues after their same-sport counterpart (e.g., PWHL after NHL, NWSL after MLS), not just appended to the end.
 
 ---
 
@@ -573,3 +591,19 @@ For a complete soccer league example, see the MLS implementation:
 4. **Soccer-specific text** - Uses "play next" without "the" prefix (in `countdown.tsx`)
 5. **Navigation** - Added to both homepage and teams dropdown component
 6. **Footer disclaimer** - Added MLS to the trademark disclaimer in `footer.tsx` for public launch
+
+### PWHL Implementation
+
+For a non-ESPN, non-NBA-format example using a third-party API (HockeyTech):
+
+**Key files:**
+- Color file: `pwhl_colors.json` (colors extracted via SVG source + ImageMagick histogram)
+- Schedule fetcher: `cron/getPwhlSchedule.ts` (HockeyTech API, filter to `SeasonID === '8'`)
+- Transformation: `app/lib/pwhlGameToGame.ts` (unique signature — fields passed individually, not as a team object)
+- Logos: Mixed Wikipedia SVGs and WebP-embedded wrappers
+
+**Key lessons learned:**
+1. **Brand-new API format** — HockeyTech is completely different from ESPN/NBA/NHL. Required new types and a custom transformation signature.
+2. **Color extraction without teamcolorcodes.com** — Used `magick -colors 8 histogram:info:` to extract dominant colors from PNG logos; extracted hex values directly from SVG `fill` attributes for vector logos.
+3. **types.ts discipline** — Only append new types; do not rewrite the file. Rewriting broke field names that existing `GameToGame` files depended on.
+4. **HockeyTech API key** — Found by loading `thepwhl.com/schedule` in a browser and checking `var appKey` in the page source. The same provider is used by many pro and junior hockey leagues (OHL, WHL, AHL, etc.) with `client_code` as the differentiator.

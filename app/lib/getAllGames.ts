@@ -7,7 +7,8 @@ import { wnbaGameToGame } from './wnbaGameToGame'
 import { cplGameToGame } from './cplGameToGame'
 import { mlsGameToGame } from './mlsGameToGame'
 import { nwslGameToGame } from './nwslGameToGame'
-import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, Game } from './types'
+import { pwhlGameToGame } from './pwhlGameToGame'
+import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, Game } from './types'
 
 /**
  * Loads all games for a given league from JSON schedule files.
@@ -73,6 +74,12 @@ export async function getAllGames(league: string, viewingTeamAbbrev?: string): P
 		const raw = await readFile('data/nwsl_schedule.json', 'utf-8')
 		const nwslSchedule: NwslScheduleApi = JSON.parse(raw)
 		return nwslSchedule.events.map(e => nwslGameToGame(e, viewingTeamAbbrev))
+	}
+
+	if (LEAGUE === 'PWHL') {
+		const raw = await readFile('data/pwhl_schedule.json', 'utf-8')
+		const pwhlSchedule: PwhlScheduleApi = JSON.parse(raw)
+		return pwhlSchedule.SiteKit.Scorebar.map(pwhlGameToGame)
 	}
 
 	return []

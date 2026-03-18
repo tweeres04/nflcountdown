@@ -12,7 +12,8 @@
 		"get-wnba-schedule": "tsx getWnbaSchedule.ts",
 		"get-cpl-schedule": "tsx getCplSchedule.ts",
 		"get-mls-schedule": "tsx getMlsSchedule.ts",
-		"get-nwsl-schedule": "tsx getNwslSchedule.ts"
+		"get-nwsl-schedule": "tsx getNwslSchedule.ts",
+		"get-pwhl-schedule": "tsx getPwhlSchedule.ts"
 	},
 	"type": "module"
 }

@@ -23,6 +23,8 @@ export function getSportName(league: string): string {
 			return 'Soccer'
 		case 'NWSL':
 			return 'Soccer'
+		case 'PWHL':
+			return 'Ice Hockey'
 		default:
 			return 'Sports'
 	}
@@ -46,6 +48,8 @@ export function getLeagueFullName(league: string): string {
 			return 'Canadian Premier League'
 		case 'NWSL':
 			return "National Women's Soccer League"
+		case 'PWHL':
+			return "Professional Women's Hockey League"
 		default:
 			return league
 	}
@@ -61,6 +65,7 @@ export function getLeagueSameAs(league: string): string {
 		MLS: 'https://www.mlssoccer.com',
 		CPL: 'https://canpl.ca',
 		NWSL: 'https://www.nwslsoccer.com',
+		PWHL: 'https://www.thepwhl.com',
 	}
 	return officialUrls[league] || ''
 }
@@ -206,6 +211,10 @@ export function generateWebSiteSchema() {
 			{
 				'@type': 'SportsOrganization',
 				name: "National Women's Soccer League",
+			},
+			{
+				'@type': 'SportsOrganization',
+				name: "Professional Women's Hockey League",
 			},
 		],
 	}

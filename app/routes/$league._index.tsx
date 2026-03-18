@@ -11,6 +11,7 @@ import { wnbaTeamToTeam } from '~/lib/wnbaGameToGame'
 import { cplTeamToTeam } from '~/lib/cplGameToGame'
 import { mlsTeamToTeam } from '~/lib/mlsGameToGame'
 import { nwslTeamToTeam } from '~/lib/nwslGameToGame'
+import { pwhlTeamToTeam } from '~/lib/pwhlGameToGame'
 import { readFile } from 'node:fs/promises'
 import {
 	NbaScheduleApi,
@@ -20,6 +21,7 @@ import {
 	CplScheduleApi,
 	MlsScheduleApi,
 	NwslScheduleApi,
+	PwhlScheduleApi,
 	Team,
 } from '~/lib/types'
 import {
@@ -131,6 +133,16 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		teamCount: 16,
 		seasonLength: '30 games per team',
 		seasonMonths: 'March to November',
+	},
+	PWHL: {
+		fullName: 'Professional Women\'s Hockey League',
+		shortName: 'PWHL',
+		seasonTerm: 'puck drop',
+		titleKeyword: 'PWHL Season',
+		crossYear: true,
+		teamCount: 8,
+		seasonLength: '30 games per team',
+		seasonMonths: 'January to April',
 	},
 }
 
@@ -304,7 +316,7 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 	const LEAGUE = league!.toUpperCase()
 
 	if (
-		!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA', 'CPL', 'MLS', 'NWSL'].includes(LEAGUE)
+		!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA', 'CPL', 'MLS', 'NWSL', 'PWHL'].includes(LEAGUE)
 	) {
 		throw new Response(null, { status: 404 })
 	}
@@ -324,6 +336,8 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 			? 'data/mls_schedule.json'
 			: LEAGUE === 'NWSL'
 			? 'data/nwsl_schedule.json'
+			: LEAGUE === 'PWHL'
+			? 'data/pwhl_schedule.json'
 			: 'data/nfl_schedule.json'
 
 	const scheduleRaw = await readFile(scheduleFile, 'utf-8')
@@ -377,6 +391,13 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 					),
 					'id'
 			  ).map(nwslTeamToTeam)
+			: LEAGUE === 'PWHL'
+			? uniqBy(
+					(scheduleParsed as PwhlScheduleApi).SiteKit.Scorebar,
+					'HomeID'
+			  ).map((g) =>
+					pwhlTeamToTeam(g.HomeID, g.HomeCode, g.HomeCity, g.HomeNickname, g.HomeLongName)
+			  )
 			: uniqBy(
 					(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),
 					'id'
@@ -507,10 +528,12 @@ export default function LeagueIndex() {
 												? 'Cavalry FC'
 												: LEAGUE === 'MLS'
 												? 'Inter Miami CF'
-												: LEAGUE === 'NWSL'
-												? 'Gotham FC'
-												: 'Kansas City Chiefs'
-										} countdown in action.`}
+								: LEAGUE === 'NWSL'
+										? 'Gotham FC'
+										: LEAGUE === 'PWHL'
+										? 'Minnesota Frost'
+										: 'Kansas City Chiefs'
+								} countdown in action.`}
 										className="rounded-sm"
 									/>
 									<p className="text-sm text-white/60">
@@ -527,10 +550,12 @@ export default function LeagueIndex() {
 											? 'Cavalry FC'
 											: LEAGUE === 'MLS'
 											? 'Inter Miami CF'
-											: LEAGUE === 'NWSL'
-											? 'Gotham FC'
-											: 'Kansas City Chiefs'}{' '}
-										countdown in action.
+									: LEAGUE === 'NWSL'
+									? 'Gotham FC'
+								: LEAGUE === 'PWHL'
+								? 'Minnesota Frost'
+								: 'Kansas City Chiefs'}{' '}
+							countdown in action.
 									</p>
 								</div>
 							</div>

@@ -170,3 +170,28 @@ export type NwslCompetitorApi = MlsCompetitorApi
 export type NwslCompetitionApi = MlsCompetitionApi
 export type NwslEventApi = MlsEventApi
 export type NwslScheduleApi = MlsScheduleApi
+
+// PWHL uses the HockeyTech API (lscluster.hockeytech.com)
+export interface PwhlGameApi {
+	ID: string
+	Date: string
+	GameDateISO8601: string
+	SeasonID: string
+	HomeID: string
+	HomeCode: string
+	HomeCity: string
+	HomeNickname: string
+	HomeLongName: string
+	VisitorID: string
+	VisitorCode: string
+	VisitorCity: string
+	VisitorNickname: string
+	VisitorLongName: string
+	GameStatusString: string
+}
+
+export interface PwhlScheduleApi {
+	SiteKit: {
+		Scorebar: PwhlGameApi[]
+	}
+}

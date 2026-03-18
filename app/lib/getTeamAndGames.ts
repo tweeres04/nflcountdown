@@ -9,8 +9,9 @@ import { wnbaTeamToTeam } from './wnbaGameToGame'
 import { cplTeamToTeam } from './cplGameToGame'
 import { mlsTeamToTeam } from './mlsGameToGame'
 import { nwslTeamToTeam } from './nwslGameToGame'
+import { pwhlTeamToTeam } from './pwhlGameToGame'
 import { getAllGames } from './getAllGames'
-import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, Team } from './types'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, Team } from './types'
 
 export async function getTeamAndGames(
 	league: string | undefined,
@@ -19,7 +20,7 @@ export async function getTeamAndGames(
 	const LEAGUE = league?.toUpperCase() ?? 'NFL'
 
 	// Validate league
-	if (!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA', 'CPL', 'MLS', 'NWSL'].includes(LEAGUE)) {
+	if (!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA', 'CPL', 'MLS', 'NWSL', 'PWHL'].includes(LEAGUE)) {
 		throw new Response(null, { status: 404 })
 	}
 
@@ -87,6 +88,12 @@ export async function getTeamAndGames(
 			),
 			'id'
 		).map(nwslTeamToTeam)
+	} else if (LEAGUE === 'PWHL') {
+		const raw = await readFile('data/pwhl_schedule.json', 'utf-8')
+		const pwhlSchedule: PwhlScheduleApi = JSON.parse(raw)
+		teams = uniqBy(pwhlSchedule.SiteKit.Scorebar, 'HomeID').map((g) =>
+			pwhlTeamToTeam(g.HomeID, g.HomeCode, g.HomeCity, g.HomeNickname, g.HomeLongName)
+		)
 	}
 
 	teams = orderBy(teams, 'fullName')

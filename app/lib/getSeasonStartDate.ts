@@ -145,6 +145,13 @@ function calculateSeasonStartDate(league: string, year: number): Date {
 		return date
 	}
 
+	if (LEAGUE === 'PWHL') {
+		// 1st Saturday of January (season typically starts early January)
+		date = nthWeekdayOfMonth(year, 0, isSaturday, nextSaturday, 1)
+		date.setUTCHours(19, 0, 0, 0) // 2:00 PM EST (UTC-5) = 19:00 UTC
+		return date
+	}
+
 	// Fallback: first day of next year
 	return new Date(year + 1, 0, 1)
 }

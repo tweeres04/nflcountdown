@@ -1,0 +1,50 @@
+[
+	{
+		"team": "Boston Fleet",
+		"abbreviation": "BOS",
+		"color_1": "#0A2A31",
+		"color_2": "#2C5450"
+	},
+	{
+		"team": "Minnesota Frost",
+		"abbreviation": "MIN",
+		"color_1": "#220E60",
+		"color_2": "#8D73B5"
+	},
+	{
+		"team": "Montréal Victoire",
+		"abbreviation": "MTL",
+		"color_1": "#852734",
+		"color_2": "#011E42"
+	},
+	{
+		"team": "New York Sirens",
+		"abbreviation": "NY",
+		"color_1": "#011E42",
+		"color_2": "#00B9B3"
+	},
+	{
+		"team": "Ottawa Charge",
+		"abbreviation": "OTT",
+		"color_1": "#A51B2F",
+		"color_2": "#FDB81E"
+	},
+	{
+		"team": "Toronto Sceptres",
+		"abbreviation": "TOR",
+		"color_1": "#0C1D38",
+		"color_2": "#FDD006"
+	},
+	{
+		"team": "Seattle Torrent",
+		"abbreviation": "SEA",
+		"color_1": "#0C5559",
+		"color_2": "#699EB0"
+	},
+	{
+		"team": "Vancouver Goldeneyes",
+		"abbreviation": "VAN",
+		"color_1": "#10447F",
+		"color_2": "#AD6A43"
+	}
+]
