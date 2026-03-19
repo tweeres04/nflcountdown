@@ -576,7 +576,6 @@ export default function Countdown({
 							: `bg-${LEAGUE.toLowerCase()}-${lowercaseAbbreviation}`
 						: 'bg-[#013369]'
 				}
-				countdownName={team?.fullName ?? `${LEAGUE} Season`}
 			/>
 			<Microsurvey />
 		</>

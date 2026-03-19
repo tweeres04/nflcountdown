@@ -55,10 +55,8 @@ function detectInAppBrowser(): InAppBrowserApp | null {
 }
 
 export default function InstallNotification({
-	countdownName,
 	className,
 }: {
-	countdownName: string
 	className: string
 }) {
 	const [isVisible, setIsVisible] = useState(false)
@@ -198,7 +196,7 @@ export default function InstallNotification({
 				) : (
 					<>
 						<p className="text-center">
-							Never miss a {countdownName} game. One tap from your home screen.
+							Your team&apos;s next game, always one tap away.
 						</p>
 						{deferredInstallPrompt ? (
 							<Button
