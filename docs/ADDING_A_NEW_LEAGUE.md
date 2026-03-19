@@ -50,7 +50,6 @@ Before starting, gather:
 | `app/components/ui/teams-dropdown.tsx` | Add league to "More leagues" dropdown |
 | `app/components/countdown.tsx` | Add league-specific text (e.g., soccer uses "play next" without "the") |
 | `app/components/footer.tsx` | Add league to trademark disclaimer (if publicly launching) |
-| `tailwind.config.ts` | Add team colors to Tailwind safelist |
 | `cron/package.json` | Add schedule fetch script |
 | `cron/crontab` | Add cron entry for schedule updates |
 | `cron/Dockerfile` | Copy new files into container |
@@ -78,7 +77,7 @@ Create `{league}_colors.json` at project root:
 - `color_1` / `color_2` (MLB, NBA, NHL, WNBA, CPL, NWSL)
 - `primaryColor` / `secondaryColor` (MLS)
 
-If using a different format, update `tailwind.config.ts` accordingly to map to `DEFAULT` and `secondary`.
+If using a different format, update the `{league}TeamToTeam` function in `app/lib/{league}GameToGame.ts` to map the fields to `primaryColor` and `secondaryColor` on the `Team` type.
 
 **Critical:** All hex color values MUST include the `#` prefix:
 - ✅ Correct: `"#9d2235"`
@@ -353,33 +352,7 @@ NEWLEAGUE: 'https://www.example.com',
 
 ---
 
-### 7. Update Tailwind Config
-
-In `tailwind.config.ts`:
-
-```typescript
-import {league}Colors from './{league}_colors.json'
-
-const {league}Colors_ = {league}Colors.reduce(
-  (result, c) => ({
-    ...result,
-    ['{league}-' + c.abbreviation.toLowerCase()]: {
-      DEFAULT: c.color_1,
-      secondary: c.color_2,
-    },
-  }),
-  {}
-)
-
-colors = {
-  ...colors,
-  ...{league}Colors_,
-}
-```
-
----
-
-### 8. Add Legacy Redirects (if needed)
+### 7. Add Legacy Redirects (if needed)
 
 If migrating from an old domain, add redirect mapping in `app/root.tsx`:
 
@@ -397,7 +370,7 @@ if (url.hostname === '{league}countdown.tweeres.com') {
 
 ---
 
-### 9. Update Navigation and Footer
+### 8. Update Navigation and Footer
 
 **`app/components/ui/teams-dropdown.tsx`** — Add the league to the "More leagues" list (appears in two places in the file — the hover state and the mobile menu).
 
@@ -409,7 +382,7 @@ if (url.hostname === '{league}countdown.tweeres.com') {
 
 ---
 
-### 10. Update Cron Configuration
+### 9. Update Cron Configuration
 
 **`cron/crontab`:**
 ```
@@ -424,7 +397,7 @@ COPY ./cron/get{League}Schedule.ts .
 
 ---
 
-### 11. Generate Initial Data
+### 10. Generate Initial Data
 
 ```bash
 cd cron && npm run get-{league}-schedule
@@ -432,7 +405,7 @@ cd cron && npm run get-{league}-schedule
 
 ---
 
-### 12. Verify Implementation
+### 11. Verify Implementation
 
 ```bash
 # Run typecheck
@@ -475,7 +448,6 @@ npm run dev
 - [ ] `app/components/ui/teams-dropdown.tsx` updated
 - [ ] `app/components/countdown.tsx` updated (league-specific text if needed)
 - [ ] `app/components/footer.tsx` updated (add league to disclaimer if publicly launching)
-- [ ] `tailwind.config.ts` updated
 - [ ] `cron/crontab` updated
 - [ ] `cron/Dockerfile` updated
 - [ ] Typecheck passes
