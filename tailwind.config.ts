@@ -1,144 +1,4 @@
 import type { Config } from 'tailwindcss'
-import schedule from './nfl_schedule.json'
-import mlbColors from './mlb_colors.json'
-import nbaColors from './nba_colors.json'
-import nhlColors from './nhl_colors.json'
-import wnbaColors from './wnba_colors.json'
-import cplColors from './cpl_colors.json'
-import mlsColors from './mls_colors.json'
-import nwslColors from './nwsl_colors.json'
-import pwhlColors from './pwhl_colors.json'
-import cfbColors from './cfb_colors.json'
-
-const teams = [...new Set(schedule.games.map((g) => g.homeTeam))]
-
-let colors = teams.reduce(
-	(result, t) => ({
-		...result,
-		[t.abbreviation.toLowerCase()]: {
-			DEFAULT: t.primaryColor,
-			secondary: t.secondaryColor,
-		},
-	}),
-	{}
-)
-
-const mlbColors_ = mlbColors.reduce(
-	(result, c) => ({
-		...result,
-		['mlb-' + c.abbreviation.toLowerCase()]: {
-			DEFAULT: c.color_1,
-			secondary: c.color_2,
-		},
-	}),
-	{}
-)
-const nbaColors_ = nbaColors.reduce(
-	(result, c) => ({
-		...result,
-		['nba-' + c.abbreviation.toLowerCase()]: {
-			DEFAULT: c.color_1,
-			secondary: c.color_2,
-		},
-	}),
-	{}
-)
-const nhlColors_ = nhlColors.reduce(
-	(result, c) => ({
-		...result,
-		['nhl-' + c.abbreviation.toLowerCase()]: {
-			DEFAULT: c.color_1,
-			secondary: c.color_2,
-		},
-	}),
-	{}
-)
-const wnbaColors_ = wnbaColors.reduce(
-	(result, c) => ({
-		...result,
-		['wnba-' + c.abbreviation.toLowerCase()]: {
-			DEFAULT: c.color_1,
-			secondary: c.color_2,
-		},
-	}),
-	{}
-)
-const cplColors_ = cplColors.reduce(
-	(result, c) => ({
-		...result,
-		['cpl-' + c.abbreviation.toLowerCase()]: {
-			DEFAULT: c.color_1,
-			secondary: c.color_2,
-		},
-	}),
-	{}
-)
-const mlsColors_ = mlsColors.reduce(
-	(result, c) => ({
-		...result,
-		['mls-' + c.abbreviation.toLowerCase()]: {
-			DEFAULT: c.primaryColor,
-			secondary: c.secondaryColor,
-		},
-	}),
-	{}
-)
-const nwslColors_ = nwslColors.reduce(
-	(result, c) => ({
-		...result,
-		['nwsl-' + c.abbreviation.toLowerCase()]: {
-			DEFAULT: c.color_1,
-			secondary: c.color_2,
-		},
-	}),
-	{}
-)
-const pwhlColors_ = pwhlColors.reduce(
-	(result, c) => ({
-		...result,
-		['pwhl-' + c.abbreviation.toLowerCase()]: {
-			DEFAULT: c.color_1,
-			secondary: c.color_2,
-		},
-	}),
-	{}
-)
-const cfbColors_ = cfbColors.reduce(
-	(result, c) => ({
-		...result,
-		['cfb-' + c.abbreviation.toLowerCase()]: {
-			DEFAULT: c.color_1,
-			secondary: c.color_2,
-		},
-	}),
-	{}
-)
-
-colors = {
-	...colors,
-	...mlbColors_,
-	...nbaColors_,
-	...nhlColors_,
-	...wnbaColors_,
-	...cplColors_,
-	...mlsColors_,
-	...nwslColors_,
-	...pwhlColors_,
-	...cfbColors_,
-}
-
-const safelist = Object.keys(colors).flatMap((abbrev) => {
-	return [
-		`from-${abbrev}`,
-		`to-${abbrev}-secondary`,
-		`bg-${abbrev}`,
-		`hover:bg-${abbrev}`,
-		`bg-${abbrev}-secondary`,
-		`hover:bg-${abbrev}-secondary`,
-	]
-})
-
-safelist.push('bg-stone-900', 'hover:bg-stone-900')
 
 export default {
 	darkMode: ['class'],
@@ -155,7 +15,6 @@ export default {
 			fontFamily: {
 				sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
 			},
-			colors,
 			keyframes: {
 				'accordion-down': {
 					from: { height: '0' },
@@ -172,6 +31,5 @@ export default {
 			},
 		},
 	},
-	safelist,
 	plugins: [require('tailwindcss-animate')],
 } satisfies Config

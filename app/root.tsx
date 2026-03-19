@@ -7,6 +7,7 @@ import {
 	ScrollRestoration,
 	useLoaderData,
 	useLocation,
+	useMatches,
 	useParams,
 } from '@remix-run/react'
 import './tailwind.css'
@@ -139,16 +140,7 @@ export function loader({ request }: LoaderFunctionArgs) {
 	})
 }
 
-export function gradientClass(
-	lowercaseLeague: string,
-	lowercaseAbbreviation: string
-) {
-	const color =
-		lowercaseLeague === 'nfl'
-			? lowercaseAbbreviation
-			: `${lowercaseLeague}-${lowercaseAbbreviation}`
-	return `bg-fixed bg-gradient-to-b from-${color} to-${color}-secondary`
-}
+export const teamGradientClass = 'bg-fixed bg-gradient-to-b from-[var(--color-primary)] to-[var(--color-secondary)]'
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	const loaderData = useLoaderData<typeof loader>() ?? {} // empty object in case we're in an error page
@@ -157,10 +149,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
 	const LEAGUE = league?.toUpperCase() ?? ''
 	const lowercaseAbbreviation = teamAbbrev?.toLowerCase()
 	const lowercaseLeague = LEAGUE?.toLowerCase()
-	const gradientClass_ = gradientClass(
-		lowercaseLeague ?? '',
-		lowercaseAbbreviation ?? ''
-	)
+
+	const matches = useMatches()
+	const teamMatch = matches.find((m) => (m.data as any)?.team)
+	const teamColors = teamMatch?.data
+		? {
+				primary: (teamMatch.data as any).team?.primaryColor as string | undefined,
+				secondary: (teamMatch.data as any).team?.secondaryColor as string | undefined,
+		  }
+		: null
+
 	const logo = (filetype: string) =>
 		teamAbbrev
 			? `/logos/${
@@ -210,16 +208,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
 					value="5464c54d-4d05-44e5-b0e8-fee1cd731188"
 				></meta>
 			</head>
-			<body
+		<body
 			className={cn(
 				'font-sans',
 				teamAbbrev
-					? gradientClass_
+					? teamGradientClass
 					: isStaticPage
 					? 'bg-stone-100'
 					: 'bg-dark-vignette'
 			)}
-			>
+			style={
+				teamColors?.primary
+					? ({
+							'--color-primary': teamColors.primary,
+							'--color-secondary': teamColors.secondary,
+					  } as React.CSSProperties)
+					: undefined
+			}
+		>
 				<script
 					dangerouslySetInnerHTML={{
 						__html: `window.mixpanelToken = '${MIXPANEL_TOKEN}'`,

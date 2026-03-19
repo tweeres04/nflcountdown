@@ -61,14 +61,12 @@ interface GamePreviewDialogProps {
 	game: Game
 	team: Team
 	LEAGUE: string
-	lowercaseAbbreviation: string | undefined
 }
 
 function GamePreviewDialog({
 	game,
 	team,
 	LEAGUE,
-	lowercaseAbbreviation,
 }: GamePreviewDialogProps) {
 	const [feedbackGiven, setFeedbackGiven] = useState(false)
 	const previewFetcher = useFetcher<{ preview: string | null }>()
@@ -96,16 +94,9 @@ function GamePreviewDialog({
 					Quick preview <Eye className="size-5" />
 				</Button>
 			</DialogTrigger>
-			<DialogContent
-				className={cn(
-					'p-4 text-white [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-3 border-0 rounded-lg',
-					lowercaseAbbreviation
-						? LEAGUE === 'NFL'
-							? `bg-${lowercaseAbbreviation}`
-							: `bg-${LEAGUE.toLowerCase()}-${lowercaseAbbreviation}`
-						: 'bg-[#013369]'
-				)}
-			>
+		<DialogContent
+			className="p-4 text-white [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-3 border-0 rounded-lg bg-[var(--color-primary,#013369)]"
+		>
 				<DialogTitle>
 					<div>
 						{game.homeTeam && game.awayTeam
@@ -474,13 +465,12 @@ export default function Countdown({
 
 					{/* Tier 2 — secondary actions */}
 					{canShowPreview && game && team && (
-						<GamePreviewDialog
-							key={game.id}
-							game={game}
-							team={team}
-							LEAGUE={LEAGUE}
-							lowercaseAbbreviation={lowercaseAbbreviation}
-						/>
+					<GamePreviewDialog
+						key={game.id}
+						game={game}
+						team={team}
+						LEAGUE={LEAGUE}
+					/>
 					)}
 					{games.length > 0 ? (
 						<>
@@ -568,15 +558,9 @@ export default function Countdown({
 					<YouMightLike games={suggestedGames} league={LEAGUE} />
 				)}
 			</div>
-			<InstallNotification
-				className={
-					lowercaseAbbreviation
-						? LEAGUE === 'NFL'
-							? `bg-${lowercaseAbbreviation}`
-							: `bg-${LEAGUE.toLowerCase()}-${lowercaseAbbreviation}`
-						: 'bg-[#013369]'
-				}
-			/>
+		<InstallNotification
+			className="bg-[var(--color-primary,#013369)]"
+		/>
 			<Microsurvey />
 		</>
 	)

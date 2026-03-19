@@ -24,13 +24,10 @@ export default function TeamsDropdown({
 }: Props) {
 	const LEAGUE = useContext(LeagueContext)
 	const lowercaseLeague = LEAGUE?.toLowerCase()
-	const color = lowercaseAbbreviation
-		? LEAGUE === 'NFL'
-			? lowercaseAbbreviation
-			: `${lowercaseLeague}-${lowercaseAbbreviation}`
-		: 'stone-900'
 
-	const contentClasses = `text-white bg-${color} hover:bg-${color} hover:text-white border-0 rounded-none`
+	const contentClasses = lowercaseAbbreviation
+		? 'text-white bg-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white border-0 rounded-none'
+		: 'text-white bg-stone-900 hover:bg-stone-900 hover:text-white border-0 rounded-none'
 
 	return (
 		<>
@@ -59,7 +56,7 @@ export default function TeamsDropdown({
 				<DropdownMenuContent className={contentClasses}>
 					<DropdownMenuSub>
 						<DropdownMenuSubTrigger
-							className={`data-[state=open]:bg-${color} focus:bg-${color}`}
+							className={lowercaseAbbreviation ? 'data-[state=open]:bg-[var(--color-primary)] focus:bg-[var(--color-primary)]' : 'data-[state=open]:bg-stone-900 focus:bg-stone-900'}
 						>
 							More leagues
 						</DropdownMenuSubTrigger>
