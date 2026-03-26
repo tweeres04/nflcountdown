@@ -47,7 +47,9 @@ export const generateMeta: MetaFunction = ({ data, params }) => {
 		description = `Live countdown to the next ${team.fullName} game. The fastest way to see exactly when your team plays next. Saves to your home screen for instant access.`
 	}
 
-	const ogImage = `https://teamcountdown.com/${lowercaseLeague}/og/${lowercaseAbbreviation}`
+	// Rotate OG image URL every 2 hours so social platforms re-fetch fresh countdowns
+	const twoHourBlock = Math.floor(Date.now() / (2 * 60 * 60 * 1000))
+	const ogImage = `https://teamcountdown.com/${lowercaseLeague}/og/${lowercaseAbbreviation}?v=${twoHourBlock}`
 	const url = `https://teamcountdown.com/${lowercaseLeague}/${lowercaseAbbreviation}${
 		game ? `/${params.gameSlug}` : ''
 	}`
