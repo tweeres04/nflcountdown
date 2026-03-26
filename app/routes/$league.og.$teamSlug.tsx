@@ -27,7 +27,7 @@ export async function loader({
 		LEAGUE === 'NFL' ? '' : `${LEAGUE.toLowerCase()}/`
 	}${team.abbreviation.toLowerCase()}.svg`
 
-	return new ImageResponse(
+	const imageResponse = new ImageResponse(
 		(
 			<div
 				style={{
@@ -82,4 +82,12 @@ export async function loader({
 			height: 630,
 		}
 	)
+
+	// Cache at Cloudflare for 5 minutes, allow stale for 1h while revalidating
+	imageResponse.headers.set(
+		'Cache-Control',
+		'public, max-age=300, stale-while-revalidate=3600'
+	)
+
+	return imageResponse
 }

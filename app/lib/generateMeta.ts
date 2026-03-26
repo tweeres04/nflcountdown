@@ -17,6 +17,7 @@ interface MetaParams {
 }
 
 export const generateMeta: MetaFunction = ({ data, params }) => {
+	if (!data) return []
 	const { LEAGUE, team, game, nextGame, breadcrumbItems } = data as MetaParams
 	const lowercaseAbbreviation = team.abbreviation.toLowerCase()
 	const lowercaseLeague = LEAGUE.toLowerCase()
