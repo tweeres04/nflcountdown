@@ -13,7 +13,7 @@ export function RouteErrorBoundary({
 	const is404 = isRouteErrorResponse(error) && error.status === 404
 
 	return (
-		<div className="font-sans text-white p-8 max-w-[500px] mx-auto text-center space-y-4 min-h-screen flex flex-col justify-center">
+		<div className="font-sans text-white p-8 max-w-[500px] mx-auto text-center space-y-4 min-h-screen flex flex-col justify-center bg-neutral-900">
 			<h1 className="text-2xl font-semibold">
 				{is404 ? notFoundTitle : 'Something went wrong'}
 			</h1>
