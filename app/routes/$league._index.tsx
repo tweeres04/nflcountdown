@@ -42,6 +42,7 @@ import {
 import { getSuggestedGames } from '~/lib/getSuggestedGames'
 import UpcomingGames from '~/components/upcoming-games'
 import Countdown from '~/components/countdown'
+import InstallNotification from '~/components/install-notification'
 import { getSeasonStartDate } from '~/lib/getSeasonStartDate'
 
 interface LeagueMeta {
@@ -53,6 +54,7 @@ interface LeagueMeta {
 	teamCount: number // for static FAQ entries
 	seasonLength: string // e.g. "18 weeks", "162 games per team"
 	seasonMonths: string // e.g. "September to February", "October to June"
+	brandColor: string // league primary brand color (hex)
 }
 
 const LEAGUE_META: Record<string, LeagueMeta> = {
@@ -65,6 +67,7 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		teamCount: 32,
 		seasonLength: '18 weeks',
 		seasonMonths: 'September to January',
+		brandColor: '#013369',
 	},
 	MLB: {
 		fullName: 'Major League Baseball',
@@ -75,6 +78,7 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		teamCount: 30,
 		seasonLength: '162 games per team',
 		seasonMonths: 'March to October',
+		brandColor: '#002D72',
 	},
 	NBA: {
 		fullName: 'National Basketball Association',
@@ -85,6 +89,7 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		teamCount: 30,
 		seasonLength: '82 games per team',
 		seasonMonths: 'October to June',
+		brandColor: '#1D428A',
 	},
 	NHL: {
 		fullName: 'National Hockey League',
@@ -95,6 +100,7 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		teamCount: 32,
 		seasonLength: '82 games per team',
 		seasonMonths: 'October to June',
+		brandColor: '#000000',
 	},
 	WNBA: {
 		fullName: "Women's National Basketball Association",
@@ -105,6 +111,7 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		teamCount: 13,
 		seasonLength: '40 games per team',
 		seasonMonths: 'May to September',
+		brandColor: '#FF6A00',
 	},
 	MLS: {
 		fullName: 'Major League Soccer',
@@ -115,6 +122,7 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		teamCount: 30,
 		seasonLength: '34 games per team',
 		seasonMonths: 'February to November',
+		brandColor: '#292929',
 	},
 	CPL: {
 		fullName: 'Canadian Premier League',
@@ -125,6 +133,7 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		teamCount: 8,
 		seasonLength: '28 games per team',
 		seasonMonths: 'April to October',
+		brandColor: '#6D2077',
 	},
 	NWSL: {
 		fullName: "National Women's Soccer League",
@@ -135,9 +144,10 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		teamCount: 16,
 		seasonLength: '30 games per team',
 		seasonMonths: 'March to November',
+		brandColor: '#003087',
 	},
 	PWHL: {
-		fullName: 'Professional Women\'s Hockey League',
+		fullName: "Professional Women's Hockey League",
 		shortName: 'PWHL',
 		seasonTerm: 'puck drop',
 		titleKeyword: 'PWHL Season',
@@ -145,6 +155,7 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		teamCount: 8,
 		seasonLength: '30 games per team',
 		seasonMonths: 'January to April',
+		brandColor: '#350282',
 	},
 	CFB: {
 		fullName: 'College Football',
@@ -155,6 +166,7 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		teamCount: 68,
 		seasonLength: '12-15 games per team',
 		seasonMonths: 'August to January',
+		brandColor: '#1a1a1a',
 	},
 }
 
@@ -485,6 +497,7 @@ export default function LeagueIndex() {
 			<div className="flex flex-col min-h-screen md:h-auto">
 				{isMidSeason ? (
 					// Mid-season: dark themed layout with copy + team picker
+					<>
 					<div className="font-sans text-white p-4 max-w-[500px] lg:max-w-[750px] mx-auto space-y-12 min-h-[600px] grow pb-20">
 						<Breadcrumb className="mb-4">
 							<BreadcrumbList className="text-white/70">
@@ -607,9 +620,13 @@ export default function LeagueIndex() {
 									))}
 								</div>
 							</div>
-							<UpcomingGames games={upcomingGames} league={LEAGUE} />
-						</div>
+						<UpcomingGames games={upcomingGames} league={LEAGUE} />
 					</div>
+				</div>
+				<InstallNotification
+					className={`bg-[${leagueMeta?.brandColor ?? '#013369'}]`}
+				/>
+				</>
 				) : (
 					// Offseason: dark themed countdown layout
 					<Countdown
@@ -619,6 +636,7 @@ export default function LeagueIndex() {
 						isTeamPage={false}
 						breadcrumbItems={breadcrumbItems}
 						teamPickerTeams={teams}
+						leagueBrandColor={leagueMeta?.brandColor}
 					/>
 				)}
 				<Footer league={LEAGUE} dark />

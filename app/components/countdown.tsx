@@ -172,6 +172,7 @@ interface CountdownProps {
 	suggestedGames?: Game[]
 	affiliateLinks?: Promise<AffiliateLinks | null>
 	teamPickerTeams?: Team[]
+	leagueBrandColor?: string
 }
 
 function useUpdateTime() {
@@ -249,6 +250,7 @@ export default function Countdown({
 	suggestedGames = [],
 	affiliateLinks,
 	teamPickerTeams,
+	leagueBrandColor,
 }: CountdownProps) {
 	const LEAGUE = useContext(LeagueContext)
 	useUpdateTime()
@@ -559,7 +561,7 @@ export default function Countdown({
 				)}
 			</div>
 		<InstallNotification
-			className="bg-[var(--color-primary,#013369)]"
+			className={`bg-[var(--color-primary,${leagueBrandColor ?? '#013369'})]`}
 		/>
 			<Microsurvey />
 		</>
