@@ -131,13 +131,14 @@ This document outlines the monetization strategy for teamcountdown.com, focusing
 
 #### 1. Ticket Affiliates
 
-**Status: Shipped** via TicketNetwork through CJ Affiliate. See `docs/ticketnetwork-integration.md` for full implementation details.
+**Status: Shipped** via Ticketmaster (Impact.com) as primary, CJ/TicketNetwork as fallback. See `app/lib/affiliate-service.ts` for orchestration.
 
 | Program | Commission | Cookie | Apply At | Priority |
 |---------|------------|--------|----------|----------|
-| **TicketNetwork (via CJ)** ✅ | CJ-negotiated | 7 days | CJ Affiliate — approved | **Live** |
-| StubHub | 4-6% | 7 days | stubhub.com/affiliates (via Partnerize) | Fallback |
-| SeatGeek | 5% | 30 days | CJ Affiliate network | Fallback |
+| **Ticketmaster (via Impact.com)** ✅ | Impact-negotiated | TBD | Impact.com — approved | **Primary** |
+| **TicketNetwork (via CJ)** ✅ | CJ-negotiated | 7 days | CJ Affiliate — approved | **Fallback** |
+| StubHub | 4-6% | 7 days | stubhub.com/affiliates (via Partnerize) | Not applied |
+| SeatGeek | 5% | 30 days | CJ Affiliate network | Not applied |
 
 **Why tickets:**
 - Perfect user intent match (researching game → buy tickets)
@@ -251,26 +252,38 @@ Route Loaders (defer)
   ↓ getAffiliateLinks() → Promise<AffiliateLinks | null>
   ↓ passed to defer() as unresolved promise
   ↓
+affiliate-service.ts
+  ↓ Try Ticketmaster (Discovery API + Impact.com tracking)
+  ↓ Fall back to CJ/TicketNetwork if no Ticketmaster result
+  ↓
 Countdown Component
   ↓ <Suspense> + <Await> — invisible placeholder while loading
   ↓ Fades in button when promise resolves
   ↓
-User clicks → TicketNetwork (via CJ tracked link)
+User clicks → Ticketmaster (via Impact tracked link) or TicketNetwork (via CJ tracked link)
 ```
 
 ### Key files
 
 | File | Purpose |
 |------|---------|
-| `app/lib/cj-service.ts` | CJ GraphQL API client, game matching, disk cache |
+| `app/lib/affiliate-service.ts` | Orchestrates ticket providers: Ticketmaster first, CJ/TicketNetwork fallback |
+| `app/lib/ticketmaster-service.ts` | Ticketmaster Discovery API client, attractionId-based lookup, disk cache |
+| `app/lib/cj-service.ts` | CJ GraphQL API client, game matching, disk cache (fallback) |
+| `data/ticketmaster-attractions.json` | Static mapping of team fullNames to Ticketmaster attractionIds, grouped by league |
 | `app/components/countdown.tsx` | Suspense/Await wrapper, ticket button UI |
 | `app/routes/$league.$teamAbbrev_.tsx` | Team page — deferred affiliate links |
 | `app/routes/$league.$teamAbbrev.$gameSlug.tsx` | Game page — deferred affiliate links |
-| `data/cache/cj-tickets.json` | Per-event disk cache (7-day TTL) |
+| `data/cache/ticketmaster-tickets.json` | Per-event disk cache for Ticketmaster (7-day TTL) |
+| `data/cache/cj-tickets.json` | Per-event disk cache for CJ (7-day TTL) |
 
 ### Environment variables
 
 ```bash
+# Ticketmaster (primary)
+TICKET_MASTER_API_KEY=...
+
+# CJ/TicketNetwork (fallback)
 CJ_ACCESS_TOKEN=...
 CJ_COMPANY_ID=...
 CJ_WEBSITE_PID=...

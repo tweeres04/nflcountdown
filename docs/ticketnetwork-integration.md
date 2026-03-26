@@ -14,7 +14,7 @@
 
 ## Status
 
-**Shipped.** Live on all leagues except CPL.
+**Demoted to fallback.** Ticketmaster (via Impact.com) is now the primary ticket provider. CJ/TicketNetwork remains as a fallback when Ticketmaster has no listing for a game. See `app/lib/affiliate-service.ts` for the orchestration logic and `app/lib/ticketmaster-service.ts` for the Ticketmaster integration.
 
 ## Context
 

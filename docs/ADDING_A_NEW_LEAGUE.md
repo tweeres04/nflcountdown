@@ -46,6 +46,7 @@ Before starting, gather:
 | `app/lib/getSeasonStartDate.ts` | Add calculated season start date fallback rule for the league |
 | `app/lib/schema-helpers.ts` | Add league to `getSportName`, `getLeagueFullName`, `getLeagueSameAs`, and `generateWebSiteSchema` |
 | `app/lib/cj-service.ts` | Add league to `LEAGUE_CATEGORY` if TicketNetwork has listings for it. If omitted, the service falls back to unfiltered results which may still return valid tickets. |
+| `data/ticketmaster-attractions.json` | Add Ticketmaster attractionIds for every team in the league (see Step 6b) |
 | `app/root.tsx` | Add legacy redirects (if migrating from old domain) |
 | `app/components/ui/teams-dropdown.tsx` | Add league to "More leagues" dropdown |
 | `app/components/countdown.tsx` | Add league-specific text (e.g., soccer uses "play next" without "the") |
@@ -352,6 +353,39 @@ NEWLEAGUE: 'https://www.example.com',
 
 ---
 
+### 6b. Add Ticketmaster Attraction IDs
+
+Look up each team's Ticketmaster `attractionId` using the Discovery API and add them to `data/ticketmaster-attractions.json`. This enables game-specific ticket links via Ticketmaster (primary ticket provider), with CJ/TicketNetwork as fallback.
+
+```bash
+# Look up a team's attractionId
+curl -s "https://app.ticketmaster.com/discovery/v2/attractions.json?keyword=Seattle+Seahawks&classificationName=Football&apikey=${TICKET_MASTER_API_KEY}&size=3" | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+for a in d.get('_embedded', {}).get('attractions', [])[:3]:
+    print(f'{a[\"id\"]} - {a[\"name\"]}')
+"
+```
+
+Add the results to the league's section in `data/ticketmaster-attractions.json`:
+```json
+{
+  "NEWLEAGUE": {
+    "Team Full Name": "K8vZ...",
+    "Another Team": "K8vZ..."
+  }
+}
+```
+
+**Classification names for the API:** Football, Baseball, Basketball, Hockey, Soccer.
+
+**Tips:**
+- Pick the first result that matches the actual team (skip "Training Camp", "Preseason" etc.)
+- If a team can't be found by full name, try the nickname only (e.g., "Athletics" instead of "Oakland Athletics")
+- Teams with no Ticketmaster coverage get `null` — the system falls back to CJ/TicketNetwork automatically
+
+---
+
 ### 7. Add Legacy Redirects (if needed)
 
 If migrating from an old domain, add redirect mapping in `app/root.tsx`:
@@ -444,6 +478,7 @@ npm run dev
 - [ ] `app/lib/getSeasonStartDate.ts` updated (add calculated fallback rule)
 - [ ] `app/lib/schema-helpers.ts` updated (all 4 locations)
 - [ ] `app/lib/cj-service.ts` updated (add to `LEAGUE_CATEGORY` if TicketNetwork has listings; omitting falls back to unfiltered which may still return valid results)
+- [ ] `data/ticketmaster-attractions.json` updated (add attractionIds for every team in the league)
 - [ ] `app/root.tsx` updated (legacy redirects if needed)
 - [ ] `app/components/ui/teams-dropdown.tsx` updated
 - [ ] `app/components/countdown.tsx` updated (league-specific text if needed)

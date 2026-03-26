@@ -236,11 +236,11 @@ export function findGameTicketLink(
 	return next?.clickUrl ?? null
 }
 
-export async function getAffiliateLinks(
+export async function getCJTicketLink(
 	team: Team,
 	league: string,
 	game?: Game
-): Promise<AffiliateLinks | null> {
+): Promise<string | null> {
 	const opponent =
 		game?.homeTeam?.abbreviation === team.abbreviation
 			? game?.awayTeam
@@ -252,7 +252,7 @@ export async function getAffiliateLinks(
 	if (gameDate) {
 		const key = cacheKey(team.fullName, gameDate)
 		const cached = getCachedUrl(key)
-		if (cached) return { tickets: cached }
+		if (cached) return cached
 	}
 
 	// Cache miss — fetch from CJ API
@@ -268,5 +268,5 @@ export async function getAffiliateLinks(
 		setCachedUrl(key, ticketUrl)
 	}
 
-	return { tickets: ticketUrl }
+	return ticketUrl
 }

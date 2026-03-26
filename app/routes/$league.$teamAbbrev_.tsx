@@ -7,7 +7,7 @@ import Countdown from '~/components/countdown'
 import { getTeamAndGames } from '~/lib/getTeamAndGames'
 import { generateMeta } from '~/lib/generateMeta'
 import { getSuggestedGames } from '~/lib/getSuggestedGames'
-import { getAffiliateLinks } from '~/lib/cj-service'
+import { getAffiliateLinks } from '~/lib/affiliate-service'
 import { Game } from '~/lib/types'
 import Footer from '~/components/footer'
 

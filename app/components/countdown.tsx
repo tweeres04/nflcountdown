@@ -40,7 +40,7 @@ import {
 	BreadcrumbSeparator,
 } from './ui/breadcrumb'
 import type { BreadcrumbItem as BreadcrumbItemType } from '~/lib/schema-helpers'
-import type { AffiliateLinks } from '~/lib/cj-service'
+import type { AffiliateLinks } from '~/lib/affiliate-service'
 
 // Simple inline loading skeleton for Dialog
 const GamePreviewLoading = () => (
