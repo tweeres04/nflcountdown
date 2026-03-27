@@ -16,37 +16,161 @@ interface MetaParams {
 	breadcrumbItems?: BreadcrumbItem[] // For breadcrumb schema
 }
 
-export const generateMeta: MetaFunction = ({ data, params }) => {
-	if (!data) return []
-	const { LEAGUE, team, game, nextGame, breadcrumbItems } = data as MetaParams
-	const lowercaseAbbreviation = team.abbreviation.toLowerCase()
-	const lowercaseLeague = LEAGUE.toLowerCase()
+// Leagues where Google shows sports cards for "next game" queries,
+// making those queries unwinnable. Target "[team] countdown" instead.
+export const BIG_LEAGUES = new Set([
+	'NFL',
+	'MLB',
+	'NBA',
+	'NHL',
+	'MLS',
+	'WNBA',
+	'CFB',
+])
 
-	let title: string
-	let description: string
+export function getSeasonYear(): string {
+	const now = new Date()
+	return String(now.getFullYear())
+}
 
+export function getTeamNextGameDescription(
+	team: Team,
+	nextGame: Game | undefined
+): string {
+	if (!nextGame?.time) return ''
+	const opponent =
+		(nextGame.homeTeam?.abbreviation === team.abbreviation
+			? nextGame.awayTeam?.fullName
+			: nextGame.homeTeam?.fullName) ?? 'TBD'
+	const dateFormatted = new Intl.DateTimeFormat('en-US', {
+		month: 'short',
+		day: 'numeric',
+	}).format(new Date(nextGame.time))
+	return `Next game: vs ${opponent} on ${dateFormatted}.`
+}
+
+export function generateTitle(
+	team: Team,
+	league: string,
+	year: string,
+	game?: Game
+): string {
 	if (game) {
 		const opponent =
 			(game.homeTeam?.abbreviation === team.abbreviation
 				? game.awayTeam?.fullName
 				: game.homeTeam?.fullName) ?? 'TBD'
-
 		const gameDateFormatted = game.time
 			? new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(
 					new Date(game.time)
 			  )
 			: ''
 		const gameDateStringForTitle = game.time ? ` - ${gameDateFormatted}` : ''
-		const gameDateStringForDescription = game.time
-			? ` on ${gameDateFormatted}`
-			: ''
-
-		title = `${team.fullName} vs ${opponent}${gameDateStringForTitle} - Team Countdown`
-		description = `Countdown to ${team.fullName} vs ${opponent}${gameDateStringForDescription}. Launches instantly from your home screen.`
-	} else {
-		title = `When is the next ${team.fullName} game? - Team Countdown`
-		description = `Live countdown to the next ${team.fullName} game. The fastest way to see exactly when your team plays next. Saves to your home screen for instant access.`
+		return `${team.fullName} vs ${opponent}${gameDateStringForTitle} - Team Countdown`
 	}
+
+	if (BIG_LEAGUES.has(league)) {
+		return `${team.fullName} Countdown - ${year} Schedule & Next Game`
+	}
+
+	return `When is the Next ${team.fullName} Game? - ${league} Countdown ${year}`
+}
+
+export function generateDescription(
+	team: Team,
+	league: string,
+	game?: Game,
+	nextGame?: Game
+): string {
+	if (game) {
+		const opponent =
+			(game.homeTeam?.abbreviation === team.abbreviation
+				? game.awayTeam?.fullName
+				: game.homeTeam?.fullName) ?? 'TBD'
+		const gameDateStringForDescription = game.time
+			? ` on ${new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(
+					new Date(game.time)
+			  )}`
+			: ''
+		return `Countdown to ${team.fullName} vs ${opponent}${gameDateStringForDescription}. Launches instantly from your home screen.`
+	}
+
+	const nextGameInfo = getTeamNextGameDescription(team, nextGame)
+	return `Live countdown to the next ${team.fullName} game. ${nextGameInfo} Add to your home screen for instant access.`
+}
+
+export function generateTeamFaqSchema(team: Team, nextGame?: Game): object {
+	const faqEntities: object[] = []
+
+	if (nextGame?.time) {
+		const opponent =
+			(nextGame.homeTeam?.abbreviation === team.abbreviation
+				? nextGame.awayTeam?.fullName
+				: nextGame.homeTeam?.fullName) ?? 'TBD'
+		const dateFormatted = new Intl.DateTimeFormat('en-US', {
+			weekday: 'long',
+			month: 'long',
+			day: 'numeric',
+			year: 'numeric',
+			hour: nextGame.startTimeTbd ? undefined : 'numeric',
+			minute: nextGame.startTimeTbd ? undefined : 'numeric',
+		}).format(new Date(nextGame.time))
+
+		faqEntities.push({
+			'@type': 'Question',
+			name: `When is the next ${team.fullName} game?`,
+			acceptedAnswer: {
+				'@type': 'Answer',
+				text: `The next ${team.fullName} game is ${opponent} on ${dateFormatted}.`,
+			},
+		})
+
+		if (nextGame.broadcast) {
+			faqEntities.push({
+				'@type': 'Question',
+				name: `What channel is the ${team.fullName} game on?`,
+				acceptedAnswer: {
+					'@type': 'Answer',
+					text: `The next ${team.fullName} game will air on ${nextGame.broadcast}.`,
+				},
+			})
+		}
+	} else {
+		faqEntities.push({
+			'@type': 'Question',
+			name: `When is the next ${team.fullName} game?`,
+			acceptedAnswer: {
+				'@type': 'Answer',
+				text: `The ${team.fullName} schedule has not been announced yet. Check back for updates.`,
+			},
+		})
+	}
+
+	faqEntities.push({
+		'@type': 'Question',
+		name: `How many days until the next ${team.fullName} game?`,
+		acceptedAnswer: {
+			'@type': 'Answer',
+			text: `Use the live countdown above for the exact days, hours, minutes, and seconds until the next ${team.fullName} game.`,
+		},
+	})
+
+	return {
+		'@context': 'https://schema.org',
+		'@type': 'FAQPage',
+		mainEntity: faqEntities,
+	}
+}
+
+export const generateMeta: MetaFunction = ({ data, params }) => {
+	if (!data) return []
+	const { LEAGUE, team, game, nextGame, breadcrumbItems } = data as MetaParams
+	const lowercaseAbbreviation = team.abbreviation.toLowerCase()
+	const lowercaseLeague = LEAGUE.toLowerCase()
+	const year = getSeasonYear()
+
+	const title = generateTitle(team, LEAGUE, year, game, nextGame)
+	const description = generateDescription(team, LEAGUE, game, nextGame)
 
 	// Rotate OG image URL every 2 hours so social platforms re-fetch fresh countdowns
 	const twoHourBlock = Math.floor(Date.now() / (2 * 60 * 60 * 1000))
@@ -96,11 +220,18 @@ export const generateMeta: MetaFunction = ({ data, params }) => {
 				}
 			}
 		}
+
+		// FAQ schema for team pages
+		metaTags.push({
+			'script:ld+json': generateTeamFaqSchema(team, nextGame),
+		})
 	}
 
 	// Add breadcrumb schema if available
 	if (breadcrumbItems && breadcrumbItems.length >= 2) {
-		metaTags.push({ 'script:ld+json': generateBreadcrumbSchema(breadcrumbItems) })
+		metaTags.push({
+			'script:ld+json': generateBreadcrumbSchema(breadcrumbItems),
+		})
 	}
 
 	return metaTags

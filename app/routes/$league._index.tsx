@@ -188,10 +188,10 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	const ogImage = LEAGUE === 'NFL' ? 'og.png' : `${lowercaseLeague}-og.png`
 
 	const title = isMidSeason
-		? `${LEAGUE} Countdown | Live Game Countdowns for Every Team`
+		? `${LEAGUE} Countdown ${seasonYear} | Live Game Countdowns for Every Team`
 		: `How Many Days Till ${
 				meta?.titleKeyword ?? LEAGUE + ' Season'
-		  }? Live ${LEAGUE} Season Countdown`
+		  } ${seasonYear}? Live ${LEAGUE} Season Countdown`
 
 	const description = isMidSeason
 		? `The ${seasonYear} ${LEAGUE} season is underway. Pick your team and count down to their next game.`
