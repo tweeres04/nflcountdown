@@ -53,7 +53,7 @@
 	{ "team": "Syracuse Orange", "abbreviation": "SYR", "color_1": "#d44500", "color_2": "#002147" },
 	{ "team": "TCU Horned Frogs", "abbreviation": "TCU", "color_1": "#4d1979", "color_2": "#a3a9ac" },
 	{ "team": "Tennessee Volunteers", "abbreviation": "TENN", "color_1": "#ff8200", "color_2": "#58595b" },
-	{ "team": "Texas A&M Aggies", "abbreviation": "TA&M", "color_1": "#500000", "color_2": "#786a58" },
+	{ "team": "Texas A&M Aggies", "abbreviation": "TAM", "color_1": "#500000", "color_2": "#786a58" },
 	{ "team": "Texas Longhorns", "abbreviation": "TEX", "color_1": "#bf5700", "color_2": "#f5f1e7" },
 	{ "team": "Texas Tech Red Raiders", "abbreviation": "TTU", "color_1": "#cc0000", "color_2": "#2d2d2d" },
 	{ "team": "UCF Knights", "abbreviation": "UCF", "color_1": "#ba9b37", "color_2": "#000000" },

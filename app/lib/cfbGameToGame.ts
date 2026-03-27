@@ -19,7 +19,7 @@ export function cfbTeamToTeam({
 		id: id,
 		nickName: name, // e.g. "Wolverines", "Crimson Tide", "Buckeyes"
 		fullName: displayName,
-		abbreviation: abbreviation,
+		abbreviation: abbreviation.replace('&', ''),
 		primaryColor: colorData?.color_1 || `#${color}` || '#000000',
 		secondaryColor: colorData?.color_2 || `#${alternateColor}` || '#333333',
 	}
