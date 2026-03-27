@@ -31,18 +31,8 @@ import {
 	generateBreadcrumbSchema,
 } from '~/lib/schema-helpers'
 import Footer from '~/components/footer'
-import {
-	Breadcrumb,
-	BreadcrumbList,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from '~/components/ui/breadcrumb'
 import { getSuggestedGames } from '~/lib/getSuggestedGames'
-import UpcomingGames from '~/components/upcoming-games'
 import Countdown from '~/components/countdown'
-import InstallNotification from '~/components/install-notification'
 import { getSeasonStartDate } from '~/lib/getSeasonStartDate'
 
 interface LeagueMeta {
@@ -187,17 +177,11 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	const url = `https://teamcountdown.com/${lowercaseLeague}`
 	const ogImage = LEAGUE === 'NFL' ? 'og.png' : `${lowercaseLeague}-og.png`
 
-	const title = isMidSeason
-		? `${LEAGUE} Countdown ${seasonYear} | Live Game Countdowns for Every Team`
-		: `How Many Days Till ${
-				meta?.titleKeyword ?? LEAGUE + ' Season'
-		  } ${seasonYear}? Live ${LEAGUE} Season Countdown`
+	const title = `${LEAGUE} Game Countdown - Team Countdown ${seasonYear}`
 
 	const description = isMidSeason
-		? `The ${seasonYear} ${LEAGUE} season is underway. Pick your team and count down to their next game.`
-		: `Find out exactly how many days until ${LEAGUE} season starts. Live countdown showing the precise days, hours, and minutes until ${
-				meta?.fullName ?? LEAGUE
-		  } ${meta?.seasonTerm ?? 'kickoff'} in ${seasonYear}.`
+		? `The ${seasonYear} ${LEAGUE} season is underway. Live countdown to the next game. Pick your team for a personalized countdown.`
+		: `Countdown to the first ${LEAGUE} game of ${seasonYear}. Pick your team and add the countdown to your home screen.`
 
 	const breadcrumbItems = [
 		{ label: 'Team Countdown', href: '/' },
@@ -340,7 +324,18 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 	const LEAGUE = league!.toUpperCase()
 
 	if (
-		!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA', 'CPL', 'MLS', 'NWSL', 'PWHL', 'CFB'].includes(LEAGUE)
+		![
+			'NFL',
+			'NBA',
+			'MLB',
+			'NHL',
+			'WNBA',
+			'CPL',
+			'MLS',
+			'NWSL',
+			'PWHL',
+			'CFB',
+		].includes(LEAGUE)
 	) {
 		throw new Response(null, { status: 404 })
 	}
@@ -418,23 +413,29 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 					'id'
 			  ).map(nwslTeamToTeam)
 			: LEAGUE === 'PWHL'
-		? uniqBy(
-				(scheduleParsed as PwhlScheduleApi).SiteKit.Scorebar,
-				'HomeID'
-		  ).map((g) =>
-				pwhlTeamToTeam(g.HomeID, g.HomeCode, g.HomeCity, g.HomeNickname, g.HomeLongName)
-		  )
-		: LEAGUE === 'CFB'
-		? uniqBy(
-				(scheduleParsed as CfbScheduleApi).events.flatMap((e) =>
-					e.competitions[0].competitors.map((c) => c.team)
-				),
-				'id'
-		  ).map(cfbTeamToTeam)
-		: uniqBy(
-				(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),
-				'id'
-		  ).map(nflTeamToTeam)
+			? uniqBy(
+					(scheduleParsed as PwhlScheduleApi).SiteKit.Scorebar,
+					'HomeID'
+			  ).map((g) =>
+					pwhlTeamToTeam(
+						g.HomeID,
+						g.HomeCode,
+						g.HomeCity,
+						g.HomeNickname,
+						g.HomeLongName
+					)
+			  )
+			: LEAGUE === 'CFB'
+			? uniqBy(
+					(scheduleParsed as CfbScheduleApi).events.flatMap((e) =>
+						e.competitions[0].competitors.map((c) => c.team)
+					),
+					'id'
+			  ).map(cfbTeamToTeam)
+			: uniqBy(
+					(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),
+					'id'
+			  ).map(nflTeamToTeam)
 	teams = orderBy(teams, 'fullName')
 
 	const [upcomingGames, seasonResult] = await Promise.all([
@@ -472,12 +473,10 @@ export function ErrorBoundary() {
 }
 
 export default function LeagueIndex() {
-	const { LEAGUE, teams, upcomingGames, seasonStartDate, isMidSeason } =
+	const { LEAGUE, teams, upcomingGames, seasonStartDate } =
 		useLoaderData<typeof loader>()
 
-	const league = LEAGUE.toLowerCase()
 	const leagueMeta = LEAGUE_META[LEAGUE]
-	const gameEvent = leagueMeta?.seasonTerm ?? 'kickoff'
 
 	const breadcrumbItems = [
 		{ label: 'Team Countdown', href: '/' },
@@ -492,153 +491,22 @@ export default function LeagueIndex() {
 		startTimeTbd: false,
 	}
 
+	// Next game is either the soonest upcoming game or the season opener
+	const nextGame = upcomingGames[0] ?? seasonGame
+
 	return (
 		<>
 			<div className="flex flex-col min-h-screen md:h-auto">
-				{isMidSeason ? (
-					// Mid-season: dark themed layout with copy + team picker
-					<>
-					<div className="font-sans text-white p-4 max-w-[500px] lg:max-w-[750px] mx-auto space-y-12 min-h-[600px] grow pb-20">
-						<Breadcrumb className="mb-4">
-							<BreadcrumbList className="text-white/70">
-								<BreadcrumbItem>
-									<BreadcrumbLink href="/" className="hover:text-white">
-										Team Countdown
-									</BreadcrumbLink>
-								</BreadcrumbItem>
-								<BreadcrumbSeparator className="text-white/50" />
-								<BreadcrumbItem>
-									<BreadcrumbPage className="text-white font-normal">
-										{LEAGUE}
-									</BreadcrumbPage>
-								</BreadcrumbItem>
-							</BreadcrumbList>
-						</Breadcrumb>
-						<h1 className="text-3xl">{LEAGUE} Countdown</h1>
-						<div className="flex flex-col gap-10">
-							<div className="space-y-5">
-								<div className="space-y-3">
-									<h2 className="text-2xl">Get pumped for game day</h2>
-									<p className="text-white/80">
-										Pick your team. Add it to your home screen. Watch the days,
-										hours, and minutes tick away until {gameEvent}.
-									</p>
-									<a
-										href="#teams"
-										onClick={(e) => {
-											e.preventDefault()
-											const prefersReducedMotion = window.matchMedia(
-												'(prefers-reduced-motion: reduce)'
-											).matches
-											document.getElementById('teams')?.scrollIntoView({
-												behavior: prefersReducedMotion ? 'auto' : 'smooth',
-												block: 'start',
-											})
-										}}
-										className="content-link inline-flex items-center gap-1"
-									>
-										Choose your team <span aria-hidden="true">↓</span>
-									</a>
-								</div>
-							</div>
-							<div>
-								<div className="space-y-1 max-w-[400px] mx-auto">
-									<img
-										src={
-											LEAGUE === 'NFL'
-												? '/hero.png'
-												: `/${LEAGUE.toLowerCase()}-hero.png`
-										}
-										alt={`Screenshot of ${
-											LEAGUE === 'MLB'
-												? 'Texas Rangers'
-												: LEAGUE === 'NBA'
-												? 'Boston Celtics'
-												: LEAGUE === 'NHL'
-												? 'Florida Panthers'
-												: LEAGUE === 'WNBA'
-												? 'Indiana Fever'
-												: LEAGUE === 'CPL'
-												? 'Cavalry FC'
-												: LEAGUE === 'MLS'
-												? 'Inter Miami CF'
-								: LEAGUE === 'NWSL'
-										? 'Gotham FC'
-										: LEAGUE === 'PWHL'
-										? 'Minnesota Frost'
-										: LEAGUE === 'CFB'
-										? 'Indiana Hoosiers'
-										: 'Kansas City Chiefs'
-								} countdown in action.`}
-										className="rounded-sm"
-									/>
-									<p className="text-sm text-white/60">
-										Screenshot of{' '}
-										{LEAGUE === 'MLB'
-											? 'Texas Rangers'
-											: LEAGUE === 'NBA'
-											? 'Boston Celtics'
-											: LEAGUE === 'NHL'
-											? 'Florida Panthers'
-											: LEAGUE === 'WNBA'
-											? 'Indiana Fever'
-											: LEAGUE === 'CPL'
-											? 'Cavalry FC'
-											: LEAGUE === 'MLS'
-											? 'Inter Miami CF'
-									: LEAGUE === 'NWSL'
-									? 'Gotham FC'
-								: LEAGUE === 'PWHL'
-								? 'Minnesota Frost'
-							: LEAGUE === 'CFB'
-								? 'Indiana Hoosiers'
-								: 'Kansas City Chiefs'}{' '}
-						countdown in action.
-									</p>
-								</div>
-							</div>
-							<div id="teams" className="space-y-3">
-								<h3 className="text-xl">Choose your team:</h3>
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-									{teams.map((team) => (
-										<a
-											key={team.abbreviation}
-											href={`/${league}/${team.abbreviation.toLowerCase()}`}
-											className="flex items-center gap-4 py-2 content-link group"
-										>
-											<img
-												src={`/logos/${
-													LEAGUE === 'NFL' ? '' : `${league}/`
-												}${team.abbreviation.toLowerCase()}.svg`}
-												alt={`${team.fullName} logo`}
-												className="h-10 w-10 object-contain flex-shrink-0"
-											/>
-											<div className="text-base font-semibold text-white">
-												{team.fullName}
-											</div>
-										</a>
-									))}
-								</div>
-							</div>
-						<UpcomingGames games={upcomingGames} league={LEAGUE} />
-					</div>
-				</div>
-				<InstallNotification
-					className={`bg-[${leagueMeta?.brandColor ?? '#013369'}]`}
+				<Countdown
+					pageTitle={`${LEAGUE} Countdown`}
+					teams={teams}
+					game={nextGame}
+					isTeamPage={false}
+					breadcrumbItems={breadcrumbItems}
+					teamPickerTeams={teams}
+					suggestedGames={upcomingGames.slice(1)}
+					leagueBrandColor={leagueMeta?.brandColor}
 				/>
-				</>
-				) : (
-					// Offseason: dark themed countdown layout
-					<Countdown
-						pageTitle={`${LEAGUE} Season Countdown`}
-						teams={teams}
-						game={seasonGame}
-						isTeamPage={false}
-						breadcrumbItems={breadcrumbItems}
-						teamPickerTeams={teams}
-						leagueBrandColor={leagueMeta?.brandColor}
-					/>
-				)}
 				<Footer league={LEAGUE} dark />
 			</div>
 		</>

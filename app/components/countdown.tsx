@@ -222,17 +222,7 @@ export function countdownString({
 						? LEAGUE === 'CPL' || LEAGUE === 'MLS' || LEAGUE === 'NWSL'
 							? `${team.nickName} play next`
 							: `the ${team.nickName} play next`
-						: LEAGUE === 'NFL' ||
-						  LEAGUE === 'CFB' ||
-						  LEAGUE === 'MLS' ||
-						  LEAGUE === 'CPL' ||
-						  LEAGUE === 'NWSL'
-						? 'kickoff'
-						: LEAGUE === 'MLB'
-						? 'first pitch'
-						: LEAGUE === 'NHL' || LEAGUE === 'PWHL'
-						? 'puck drop'
-						: 'tip-off'
+						: `the next ${LEAGUE} game`
 			  }`
 		: 'Game time TBD'
 	return countdownString
@@ -299,16 +289,36 @@ export default function Countdown({
 			: game?.awayTeam
 
 	const gameMatchupInfo =
-		game?.awayTeam && game?.homeTeam && opposingTeam ? (
-			<div className="text-sm" suppressHydrationWarning>
-				vs{' '}
-				<Link
-					to={`/${LEAGUE.toLowerCase()}/${opposingTeam.abbreviation.toLowerCase()}`}
-					className="content-link"
-				>
-					{opposingTeam.fullName}
-				</Link>
-			</div>
+		game?.awayTeam && game?.homeTeam ? (
+			!team ? (
+				// League page: show both teams
+				<div className="text-sm" suppressHydrationWarning>
+					<Link
+						to={`/${LEAGUE.toLowerCase()}/${game.awayTeam.abbreviation.toLowerCase()}`}
+						className="content-link"
+					>
+						{game.awayTeam.fullName}
+					</Link>
+					{' vs '}
+					<Link
+						to={`/${LEAGUE.toLowerCase()}/${game.homeTeam.abbreviation.toLowerCase()}`}
+						className="content-link"
+					>
+						{game.homeTeam.fullName}
+					</Link>
+				</div>
+			) : opposingTeam ? (
+				// Team page: show "vs [opponent]"
+				<div className="text-sm" suppressHydrationWarning>
+					vs{' '}
+					<Link
+						to={`/${LEAGUE.toLowerCase()}/${opposingTeam.abbreviation.toLowerCase()}`}
+						className="content-link"
+					>
+						{opposingTeam.fullName}
+					</Link>
+				</div>
+			) : null
 		) : null
 
 	return (
