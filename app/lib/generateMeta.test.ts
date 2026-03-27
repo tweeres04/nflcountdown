@@ -63,22 +63,22 @@ describe('generateTitle', () => {
 	it('generates big league team page title with countdown focus', () => {
 		const title = generateTitle(seahawks, 'NFL', '2026')
 		expect(title).toBe(
-			'Seattle Seahawks Countdown - 2026 Schedule & Next Game'
+			'Seattle Seahawks Countdown - Team Countdown'
 		)
 	})
 
 	it('generates small league team page title with next game focus', () => {
 		const title = generateTitle(frost, 'PWHL', '2026')
 		expect(title).toBe(
-			'When is the Next Minnesota Frost Game? - PWHL Countdown 2026'
+			'When is the Next Minnesota Frost Game? - Team Countdown'
 		)
 	})
 
-	it('includes year in both big and small league titles', () => {
+	it('does not include year in team page titles', () => {
 		const big = generateTitle(seahawks, 'NFL', '2027')
 		const small = generateTitle(frost, 'PWHL', '2027')
-		expect(big).toContain('2027')
-		expect(small).toContain('2027')
+		expect(big).not.toContain('2027')
+		expect(small).not.toContain('2027')
 	})
 })
 

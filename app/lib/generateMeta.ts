@@ -70,10 +70,10 @@ export function generateTitle(
 	}
 
 	if (BIG_LEAGUES.has(league)) {
-		return `${team.fullName} Countdown - ${year} Schedule & Next Game`
+		return `${team.fullName} Countdown - Team Countdown`
 	}
 
-	return `When is the Next ${team.fullName} Game? - ${league} Countdown ${year}`
+	return `When is the Next ${team.fullName} Game? - Team Countdown`
 }
 
 export function generateDescription(
