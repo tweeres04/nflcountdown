@@ -475,6 +475,23 @@ export default function Countdown({
 						</Suspense>
 					)}
 
+					{!team && suggestedGames.length > 0 && (
+						<Button
+							variant="ghost"
+							onClick={() => {
+								const prefersReducedMotion = window.matchMedia(
+									'(prefers-reduced-motion: reduce)'
+								).matches
+								document.getElementById('upcoming-games')?.scrollIntoView({
+									behavior: prefersReducedMotion ? 'auto' : 'smooth',
+									block: 'start',
+								})
+							}}
+						>
+							Upcoming games <Calendar className="size-5" />
+						</Button>
+					)}
+
 					{/* Tier 2 — secondary actions */}
 					{canShowPreview && game && team && (
 					<GamePreviewDialog
@@ -567,7 +584,11 @@ export default function Countdown({
 				)}
 
 				{suggestedGames.length > 0 && (
-					<YouMightLike games={suggestedGames} league={LEAGUE} />
+					<YouMightLike
+						games={suggestedGames}
+						league={LEAGUE}
+						title={!team ? 'Upcoming games' : undefined}
+					/>
 				)}
 			</div>
 		<InstallNotification

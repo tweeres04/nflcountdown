@@ -5,17 +5,18 @@ import MiniCountdown from './mini-countdown'
 interface YouMightLikeProps {
 	games: Game[] // Pre-filtered games from server
 	league: string
+	title?: string
 }
 
-export default function YouMightLike({ games, league }: YouMightLikeProps) {
+export default function YouMightLike({ games, league, title = 'You might like' }: YouMightLikeProps) {
 	const lowercaseLeague = league.toLowerCase()
 
 	// Don't render if no games found (already filtered server-side)
 	if (games.length === 0) return null
 
 	return (
-		<div className="mt-10 lg:max-w-[500px] mx-auto">
-			<h3 className="text-xl mb-4">You might like</h3>
+		<div id="upcoming-games" className="mt-10 lg:max-w-[500px] mx-auto">
+			<h3 className="text-xl mb-4">{title}</h3>
 			<div className="space-y-3">
 				{games.map((game) => {
 					const homeAbbrev = game.homeTeam!.abbreviation.toLowerCase()
