@@ -160,6 +160,11 @@ export async function loader() {
         <loc>https://teamcountdown.com/${lowercaseLeague}</loc>
     </url>`)
 
+		// Add season countdown page
+		allUrls.push(`    <url>
+        <loc>https://teamcountdown.com/${lowercaseLeague}/season</loc>
+    </url>`)
+
 		// Only include future games (same 3-hour buffer used throughout the app)
 		const futureGames = games.filter(
 			(g) => g.time && isFuture(addHours(g.time, 3))
