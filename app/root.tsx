@@ -133,10 +133,12 @@ export function loader({ request }: LoaderFunctionArgs) {
 	const GTAG_ID = process.env.GTAG_ID
 	const AHREFS_KEY = process.env.AHREFS_KEY
 	const MIXPANEL_TOKEN = process.env.MIXPANEL_TOKEN
+	const MIXPANEL_TOKEN_LEGACY = process.env.MIXPANEL_TOKEN_LEGACY
 	return json({
 		GTAG_ID,
 		AHREFS_KEY,
 		MIXPANEL_TOKEN,
+		MIXPANEL_TOKEN_LEGACY,
 	})
 }
 
@@ -144,7 +146,7 @@ export const teamGradientClass = 'bg-fixed bg-gradient-to-b from-[var(--color-pr
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	const loaderData = useLoaderData<typeof loader>() ?? {} // empty object in case we're in an error page
-	const { GTAG_ID, AHREFS_KEY, MIXPANEL_TOKEN } = loaderData
+	const { GTAG_ID, AHREFS_KEY, MIXPANEL_TOKEN, MIXPANEL_TOKEN_LEGACY } = loaderData
 	const { league, teamAbbrev } = useParams()
 	const LEAGUE = league?.toUpperCase() ?? ''
 	const lowercaseAbbreviation = teamAbbrev?.toLowerCase()
@@ -228,7 +230,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 		>
 				<script
 					dangerouslySetInnerHTML={{
-						__html: `window.mixpanelToken = '${MIXPANEL_TOKEN}'`,
+						__html: `window.mixpanelToken = '${MIXPANEL_TOKEN}'; window.mixpanelTokenLegacy = '${MIXPANEL_TOKEN_LEGACY || ''}'`,
 					}}
 				></script>
 				<DeferredInstallPromptContext.Provider value={deferredPrompt}>

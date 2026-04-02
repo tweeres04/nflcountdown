@@ -8,7 +8,7 @@ import {
 } from './ui/dialog'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
-import mixpanel from 'mixpanel-browser'
+import { analytics as mixpanel } from '~/lib/analytics'
 
 const SESSION_TIMEOUT_MS = 30 * 60 * 1000 // 30 minutes
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000
