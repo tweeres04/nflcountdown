@@ -8,6 +8,7 @@ import { getTeamAndGames } from '~/lib/getTeamAndGames'
 import { generateMeta } from '~/lib/generateMeta'
 import { getSuggestedGames } from '~/lib/getSuggestedGames'
 import { getAffiliateLinks } from '~/lib/affiliate-service'
+import { redirectIfAbbreviationRenamed } from '~/lib/abbreviation-redirects'
 import { Game } from '~/lib/types'
 import Footer from '~/components/footer'
 
@@ -16,6 +17,8 @@ export { generateMeta as meta }
 export async function loader({
 	params: { league, teamAbbrev, gameSlug },
 }: LoaderFunctionArgs) {
+	redirectIfAbbreviationRenamed(league, teamAbbrev, gameSlug)
+
 	const { LEAGUE, teams, team, games } = await getTeamAndGames(
 		league,
 		teamAbbrev
