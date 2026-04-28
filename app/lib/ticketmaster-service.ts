@@ -40,10 +40,10 @@ const ATTRACTIONS_FILE = path.join(
 	'data',
 	'ticketmaster-attractions.json'
 )
-const WORLDCUP_FILE = path.join(
+const WORLDCUP_SCHEDULE_FILE = path.join(
 	process.cwd(),
 	'data',
-	'worldcup-ticketmaster.json'
+	'worldcup_schedule.json'
 )
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000 // 7 days
 const CLEANUP_PROBABILITY = 0.05
@@ -51,23 +51,30 @@ const CLEANUP_PROBABILITY = 0.05
 const API_BASE = 'https://app.ticketmaster.com/discovery/v2'
 
 let attractionsCache: AttractionsMap | null = null
-let worldCupMapCache: Record<string, string> | null = null
+let worldCupMatchNumberCache: Map<string, number> | null = null
 
-// World Cup matches use a per-match URL map keyed by FIFA IdMatch — built
-// daily by cron/getWorldCupTicketmaster.ts from the Discovery API.
-function getWorldCupMap(): Record<string, string> {
-	if (worldCupMapCache) return worldCupMapCache
-	if (!fs.existsSync(WORLDCUP_FILE)) {
-		worldCupMapCache = {}
-		return worldCupMapCache
+// FIFA's MatchNumber is the join key between FIFA's IdMatch and Ticketmaster
+// event names ("World Cup: Match 8 ..."). We resolve it from the schedule
+// file at request time and module-cache the lookup map.
+function getWorldCupMatchNumber(idMatch: string): number | null {
+	if (!worldCupMatchNumberCache) {
+		if (!fs.existsSync(WORLDCUP_SCHEDULE_FILE)) {
+			worldCupMatchNumberCache = new Map()
+		} else {
+			try {
+				const raw = fs.readFileSync(WORLDCUP_SCHEDULE_FILE, 'utf-8')
+				const schedule = JSON.parse(raw) as {
+					Results: Array<{ IdMatch: string; MatchNumber: number }>
+				}
+				worldCupMatchNumberCache = new Map(
+					schedule.Results.map((m) => [m.IdMatch, m.MatchNumber])
+				)
+			} catch {
+				worldCupMatchNumberCache = new Map()
+			}
+		}
 	}
-	try {
-		const raw = fs.readFileSync(WORLDCUP_FILE, 'utf-8')
-		worldCupMapCache = JSON.parse(raw) as Record<string, string>
-	} catch {
-		worldCupMapCache = {}
-	}
-	return worldCupMapCache
+	return worldCupMatchNumberCache.get(idMatch) ?? null
 }
 
 function getAttractions(): AttractionsMap {
@@ -212,6 +219,62 @@ async function searchTicketmasterEvents(
 	}
 }
 
+async function searchWorldCupEvents(
+	gameDate: string
+): Promise<TicketmasterEvent[]> {
+	const apiKey = process.env.TICKET_MASTER_API_KEY
+	if (!apiKey) {
+		console.error('[ticketmaster] Missing TICKET_MASTER_API_KEY')
+		return []
+	}
+
+	const startDate = new Date(gameDate)
+	startDate.setDate(startDate.getDate() - 1)
+	const endDate = new Date(gameDate)
+	endDate.setDate(endDate.getDate() + 1)
+
+	const params = new URLSearchParams({
+		apikey: apiKey,
+		keyword: 'World Cup',
+		classificationName: 'Soccer',
+		startDateTime: startDate.toISOString().replace(/\.\d{3}Z$/, 'Z'),
+		endDateTime: endDate.toISOString().replace(/\.\d{3}Z$/, 'Z'),
+		size: '20',
+	})
+
+	try {
+		const response = await fetch(`${API_BASE}/events.json?${params}`, {
+			signal: AbortSignal.timeout(8000),
+		})
+		if (!response.ok) {
+			console.error(
+				'[ticketmaster] WC API error:',
+				response.status,
+				await response.text()
+			)
+			return []
+		}
+		const json = await response.json()
+		const events =
+			(json?._embedded?.events as TicketmasterEvent[]) ?? []
+		return events.filter(
+			(e) => !e.dates.status || e.dates.status.code !== 'canceled'
+		)
+	} catch (err) {
+		console.error('[ticketmaster] WC fetch failed:', err)
+		return []
+	}
+}
+
+function findWorldCupMatchUrl(
+	events: TicketmasterEvent[],
+	matchNumber: number
+): string | null {
+	const regex = new RegExp(`\\bMatch\\s+${matchNumber}\\b`, 'i')
+	const match = events.find((e) => regex.test(e.name))
+	return match?.url ?? null
+}
+
 function findEventUrl(
 	events: TicketmasterEvent[],
 	gameDate: string
@@ -241,9 +304,23 @@ export async function getTicketmasterLink(
 	const gameDate = game.time
 	if (!gameDate) return null
 
-	// World Cup uses a pre-built per-match URL map (game.id is the FIFA IdMatch)
+	// World Cup matches don't fit the team-attractionId model (each match
+	// is its own event). We search the Discovery API by date window and
+	// disambiguate by FIFA's MatchNumber, embedded in the TM event name.
 	if (league === 'WORLDCUP') {
-		return getWorldCupMap()[game.id] ?? null
+		const wcKey = `tm-wc|${game.id}`
+		const cached = getCachedUrl(wcKey)
+		if (cached) return cached
+
+		const matchNumber = getWorldCupMatchNumber(game.id)
+		if (matchNumber === null) return null
+
+		const events = await searchWorldCupEvents(gameDate)
+		const url = findWorldCupMatchUrl(events, matchNumber)
+		if (!url) return null
+
+		setCachedUrl(wcKey, url)
+		return url
 	}
 
 	const key = cacheKey(team.fullName, gameDate)
