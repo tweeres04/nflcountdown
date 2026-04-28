@@ -27,10 +27,27 @@ export function getSportName(league: string): string {
 			return 'Ice Hockey'
 		case 'CFB':
 			return 'American Football'
+		case 'WORLDCUP':
+			return 'Soccer'
 		default:
 			return 'Sports'
 	}
 }
+
+// Short display name shown in UI (breadcrumbs, titles, body copy).
+// Most leagues use the abbreviation as-is; only multi-word names override.
+export function getLeagueDisplayName(league: string): string {
+	switch (league) {
+		case 'WORLDCUP':
+			return 'World Cup'
+		default:
+			return league
+	}
+}
+
+// Soccer leagues — used to drop the "the" prefix in countdown copy
+// (e.g. "till Seattle play next" vs "till the Sounders play next").
+export const SOCCER_LEAGUES = new Set(['CPL', 'MLS', 'NWSL', 'WORLDCUP'])
 
 export function getLeagueFullName(league: string): string {
 	switch (league) {
@@ -54,6 +71,8 @@ export function getLeagueFullName(league: string): string {
 			return "Professional Women's Hockey League"
 		case 'CFB':
 			return 'College Football'
+		case 'WORLDCUP':
+			return 'FIFA World Cup'
 		default:
 			return league
 	}
@@ -71,6 +90,7 @@ export function getLeagueSameAs(league: string): string {
 		NWSL: 'https://www.nwslsoccer.com',
 		PWHL: 'https://www.thepwhl.com',
 		CFB: 'https://www.ncaa.com/sports/football/fbs',
+		WORLDCUP: 'https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026',
 	}
 	return officialUrls[league] || ''
 }
@@ -224,6 +244,10 @@ export function generateWebSiteSchema() {
 			{
 				'@type': 'SportsOrganization',
 				name: "Professional Women's Hockey League",
+			},
+			{
+				'@type': 'SportsOrganization',
+				name: 'FIFA World Cup',
 			},
 		],
 	}

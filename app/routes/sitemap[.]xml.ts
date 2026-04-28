@@ -10,15 +10,16 @@ import { mlsGameToGame, mlsTeamToTeam } from '~/lib/mlsGameToGame'
 import { nwslGameToGame, nwslTeamToTeam } from '~/lib/nwslGameToGame'
 import { pwhlGameToGame, pwhlTeamToTeam } from '~/lib/pwhlGameToGame'
 import { cfbGameToGame, cfbTeamToTeam } from '~/lib/cfbGameToGame'
+import { worldCupGameToGame, worldCupTeamToTeam } from '~/lib/worldCupGameToGame'
 import { getGameSlug } from '~/lib/getGameSlug'
 import { readFile } from 'node:fs/promises'
-import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, Team, Game } from '~/lib/types'
+import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, WorldCupScheduleApi, Team, Game } from '~/lib/types'
 import { isFuture, addHours } from 'date-fns'
 
 export async function loader() {
-	const leagues = ['NFL', 'MLB', 'NBA', 'NHL', 'WNBA', 'CPL', 'MLS', 'NWSL', 'PWHL', 'CFB']
+	const leagues = ['NFL', 'MLB', 'NBA', 'NHL', 'WNBA', 'CPL', 'MLS', 'NWSL', 'PWHL', 'CFB', 'WORLDCUP']
 
-	const [nflScheduleRaw, mlbScheduleRaw, nbaScheduleRaw, nhlScheduleRaw, wnbaScheduleRaw, cplScheduleRaw, mlsScheduleRaw, nwslScheduleRaw, pwhlScheduleRaw, cfbScheduleRaw] = await Promise.all([
+	const [nflScheduleRaw, mlbScheduleRaw, nbaScheduleRaw, nhlScheduleRaw, wnbaScheduleRaw, cplScheduleRaw, mlsScheduleRaw, nwslScheduleRaw, pwhlScheduleRaw, cfbScheduleRaw, worldCupScheduleRaw] = await Promise.all([
 		readFile('data/nfl_schedule.json', 'utf-8'),
 		readFile('data/mlb_schedule.json', 'utf-8'),
 		readFile('data/nba_schedule.json', 'utf-8'),
@@ -29,6 +30,7 @@ export async function loader() {
 		readFile('data/nwsl_schedule.json', 'utf-8'),
 		readFile('data/pwhl_schedule.json', 'utf-8'),
 		readFile('data/cfb_schedule.json', 'utf-8'),
+		readFile('data/worldcup_schedule.json', 'utf-8'),
 	])
 
 	const nflSchedule = JSON.parse(nflScheduleRaw) as NflScheduleApi
@@ -41,6 +43,7 @@ export async function loader() {
 	const nwslSchedule = JSON.parse(nwslScheduleRaw) as NwslScheduleApi
 	const pwhlSchedule = JSON.parse(pwhlScheduleRaw) as PwhlScheduleApi
 	const cfbSchedule = JSON.parse(cfbScheduleRaw) as CfbScheduleApi
+	const worldCupSchedule = JSON.parse(worldCupScheduleRaw) as WorldCupScheduleApi
 
 	let allUrls: string[] = []
 
@@ -122,6 +125,15 @@ export async function loader() {
 					),
 					'id'
 			  ).map(cfbTeamToTeam)
+			: LEAGUE === 'WORLDCUP'
+			? (uniqBy(
+					worldCupSchedule.Results.flatMap((m) => [m.Home, m.Away]).filter(
+						(t): t is NonNullable<typeof t> => t !== null && !!t.IdTeam
+					),
+					'IdTeam'
+			  )
+					.map(worldCupTeamToTeam)
+					.filter((t): t is Team => t !== null) as Team[])
 			: uniqBy(
 					nflSchedule.games.map((g) => g.homeTeam),
 					'id'
@@ -153,6 +165,8 @@ export async function loader() {
 		? pwhlSchedule.SiteKit.Scorebar.map(pwhlGameToGame)
 		: LEAGUE === 'CFB'
 		? cfbSchedule.events.map(cfbGameToGame)
+		: LEAGUE === 'WORLDCUP'
+		? worldCupSchedule.Results.map(worldCupGameToGame)
 		: nflSchedule.games.map(nflGameToGame)
 
 		// Add league index page

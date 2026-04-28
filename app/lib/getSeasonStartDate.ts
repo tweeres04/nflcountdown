@@ -159,6 +159,15 @@ function calculateSeasonStartDate(league: string, year: number): Date {
 		return date
 	}
 
+	if (LEAGUE === 'WORLDCUP') {
+		// World Cups run every 4 years; 2026 opens June 11 in Mexico City.
+		// Pick the next World Cup year from `year` (2026, 2030, 2034, ...)
+		let wcYear = year
+		while ((wcYear - 2026) % 4 !== 0 || wcYear < 2026) wcYear++
+		date = new Date(Date.UTC(wcYear, 5, 11, 19, 0, 0))
+		return date
+	}
+
 	// Fallback: first day of next year
 	return new Date(year + 1, 0, 1)
 }

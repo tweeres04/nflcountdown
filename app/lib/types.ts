@@ -203,3 +203,43 @@ export interface PwhlScheduleApi {
 		Scorebar: PwhlGameApi[]
 	}
 }
+
+// FIFA World Cup API (api.fifa.com/api/v3/calendar/matches)
+export interface WorldCupTeamApi {
+	IdTeam: string | null
+	IdCountry: string | null
+	Abbreviation: string | null
+	ShortClubName: string | null
+	TeamName: Array<{ Locale: string; Description: string }>
+	PictureUrl: string | null
+}
+
+export interface WorldCupStadiumApi {
+	IdStadium: string
+	Name: Array<{ Locale: string; Description: string }>
+	CityName: Array<{ Locale: string; Description: string }>
+	IdCountry: string | null
+}
+
+export interface WorldCupMatchApi {
+	IdMatch: string
+	IdCompetition: string
+	IdSeason: string
+	IdStage: string
+	IdGroup: string | null
+	Date: string
+	LocalDate: string | null
+	Home: WorldCupTeamApi | null
+	Away: WorldCupTeamApi | null
+	StageName: Array<{ Locale: string; Description: string }>
+	GroupName: Array<{ Locale: string; Description: string }>
+	Stadium: WorldCupStadiumApi | null
+	PlaceHolderA: string | null
+	PlaceHolderB: string | null
+	MatchNumber: number
+	MatchStatus: number
+}
+
+export interface WorldCupScheduleApi {
+	Results: WorldCupMatchApi[]
+}

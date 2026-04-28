@@ -40,6 +40,7 @@ import {
 	BreadcrumbSeparator,
 } from './ui/breadcrumb'
 import type { BreadcrumbItem as BreadcrumbItemType } from '~/lib/schema-helpers'
+import { getLeagueDisplayName, SOCCER_LEAGUES } from '~/lib/schema-helpers'
 import type { AffiliateLinks } from '~/lib/affiliate-service'
 
 // Simple inline loading skeleton for Dialog
@@ -219,10 +220,10 @@ export function countdownString({
 			? 'Game in progress!'
 			: `${countdown(new Date(game.time), null, units).toString()} till ${
 					isTeamPage && team
-						? LEAGUE === 'CPL' || LEAGUE === 'MLS' || LEAGUE === 'NWSL'
+						? SOCCER_LEAGUES.has(LEAGUE)
 							? `${team.nickName} play next`
 							: `the ${team.nickName} play next`
-						: `the next ${LEAGUE} game`
+						: `the next ${getLeagueDisplayName(LEAGUE)} game`
 			  }`
 		: 'Game time TBD'
 	return countdownString
@@ -366,22 +367,33 @@ export default function Countdown({
 					</TeamsDropdown>
 				</div>
 
-				<img
-					src={logo}
-				className={cn(
-					'mx-auto',
-					LEAGUE === 'NHL' ||
-						LEAGUE === 'CFB' ||
-						LEAGUE === 'CPL' ||
-						LEAGUE === 'MLS' ||
-						LEAGUE === 'NWSL' ||
-						LEAGUE === 'PWHL'
-						? 'h-[256px] md:h-[384px] my-8'
-						: 'w-[256px] h-[256px] md:w-[384px] md:h-[384px]',
-					{ 'py-8 lg:py-16': LEAGUE === 'MLB' }
+				{LEAGUE === 'WORLDCUP' && team ? (
+					<div className="relative w-fit mx-auto my-8 rounded-tr-[32px] rounded-bl-[32px] ring-4 ring-white shadow-xl after:pointer-events-none after:absolute after:inset-0 after:rounded-tr-[32px] after:rounded-bl-[32px] after:bg-[linear-gradient(135deg,rgba(255,255,255,0.5)_0%,rgba(255,255,255,0.15)_35%,rgba(255,255,255,0)_60%)]">
+						<img
+							src={logo}
+							className="block max-h-[256px] md:max-h-[384px] max-w-full w-auto h-auto rounded-tr-[32px] rounded-bl-[32px]"
+							alt={`${team.fullName} logo`}
+						/>
+					</div>
+				) : (
+					<img
+						src={logo}
+						className={cn(
+							'mx-auto',
+							LEAGUE === 'NHL' ||
+								LEAGUE === 'CFB' ||
+								LEAGUE === 'CPL' ||
+								LEAGUE === 'MLS' ||
+								LEAGUE === 'NWSL' ||
+								LEAGUE === 'PWHL' ||
+								LEAGUE === 'WORLDCUP'
+								? 'h-[256px] md:h-[384px] my-8'
+								: 'w-[256px] h-[256px] md:w-[384px] md:h-[384px]',
+							{ 'py-8 lg:py-16': LEAGUE === 'MLB' }
+						)}
+						alt={team ? `${team.fullName} logo` : `${getLeagueDisplayName(LEAGUE)} logo`}
+					/>
 				)}
-					alt={team ? `${team.fullName} logo` : `${LEAGUE} logo`}
-				/>
 
 				<div className="text-center space-y-2">
 					<div className="text-3xl" suppressHydrationWarning>

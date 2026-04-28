@@ -11,8 +11,9 @@ import { mlsTeamToTeam } from './mlsGameToGame'
 import { nwslTeamToTeam } from './nwslGameToGame'
 import { pwhlTeamToTeam } from './pwhlGameToGame'
 import { cfbTeamToTeam } from './cfbGameToGame'
+import { worldCupTeamToTeam } from './worldCupGameToGame'
 import { getAllGames } from './getAllGames'
-import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, Team } from './types'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, WorldCupScheduleApi, Team } from './types'
 
 export async function getTeamAndGames(
 	league: string | undefined,
@@ -21,7 +22,7 @@ export async function getTeamAndGames(
 	const LEAGUE = league?.toUpperCase() ?? 'NFL'
 
 	// Validate league
-	if (!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA', 'CPL', 'MLS', 'NWSL', 'PWHL', 'CFB'].includes(LEAGUE)) {
+	if (!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA', 'CPL', 'MLS', 'NWSL', 'PWHL', 'CFB', 'WORLDCUP'].includes(LEAGUE)) {
 		throw new Response(null, { status: 404 })
 	}
 
@@ -104,6 +105,17 @@ export async function getTeamAndGames(
 			),
 			'id'
 		).map(cfbTeamToTeam)
+	} else if (LEAGUE === 'WORLDCUP') {
+		const raw = await readFile('data/worldcup_schedule.json', 'utf-8')
+		const wcSchedule: WorldCupScheduleApi = JSON.parse(raw)
+		teams = uniqBy(
+			wcSchedule.Results.flatMap((m) => [m.Home, m.Away]).filter(
+				(t): t is NonNullable<typeof t> => t !== null && !!t.IdTeam
+			),
+			'IdTeam'
+		)
+			.map(worldCupTeamToTeam)
+			.filter((t): t is Team => t !== null)
 	}
 
 	teams = orderBy(teams, 'fullName')

@@ -63,7 +63,7 @@ export default function Footer({ league, dark = false }: FooterProps) {
 				<p className={cn('text-xs', dark ? 'text-white/70' : 'text-stone-600')}>
 					Team names, logos, and trademarks are the property of their
 					respective owners. This site is not affiliated with or endorsed by
-					the NFL, NBA, WNBA, MLB, NHL, MLS, NWSL, PWHL, NCAA, or any team.
+					FIFA, NFL, NBA, WNBA, MLB, NHL, MLS, NWSL, PWHL, NCAA, or any team.
 				</p>
 				<p className={cn('text-xs', dark ? 'text-white/70' : 'text-stone-500')}>
 						© 2026 Team Countdown

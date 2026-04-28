@@ -13,6 +13,7 @@ import { mlsTeamToTeam } from '~/lib/mlsGameToGame'
 import { nwslTeamToTeam } from '~/lib/nwslGameToGame'
 import { pwhlTeamToTeam } from '~/lib/pwhlGameToGame'
 import { cfbTeamToTeam } from '~/lib/cfbGameToGame'
+import { worldCupTeamToTeam } from '~/lib/worldCupGameToGame'
 import { readFile } from 'node:fs/promises'
 import {
 	NbaScheduleApi,
@@ -24,11 +25,13 @@ import {
 	NwslScheduleApi,
 	PwhlScheduleApi,
 	CfbScheduleApi,
+	WorldCupScheduleApi,
 	Team,
 } from '~/lib/types'
 import {
 	generateSportsOrganizationSchema,
 	generateBreadcrumbSchema,
+	getLeagueDisplayName,
 } from '~/lib/schema-helpers'
 import Footer from '~/components/footer'
 import { getSuggestedGames } from '~/lib/getSuggestedGames'
@@ -158,6 +161,17 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		seasonMonths: 'August to January',
 		brandColor: '#1a1a1a',
 	},
+	WORLDCUP: {
+		fullName: 'FIFA World Cup',
+		shortName: 'World Cup',
+		seasonTerm: 'kickoff',
+		titleKeyword: 'World Cup',
+		crossYear: false,
+		teamCount: 48,
+		seasonLength: '104 matches across the tournament',
+		seasonMonths: 'June to July',
+		brandColor: '#326295', // FIFA corporate blue
+	},
 }
 
 function formatSeasonYear(year: number, crossYear: boolean): string {
@@ -169,6 +183,7 @@ function formatSeasonYear(year: number, crossYear: boolean): string {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	const LEAGUE = data?.LEAGUE ?? 'NFL'
+	const leagueLabel = getLeagueDisplayName(LEAGUE)
 	const lowercaseLeague = LEAGUE.toLowerCase()
 	const meta = LEAGUE_META[LEAGUE]
 	const isMidSeason = data?.isMidSeason ?? false
@@ -177,15 +192,15 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	const url = `https://teamcountdown.com/${lowercaseLeague}`
 	const ogImage = LEAGUE === 'NFL' ? 'og.png' : `${lowercaseLeague}-og.png`
 
-	const title = `${LEAGUE} Game Countdown - Team Countdown ${seasonYear}`
+	const title = `${leagueLabel} Game Countdown - Team Countdown ${seasonYear}`
 
 	const description = isMidSeason
-		? `The ${seasonYear} ${LEAGUE} season is underway. Live countdown to the next game. Pick your team for a personalized countdown.`
-		: `Countdown to the first ${LEAGUE} game of ${seasonYear}. Pick your team and add the countdown to your home screen.`
+		? `The ${seasonYear} ${leagueLabel} season is underway. Live countdown to the next game. Pick your team for a personalized countdown.`
+		: `Countdown to the first ${leagueLabel} game of ${seasonYear}. Pick your team and add the countdown to your home screen.`
 
 	const breadcrumbItems = [
 		{ label: 'Team Countdown', href: '/' },
-		{ label: LEAGUE },
+		{ label: leagueLabel },
 	]
 
 	const seasonStartFormatted = seasonStartDate
@@ -219,28 +234,28 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 		// Q1+Q2: same questions, conditional answers
 		{
 			'@type': 'Question',
-			name: `How many days until the ${LEAGUE} season starts?`,
+			name: `How many days until the ${leagueLabel} season starts?`,
 			acceptedAnswer: {
 				'@type': 'Answer',
 				text: isMidSeason
-					? `The ${seasonYear} ${LEAGUE} season has already started. The next season is expected to begin in ${
+					? `The ${seasonYear} ${leagueLabel} season has already started. The next season is expected to begin in ${
 							meta?.seasonMonths?.split(' to ')[0] ?? 'fall'
 					  } ${nextSeasonYear}. Pick your team above to count down to their next game.`
-					: `The ${seasonYear} ${LEAGUE} season starts on ${seasonStartFormattedShort}. Use the live countdown above for the exact days, hours, minutes, and seconds remaining.`,
+					: `The ${seasonYear} ${leagueLabel} season starts on ${seasonStartFormattedShort}. Use the live countdown above for the exact days, hours, minutes, and seconds remaining.`,
 			},
 		},
 		{
 			'@type': 'Question',
-			name: `When does the ${LEAGUE} season start?`,
+			name: `When does the ${leagueLabel} season start?`,
 			acceptedAnswer: {
 				'@type': 'Answer',
 				text: isMidSeason
-					? `The current ${LEAGUE} season began in ${
+					? `The current ${leagueLabel} season began in ${
 							meta?.seasonMonths?.split(' to ')[0] ?? 'fall'
-					  } ${seasonYear}. The next ${LEAGUE} season is expected to start in ${
+					  } ${seasonYear}. The next ${leagueLabel} season is expected to start in ${
 							meta?.seasonMonths?.split(' to ')[0] ?? 'fall'
 					  } ${nextSeasonYear}.`
-					: `${LEAGUE} ${
+					: `${leagueLabel} ${
 							meta?.seasonTerm ?? 'kickoff'
 					  } is on ${seasonStartFormatted}.`,
 			},
@@ -248,20 +263,20 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 		// Q3+Q4: static evergreen entries
 		{
 			'@type': 'Question',
-			name: `How many teams are in the ${LEAGUE}?`,
+			name: `How many teams are in the ${leagueLabel}?`,
 			acceptedAnswer: {
 				'@type': 'Answer',
-				text: `The ${meta?.fullName ?? LEAGUE} has ${
+				text: `The ${meta?.fullName ?? leagueLabel} has ${
 					meta?.teamCount ?? ''
 				} teams.`,
 			},
 		},
 		{
 			'@type': 'Question',
-			name: `How long is the ${LEAGUE} season?`,
+			name: `How long is the ${leagueLabel} season?`,
 			acceptedAnswer: {
 				'@type': 'Answer',
-				text: `The ${LEAGUE} regular season runs ${
+				text: `The ${leagueLabel} regular season runs ${
 					meta?.seasonLength ?? ''
 				}, typically from ${meta?.seasonMonths ?? ''}.`,
 			},
@@ -291,7 +306,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 			'script:ld+json': {
 				'@context': 'https://schema.org',
 				'@type': 'WebPage',
-				name: `${LEAGUE} Season Countdown`,
+				name: `${leagueLabel} Season Countdown`,
 				description,
 				url,
 				about: { '@type': 'SportsOrganization', name: meta?.fullName },
@@ -303,12 +318,12 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 						'script:ld+json': {
 							'@context': 'https://schema.org',
 							'@type': 'SportsEvent',
-							name: `${seasonYear} ${meta?.fullName ?? LEAGUE} Season`,
+							name: `${seasonYear} ${meta?.fullName ?? leagueLabel} Season`,
 							startDate: seasonStartDate,
 							location: { '@type': 'Place', name: 'North America' },
 							organizer: {
 								'@type': 'SportsOrganization',
-								name: meta?.fullName ?? LEAGUE,
+								name: meta?.fullName ?? leagueLabel,
 							},
 							url,
 						},
@@ -335,6 +350,7 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 			'NWSL',
 			'PWHL',
 			'CFB',
+			'WORLDCUP',
 		].includes(LEAGUE)
 	) {
 		throw new Response(null, { status: 404 })
@@ -359,6 +375,8 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 			? 'data/pwhl_schedule.json'
 			: LEAGUE === 'CFB'
 			? 'data/cfb_schedule.json'
+			: LEAGUE === 'WORLDCUP'
+			? 'data/worldcup_schedule.json'
 			: 'data/nfl_schedule.json'
 
 	const scheduleRaw = await readFile(scheduleFile, 'utf-8')
@@ -432,6 +450,18 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 					),
 					'id'
 			  ).map(cfbTeamToTeam)
+			: LEAGUE === 'WORLDCUP'
+			? (uniqBy(
+					(scheduleParsed as WorldCupScheduleApi).Results.flatMap((m) => [
+						m.Home,
+						m.Away,
+					]).filter(
+						(t): t is NonNullable<typeof t> => t !== null && !!t.IdTeam
+					),
+					'IdTeam'
+			  )
+					.map(worldCupTeamToTeam)
+					.filter((t): t is Team => t !== null) as Team[])
 			: uniqBy(
 					(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),
 					'id'
@@ -477,10 +507,11 @@ export default function LeagueIndex() {
 		useLoaderData<typeof loader>()
 
 	const leagueMeta = LEAGUE_META[LEAGUE]
+	const leagueLabel = getLeagueDisplayName(LEAGUE)
 
 	const breadcrumbItems = [
 		{ label: 'Team Countdown', href: '/' },
-		{ label: LEAGUE },
+		{ label: leagueLabel },
 	]
 
 	const seasonGame = {
@@ -498,7 +529,7 @@ export default function LeagueIndex() {
 		<>
 			<div className="flex flex-col min-h-screen md:h-auto">
 				<Countdown
-					pageTitle={`${LEAGUE} Countdown`}
+					pageTitle={`${leagueLabel} Countdown`}
 					teams={teams}
 					game={nextGame}
 					isTeamPage={false}

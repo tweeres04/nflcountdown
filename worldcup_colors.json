@@ -1,0 +1,290 @@
+[
+	{
+		"team": "Algeria",
+		"abbreviation": "ALG",
+		"color_1": "#006233",
+		"color_2": "#D21034"
+	},
+	{
+		"team": "Argentina",
+		"abbreviation": "ARG",
+		"color_1": "#75AADB",
+		"color_2": "#F6B40E"
+	},
+	{
+		"team": "Australia",
+		"abbreviation": "AUS",
+		"color_1": "#00843D",
+		"color_2": "#FFCD00"
+	},
+	{
+		"team": "Austria",
+		"abbreviation": "AUT",
+		"color_1": "#ED2939",
+		"color_2": "#1F1F1F"
+	},
+	{
+		"team": "Belgium",
+		"abbreviation": "BEL",
+		"color_1": "#ED2939",
+		"color_2": "#FAE042"
+	},
+	{
+		"team": "Bosnia-Herzegovina",
+		"abbreviation": "BIH",
+		"color_1": "#002F6C",
+		"color_2": "#FECB00"
+	},
+	{
+		"team": "Brazil",
+		"abbreviation": "BRA",
+		"color_1": "#009C3B",
+		"color_2": "#FEDF00"
+	},
+	{
+		"team": "Canada",
+		"abbreviation": "CAN",
+		"color_1": "#D52B1E",
+		"color_2": "#1A1A1A"
+	},
+	{
+		"team": "Côte d'Ivoire",
+		"abbreviation": "CIV",
+		"color_1": "#F77F00",
+		"color_2": "#009E60"
+	},
+	{
+		"team": "Congo DR",
+		"abbreviation": "COD",
+		"color_1": "#007FFF",
+		"color_2": "#F7D618"
+	},
+	{
+		"team": "Colombia",
+		"abbreviation": "COL",
+		"color_1": "#FCD116",
+		"color_2": "#003893"
+	},
+	{
+		"team": "Cabo Verde",
+		"abbreviation": "CPV",
+		"color_1": "#003893",
+		"color_2": "#CF2027"
+	},
+	{
+		"team": "Croatia",
+		"abbreviation": "CRO",
+		"color_1": "#FF0000",
+		"color_2": "#171796"
+	},
+	{
+		"team": "Curaçao",
+		"abbreviation": "CUW",
+		"color_1": "#002B7F",
+		"color_2": "#F9E814"
+	},
+	{
+		"team": "Czechia",
+		"abbreviation": "CZE",
+		"color_1": "#11457E",
+		"color_2": "#D7141A"
+	},
+	{
+		"team": "Ecuador",
+		"abbreviation": "ECU",
+		"color_1": "#FFD100",
+		"color_2": "#034EA2"
+	},
+	{
+		"team": "Egypt",
+		"abbreviation": "EGY",
+		"color_1": "#CE1126",
+		"color_2": "#000000"
+	},
+	{
+		"team": "England",
+		"abbreviation": "ENG",
+		"color_1": "#CE1124",
+		"color_2": "#012169"
+	},
+	{
+		"team": "Spain",
+		"abbreviation": "ESP",
+		"color_1": "#AA151B",
+		"color_2": "#F1BF00"
+	},
+	{
+		"team": "France",
+		"abbreviation": "FRA",
+		"color_1": "#0055A4",
+		"color_2": "#EF4135"
+	},
+	{
+		"team": "Germany",
+		"abbreviation": "GER",
+		"color_1": "#1F1F1F",
+		"color_2": "#DD0000"
+	},
+	{
+		"team": "Ghana",
+		"abbreviation": "GHA",
+		"color_1": "#FCD116",
+		"color_2": "#CE1126"
+	},
+	{
+		"team": "Haiti",
+		"abbreviation": "HAI",
+		"color_1": "#00209F",
+		"color_2": "#D21034"
+	},
+	{
+		"team": "IR Iran",
+		"abbreviation": "IRN",
+		"color_1": "#239F40",
+		"color_2": "#DA0000"
+	},
+	{
+		"team": "Iraq",
+		"abbreviation": "IRQ",
+		"color_1": "#CE1126",
+		"color_2": "#007A3D"
+	},
+	{
+		"team": "Jordan",
+		"abbreviation": "JOR",
+		"color_1": "#007A3D",
+		"color_2": "#CE1126"
+	},
+	{
+		"team": "Japan",
+		"abbreviation": "JPN",
+		"color_1": "#BC002D",
+		"color_2": "#1F1F1F"
+	},
+	{
+		"team": "Korea Republic",
+		"abbreviation": "KOR",
+		"color_1": "#CD2E3A",
+		"color_2": "#0047A0"
+	},
+	{
+		"team": "Saudi Arabia",
+		"abbreviation": "KSA",
+		"color_1": "#006C35",
+		"color_2": "#1A1A1A"
+	},
+	{
+		"team": "Morocco",
+		"abbreviation": "MAR",
+		"color_1": "#C1272D",
+		"color_2": "#006233"
+	},
+	{
+		"team": "Mexico",
+		"abbreviation": "MEX",
+		"color_1": "#006847",
+		"color_2": "#CE1126"
+	},
+	{
+		"team": "Netherlands",
+		"abbreviation": "NED",
+		"color_1": "#FF6600",
+		"color_2": "#21468B"
+	},
+	{
+		"team": "Norway",
+		"abbreviation": "NOR",
+		"color_1": "#BA0C2F",
+		"color_2": "#00205B"
+	},
+	{
+		"team": "New Zealand",
+		"abbreviation": "NZL",
+		"color_1": "#1F1F1F",
+		"color_2": "#CC142B"
+	},
+	{
+		"team": "Panama",
+		"abbreviation": "PAN",
+		"color_1": "#072357",
+		"color_2": "#DA121A"
+	},
+	{
+		"team": "Paraguay",
+		"abbreviation": "PAR",
+		"color_1": "#D52B1E",
+		"color_2": "#0038A8"
+	},
+	{
+		"team": "Portugal",
+		"abbreviation": "POR",
+		"color_1": "#006600",
+		"color_2": "#FF0000"
+	},
+	{
+		"team": "Qatar",
+		"abbreviation": "QAT",
+		"color_1": "#8A1538",
+		"color_2": "#1A1A1A"
+	},
+	{
+		"team": "South Africa",
+		"abbreviation": "RSA",
+		"color_1": "#007A4D",
+		"color_2": "#FFB81C"
+	},
+	{
+		"team": "Scotland",
+		"abbreviation": "SCO",
+		"color_1": "#0065BD",
+		"color_2": "#1A1A1A"
+	},
+	{
+		"team": "Senegal",
+		"abbreviation": "SEN",
+		"color_1": "#00853F",
+		"color_2": "#FDEF42"
+	},
+	{
+		"team": "Switzerland",
+		"abbreviation": "SUI",
+		"color_1": "#DA291C",
+		"color_2": "#1A1A1A"
+	},
+	{
+		"team": "Sweden",
+		"abbreviation": "SWE",
+		"color_1": "#005B99",
+		"color_2": "#FECC02"
+	},
+	{
+		"team": "Tunisia",
+		"abbreviation": "TUN",
+		"color_1": "#E70013",
+		"color_2": "#1F1F1F"
+	},
+	{
+		"team": "Türkiye",
+		"abbreviation": "TUR",
+		"color_1": "#E30A17",
+		"color_2": "#1A1A1A"
+	},
+	{
+		"team": "Uruguay",
+		"abbreviation": "URU",
+		"color_1": "#0038A8",
+		"color_2": "#FCD116"
+	},
+	{
+		"team": "USA",
+		"abbreviation": "USA",
+		"color_1": "#3C3B6E",
+		"color_2": "#B22234"
+	},
+	{
+		"team": "Uzbekistan",
+		"abbreviation": "UZB",
+		"color_1": "#0099B5",
+		"color_2": "#1EB53A"
+	}
+]

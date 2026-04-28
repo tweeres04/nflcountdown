@@ -49,6 +49,7 @@ export default function Index() {
 		{ code: 'pwhl', name: 'PWHL', fullName: "Professional Women's Hockey League" },
 		{ code: 'mls', name: 'MLS', fullName: 'Major League Soccer' },
 		{ code: 'nwsl', name: 'NWSL', fullName: "National Women's Soccer League" },
+		{ code: 'worldcup', name: 'World Cup', fullName: 'FIFA World Cup 2026' },
 	]
 
 	return (

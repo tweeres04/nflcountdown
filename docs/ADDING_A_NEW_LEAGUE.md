@@ -199,43 +199,32 @@ Add to `cron/package.json`:
 # Check dimensions of source files
 magick identify public/logos/{league}/sea.svg  # SVG
 magick identify public/logos/{league}/van.png  # PNG/WebP
+```
 
-# Correct approach: fit within 512x512, pad the shorter dimension with transparency
+**Use `rsvg-convert` to rasterize SVGs, not ImageMagick.** ImageMagick's SVG renderer silently drops content from SVGs that use masks, clip-paths, embedded base64 images, or certain compose modes — pages render blank or missing key elements (e.g., the red cross from England's flag, or the trophy embedded in the World Cup emblem). `rsvg-convert` (from librsvg) handles all of these correctly. Then use ImageMagick to pad the result into a square 512×512 PNG for PWA manifests:
+
+```bash
+# rsvg-convert produces the correct rendering at natural aspect; magick centers it in 512×512
+for svg in public/logos/{league}/*.svg; do
+  png="${svg%.svg}.png"
+  rsvg-convert -w 512 -a "$svg" -o /tmp/_logo.png
+  magick /tmp/_logo.png -background none -gravity center -extent 512x512 "$png"
+done
+```
+
+If you prefer a single command for simple SVGs (no masks/embedded images), this still works but is risky:
+```bash
 magick -density 300 -background none input.svg -resize 512x512 -gravity center -extent 512x512 output.png
-magick input.png -resize 512x512 -background none -gravity center -extent 512x512 output.png
 ```
 
 **If SVGs are available from an official CDN** (preferred):
 ```bash
 mkdir -p public/logos/{league}
 curl -sL "https://example.com/logos/team.svg" > public/logos/{league}/team.svg
-# Then generate PNGs from the SVGs (preserving aspect ratio):
-for svg in public/logos/{league}/*.svg; do
-  png="${svg%.svg}.png"
-  magick -density 300 -background none "$svg" -resize 512x512 -gravity center -extent 512x512 "$png"
-done
+# Then generate PNGs (use rsvg-convert + magick — see above)
 ```
 
-**If only raster images are available** (PNG or WebP — e.g., ESPN CDN):
-```bash
-mkdir -p public/logos/{league}
-# Download images (use lowercase filenames!)
-curl -sL "https://a.espncdn.com/i/teamlogos/soccer/500/{TEAM_ID}.png" > "public/logos/{league}/{abbr}.png"
-
-# Optionally convert to WebP for smaller file sizes (preserve aspect ratio!):
-magick input.png -resize 500x500 -background none -gravity center -extent 500x500 output.webp
-
-# Create SVG wrappers with the image embedded as base64 (one per team).
-# IMPORTANT: Do NOT use an external href like href="/logos/..." — browsers block
-# external resource loads when an SVG is rendered via <img src="...">, so the
-# logo will appear empty. Embed as a data URI instead. Works with both PNG and WebP.
-for img in public/logos/{league}/*.png; do  # or *.webp
-  abbr="${img%.*}"; abbr="${abbr##*/}"
-  mime="image/png"  # or image/webp
-  b64=$(base64 -i "$img")
-  printf '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">\n  <image href="data:%s;base64,%s" width="500" height="500"/>\n</svg>\n' "$mime" "$b64" > "public/logos/{league}/${abbr}.svg"
-done
-```
+**If only raster images are available** (PNG or WebP — e.g., ESPN CDN): keep looking for a real SVG source. Wikipedia, official league CDNs, and projects like `flag-icons` (lipis) cover most cases. SVGs wrapping a raster image are not allowed — both the SVG and PNG should be true vector / raster of the actual logo.
 
 **Finding logo URLs on JS-rendered pages** (e.g., NWSL, MLS official sites): The initial HTML won't contain image URLs since they're injected by JavaScript. Use the agent-browser tool to get the fully rendered page and extract URLs:
 ```bash
@@ -465,7 +454,7 @@ npm run dev
 - [ ] `cron/get{League}Schedule.ts` created
 - [ ] `cron/package.json` updated with script
 - [ ] `data/{league}_schedule.json` generated
-- [ ] SVG logos in `public/logos/{league}/` (download or create wrappers around PNGs)
+- [ ] SVG logos in `public/logos/{league}/` (real vector SVGs only — no PNG-in-SVG wrappers)
 - [ ] PNG logos in `public/logos/{league}/` for PWA manifests
 - [ ] All logo filenames are lowercase
 - [ ] League-level logos created (`public/logos/{league}.svg` + `.png`)
@@ -545,23 +534,24 @@ npm run dev
 5. **Logo URL exceptions** - Some teams may use different abbreviations in logo URLs (e.g., NY Red Bulls uses `RBNY` in URL but `NY` as team abbreviation)
 6. **PNG Generation** - PWA manifests require PNG versions, not just SVG
 7. **Logo filename casing** - All logo filenames must be **lowercase** (e.g., `sea.svg`, not `SEA.svg`). The app constructs paths using `team.abbreviation.toLowerCase()`, so a casing mismatch causes broken images silently.
-8. **SVG required for every team** - The league index page and countdown component load `.svg` files. If the source only provides PNGs (e.g., ESPN CDN), create SVG wrappers with the image embedded as a **base64 data URI** (not an external `href`) — see Step 5. Using an external path like `href="/logos/nwsl/sea.png"` produces an empty image because browsers block external resource loads when SVGs are rendered via `<img src="..."`.
+8. **SVG required for every team** - The league index page and countdown component load `.svg` files. Use real vector SVGs from official sources (league CDNs, Wikipedia, projects like `flag-icons`). Do not wrap PNGs in SVG; if you can't find a true vector source, keep looking.
 9. **Non-square logos need aspect-ratio-safe resizing** - Most logos are not square (shields are portrait, wordmarks are landscape). Always check source dimensions with `magick identify` first, then use `-resize 512x512 -gravity center -background none -extent 512x512` to fit within the box with transparent padding. Plain `-resize 512x512` will squish the logo.
-10. **Logo sizing in countdown** - `countdown.tsx` has two logo sizing modes. Check which fits your league's logo shape:
+10. **Don't rasterize SVGs with ImageMagick alone** - IM silently drops content from SVGs with masks, clip-paths, embedded base64 images, or certain compose modes. Symptoms: PNGs render blank, missing details, or only one layer of a multi-layer image. Use `rsvg-convert` to rasterize, then `magick` to extent into a 512×512 square. See Step 5 for the recipe.
+11. **Logo sizing in countdown** - `countdown.tsx` has two logo sizing modes. Check which fits your league's logo shape:
     - `h-[256px] md:h-[384px] my-8` — height-constrained, width unconstrained (NHL, CPL, MLS, NWSL, PWHL). Use for tall/portrait logos or shields.
     - `w-[256px] h-[256px] md:w-[384px] md:h-[384px]` — fixed square (NFL, NBA, MLB, WNBA). Use for circular or square badges.
     - `py-8 lg:py-16` — extra vertical padding (MLB only). Add this if the logo needs breathing room within the square box.
-11. **League-level logos** - Don't forget `public/logos/{league}.svg` and `.png` for the homepage picker
-12. **Navigation dropdowns** - Don't forget to add the league to `teams-dropdown.tsx` for the "More leagues" menu
-13. **Footer disclaimer** - Add the league to `footer.tsx` trademark disclaimer when publicly launching (keep in "stealth mode" until launch if desired)
-14. **Schema helpers** - `app/lib/schema-helpers.ts` has four separate locations to update: `getSportName`, `getLeagueFullName`, `getLeagueSameAs`, and `generateWebSiteSchema`
-15. **Soccer countdown text** - Soccer leagues typically omit "the" before team names ("till Seattle play next" not "till the Seattle play next")
-16. **Timezone Handling** - Ensure game times are in UTC or properly converted
-17. **API Rate Limiting** - Add delays between requests when fetching large datasets
-18. **Team ID Uniqueness** - Ensure team IDs are unique when using `uniqBy`
-19. **`$league.season.tsx` is a redirect** - This file is now just a 301 redirect to `/{league}`. Do NOT add league data here. Season countdown functionality lives in `$league._index.tsx` via `LEAGUE_META`.
-20. **Don't rewrite `types.ts`** - Only append new types to the end of the file. Rewriting the file risks changing field names that existing `GameToGame` files depend on, causing cascading type errors across the whole codebase.
-21. **Homepage league ordering** - Place new leagues after their same-sport counterpart (e.g., PWHL after NHL, NWSL after MLS), not just appended to the end.
+12. **League-level logos** - Don't forget `public/logos/{league}.svg` and `.png` for the homepage picker
+13. **Navigation dropdowns** - Don't forget to add the league to `teams-dropdown.tsx` for the "More leagues" menu
+14. **Footer disclaimer** - Add the league to `footer.tsx` trademark disclaimer when publicly launching (keep in "stealth mode" until launch if desired)
+15. **Schema helpers** - `app/lib/schema-helpers.ts` has four separate locations to update: `getSportName`, `getLeagueFullName`, `getLeagueSameAs`, and `generateWebSiteSchema`
+16. **Soccer countdown text** - Soccer leagues typically omit "the" before team names ("till Seattle play next" not "till the Seattle play next")
+17. **Timezone Handling** - Ensure game times are in UTC or properly converted
+18. **API Rate Limiting** - Add delays between requests when fetching large datasets
+19. **Team ID Uniqueness** - Ensure team IDs are unique when using `uniqBy`
+20. **`$league.season.tsx` is a redirect** - This file is now just a 301 redirect to `/{league}`. Do NOT add league data here. Season countdown functionality lives in `$league._index.tsx` via `LEAGUE_META`.
+21. **Don't rewrite `types.ts`** - Only append new types to the end of the file. Rewriting the file risks changing field names that existing `GameToGame` files depend on, causing cascading type errors across the whole codebase.
+22. **Homepage league ordering** - Place new leagues after their same-sport counterpart (e.g., PWHL after NHL, NWSL after MLS), not just appended to the end.
 
 ---
 

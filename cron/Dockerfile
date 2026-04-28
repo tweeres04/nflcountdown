@@ -29,5 +29,7 @@ COPY ./cron/getNwslSchedule.ts .
 COPY ./cron/getPwhlSchedule.ts .
 COPY ./cfb_colors.json /
 COPY ./cron/getCfbSchedule.ts .
+COPY ./worldcup_colors.json /
+COPY ./cron/getWorldCupSchedule.ts .
 
 CMD ["crond", "-f", "-d", "8"]

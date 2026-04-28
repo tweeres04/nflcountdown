@@ -10,6 +10,7 @@ import {
 } from '~/components/ui/dropdown-menu'
 import { Team } from '~/lib/types'
 import { LeagueContext } from '~/lib/league-context'
+import { getLeagueDisplayName } from '~/lib/schema-helpers'
 
 type Props = {
 	teams: Team[]
@@ -41,10 +42,10 @@ export default function TeamsDropdown({
 					{t.fullName}
 				</a>
 			))}
-		{['NFL', 'CFB', 'MLB', 'NBA', 'WNBA', 'NHL', 'MLS', 'NWSL', 'PWHL'].map((league) =>
+		{['NFL', 'CFB', 'MLB', 'NBA', 'WNBA', 'NHL', 'MLS', 'NWSL', 'PWHL', 'WORLDCUP'].map((league) =>
 			LEAGUE !== league ? (
 				<a key={league} href={`/${league.toLowerCase()}`}>
-					{league}
+					{getLeagueDisplayName(league)}
 				</a>
 			) : null
 		)}
@@ -61,10 +62,10 @@ export default function TeamsDropdown({
 							More leagues
 						</DropdownMenuSubTrigger>
 						<DropdownMenuSubContent className={contentClasses}>
-						{['NFL', 'CFB', 'MLB', 'NBA', 'WNBA', 'NHL', 'MLS', 'NWSL', 'PWHL'].map((league) =>
+						{['NFL', 'CFB', 'MLB', 'NBA', 'WNBA', 'NHL', 'MLS', 'NWSL', 'PWHL', 'WORLDCUP'].map((league) =>
 							LEAGUE !== league ? (
 								<DropdownMenuItem asChild key={league}>
-									<a href={`/${league.toLowerCase()}`}>{league}</a>
+									<a href={`/${league.toLowerCase()}`}>{getLeagueDisplayName(league)}</a>
 								</DropdownMenuItem>
 							) : null
 						)}

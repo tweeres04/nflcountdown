@@ -14,7 +14,8 @@
 		"get-mls-schedule": "tsx getMlsSchedule.ts",
 		"get-nwsl-schedule": "tsx getNwslSchedule.ts",
 		"get-pwhl-schedule": "tsx getPwhlSchedule.ts",
-		"get-cfb-schedule": "tsx getCfbSchedule.ts"
+		"get-cfb-schedule": "tsx getCfbSchedule.ts",
+		"get-worldcup-schedule": "tsx getWorldCupSchedule.ts"
 	},
 	"type": "module"
 }

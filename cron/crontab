@@ -7,3 +7,4 @@
 0 3 * * * cd /app && npm run get-nwsl-schedule > /proc/1/fd/1 2> /proc/1/fd/2
 0 3 * * * cd /app && npm run get-pwhl-schedule > /proc/1/fd/1 2> /proc/1/fd/2
 0 4 * * 0 cd /app && npm run get-cfb-schedule > /proc/1/fd/1 2> /proc/1/fd/2
+0 3 * * * cd /app && npm run get-worldcup-schedule > /proc/1/fd/1 2> /proc/1/fd/2

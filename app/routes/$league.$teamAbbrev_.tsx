@@ -10,6 +10,7 @@ import { getSuggestedGames } from '~/lib/getSuggestedGames'
 import { getAffiliateLinks } from '~/lib/affiliate-service'
 import { redirectIfAbbreviationRenamed } from '~/lib/abbreviation-redirects'
 import { Game } from '~/lib/types'
+import { getLeagueDisplayName } from '~/lib/schema-helpers'
 import Footer from '~/components/footer'
 
 export { generateMeta as meta }
@@ -40,7 +41,7 @@ export async function loader({
 
 	const breadcrumbItems = [
 		{ label: 'Team Countdown', href: '/' },
-		{ label: LEAGUE, href: `/${LEAGUE.toLowerCase()}` },
+		{ label: getLeagueDisplayName(LEAGUE), href: `/${LEAGUE.toLowerCase()}` },
 		{ label: team.fullName }, // No href = current page
 	]
 
