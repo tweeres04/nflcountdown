@@ -40,12 +40,35 @@ const ATTRACTIONS_FILE = path.join(
 	'data',
 	'ticketmaster-attractions.json'
 )
+const WORLDCUP_FILE = path.join(
+	process.cwd(),
+	'data',
+	'worldcup-ticketmaster.json'
+)
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000 // 7 days
 const CLEANUP_PROBABILITY = 0.05
 
 const API_BASE = 'https://app.ticketmaster.com/discovery/v2'
 
 let attractionsCache: AttractionsMap | null = null
+let worldCupMapCache: Record<string, string> | null = null
+
+// World Cup matches use a per-match URL map keyed by FIFA IdMatch — built
+// daily by cron/getWorldCupTicketmaster.ts from the Discovery API.
+function getWorldCupMap(): Record<string, string> {
+	if (worldCupMapCache) return worldCupMapCache
+	if (!fs.existsSync(WORLDCUP_FILE)) {
+		worldCupMapCache = {}
+		return worldCupMapCache
+	}
+	try {
+		const raw = fs.readFileSync(WORLDCUP_FILE, 'utf-8')
+		worldCupMapCache = JSON.parse(raw) as Record<string, string>
+	} catch {
+		worldCupMapCache = {}
+	}
+	return worldCupMapCache
+}
 
 function getAttractions(): AttractionsMap {
 	if (attractionsCache) return attractionsCache
@@ -217,6 +240,11 @@ export async function getTicketmasterLink(
 ): Promise<string | null> {
 	const gameDate = game.time
 	if (!gameDate) return null
+
+	// World Cup uses a pre-built per-match URL map (game.id is the FIFA IdMatch)
+	if (league === 'WORLDCUP') {
+		return getWorldCupMap()[game.id] ?? null
+	}
 
 	const key = cacheKey(team.fullName, gameDate)
 	const cached = getCachedUrl(key)

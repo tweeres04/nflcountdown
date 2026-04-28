@@ -31,5 +31,6 @@ COPY ./cfb_colors.json /
 COPY ./cron/getCfbSchedule.ts .
 COPY ./worldcup_colors.json /
 COPY ./cron/getWorldCupSchedule.ts .
+COPY ./cron/getWorldCupTicketmaster.ts .
 
 CMD ["crond", "-f", "-d", "8"]
