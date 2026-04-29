@@ -4,7 +4,10 @@ import { RouteErrorBoundary } from '~/components/route-error-boundary'
 import Countdown from '~/components/countdown'
 import Footer from '~/components/footer'
 import { getSeasonStartDate } from '~/lib/getSeasonStartDate'
-import { generateBreadcrumbSchema } from '~/lib/schema-helpers'
+import {
+	generateBreadcrumbSchema,
+	getLeagueDisplayName,
+} from '~/lib/schema-helpers'
 import { getTeams } from '~/lib/getTeams'
 
 const SUPPORTED_LEAGUES = [
@@ -136,6 +139,9 @@ export async function loader({ params }: LoaderFunctionArgs) {
 	const seasonYear = crossYear
 		? `${seasonStartYear}-${String(seasonStartYear + 1).slice(2)}`
 		: String(seasonStartYear)
+	const seasonYearLong = crossYear
+		? `${seasonStartYear}/${seasonStartYear + 1}`
+		: String(seasonStartYear)
 
 	return json({
 		LEAGUE,
@@ -143,6 +149,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
 		seasonStartDate: date.toISOString(),
 		isMidSeason,
 		seasonYear,
+		seasonYearLong,
 	})
 }
 
@@ -156,7 +163,7 @@ export function ErrorBoundary() {
 }
 
 export default function SeasonCountdown() {
-	const { LEAGUE, teams, seasonStartDate, seasonYear } =
+	const { LEAGUE, teams, seasonStartDate, seasonYear, seasonYearLong } =
 		useLoaderData<typeof loader>()
 
 	const meta = LEAGUE_SEASON_META[LEAGUE]
@@ -186,6 +193,7 @@ export default function SeasonCountdown() {
 					breadcrumbItems={breadcrumbItems}
 					teamPickerTeams={teams}
 					leagueBrandColor={meta?.brandColor}
+					countdownSuffix={`the ${seasonYearLong} ${getLeagueDisplayName(LEAGUE)} season`}
 				/>
 				<Footer league={LEAGUE} dark />
 			</div>

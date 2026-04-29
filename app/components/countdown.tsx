@@ -174,6 +174,7 @@ interface CountdownProps {
 	affiliateLinks?: Promise<AffiliateLinks | null>
 	teamPickerTeams?: Team[]
 	leagueBrandColor?: string
+	countdownSuffix?: string
 }
 
 function useUpdateTime() {
@@ -197,18 +198,28 @@ export function countdownString({
 	isTeamPage,
 	LEAGUE,
 	excludeSeconds = false,
+	countdownSuffix,
 }: {
 	game?: Game
 	team?: Team
 	isTeamPage: boolean
 	LEAGUE: string
 	excludeSeconds?: boolean
+	countdownSuffix?: string
 }) {
 	if (!game) return 'No upcoming games'
 
 	const units = excludeSeconds
 		? countdown.DAYS | countdown.HOURS | countdown.MINUTES
 		: undefined
+
+	const suffix =
+		countdownSuffix ??
+		(isTeamPage && team
+			? SOCCER_LEAGUES.has(LEAGUE)
+				? `${team.nickName} play next`
+				: `the ${team.nickName} play next`
+			: `the next ${getLeagueDisplayName(LEAGUE)} game`)
 
 	const countdownString = game?.time
 		? isPast(addHours(game.time, 3))
@@ -218,13 +229,7 @@ export function countdownString({
 					end: addHours(game.time, 3),
 			  })
 			? 'Game in progress!'
-			: `${countdown(new Date(game.time), null, units).toString()} till ${
-					isTeamPage && team
-						? SOCCER_LEAGUES.has(LEAGUE)
-							? `${team.nickName} play next`
-							: `the ${team.nickName} play next`
-						: `the next ${getLeagueDisplayName(LEAGUE)} game`
-			  }`
+			: `${countdown(new Date(game.time), null, units).toString()} till ${suffix}`
 		: 'Game time TBD'
 	return countdownString
 }
@@ -242,6 +247,7 @@ export default function Countdown({
 	affiliateLinks,
 	teamPickerTeams,
 	leagueBrandColor,
+	countdownSuffix,
 }: CountdownProps) {
 	const LEAGUE = useContext(LeagueContext)
 	useUpdateTime()
@@ -251,13 +257,20 @@ export default function Countdown({
 		setHasShareAPI(Boolean(navigator?.share))
 	}, [])
 
-	const countdownString_ = countdownString({ game, isTeamPage, LEAGUE, team })
+	const countdownString_ = countdownString({
+		game,
+		isTeamPage,
+		LEAGUE,
+		team,
+		countdownSuffix,
+	})
 	const shareTitle = countdownString({
 		game,
 		isTeamPage,
 		LEAGUE,
 		team,
 		excludeSeconds: true,
+		countdownSuffix,
 	})
 	const UNSHAREABLE = ['Game completed', 'No upcoming games', 'Game time TBD']
 	const canShare = !UNSHAREABLE.includes(shareTitle)
