@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 const CPL_SEASONS_URL =
-	'https://api-sdp.canpl.ca/v1/cpl/football/competitions/cpl::Football_Competition::85e0d583bc894bb592558598d36c1328/seasons'
+	'https://api-sdp.cplsoccer.com/v1/cpl/football/competitions/cpl::Football_Competition::85e0d583bc894bb592558598d36c1328/seasons'
 const OUTPUT_FILE =
 	process.env.NODE_ENV === 'production'
 		? path.join(__dirname, 'data', 'cpl_schedule.json')
@@ -43,7 +43,7 @@ async function fetchAndSaveCplSchedule() {
 		)
 
 		// Step 2: Fetch schedule for the current season
-		const scheduleUrl = `https://api-sdp.canpl.ca/v1/cpl/football/seasons/${currentSeason.seasonId}/matches`
+		const scheduleUrl = `https://api-sdp.cplsoccer.com/v1/cpl/football/seasons/${currentSeason.seasonId}/matches`
 		console.log(`Fetching CPL schedule from ${scheduleUrl}...`)
 
 		const scheduleResponse = await fetch(scheduleUrl)
