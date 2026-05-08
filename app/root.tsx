@@ -196,9 +196,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
 						rel="manifest"
 						href={`/${league.toLowerCase()}/${teamAbbrev.toLowerCase()}/manifest`}
 					/>
-				) : null}
-				{location.pathname.match(/^\/nfl\/?$/) ? (
-					<link rel="manifest" href="/nfl-season-manifest.json" />
+				) : league && location.pathname.endsWith('/season') ? (
+					<link
+						rel="manifest"
+						href={`/${league.toLowerCase()}/season/manifest`}
+					/>
+				) : league ? (
+					<link rel="manifest" href={`/${league.toLowerCase()}/manifest`} />
 				) : null}
 				<link rel="preconnect" href="https://fonts.googleapis.com" />
 				<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

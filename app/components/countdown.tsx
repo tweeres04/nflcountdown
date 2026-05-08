@@ -617,7 +617,12 @@ export default function Countdown({
 				)}
 			</div>
 		<InstallNotification
-			className={`bg-[var(--color-primary,${leagueBrandColor ?? '#013369'})]`}
+			className="bg-[var(--color-primary,#013369)]"
+			style={
+				leagueBrandColor
+					? ({ '--color-primary': leagueBrandColor } as React.CSSProperties)
+					: undefined
+			}
 		/>
 			<Microsurvey />
 		</>

@@ -56,8 +56,10 @@ function detectInAppBrowser(): InAppBrowserApp | null {
 
 export default function InstallNotification({
 	className,
+	style,
 }: {
 	className: string
+	style?: React.CSSProperties
 }) {
 	const [isVisible, setIsVisible] = useState(false)
 	const [isIos, setIsIos] = useState(false)
@@ -156,6 +158,7 @@ export default function InstallNotification({
 					'relative p-4 text-white max-w-[500px] lg:max-w-[750px] mx-auto',
 					className
 				)}
+				style={style}
 			>
 				<button
 					className="absolute top-0 right-0 p-1"
