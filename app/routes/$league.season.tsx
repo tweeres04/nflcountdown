@@ -21,6 +21,7 @@ const SUPPORTED_LEAGUES = [
 	'NWSL',
 	'PWHL',
 	'CFB',
+	'WORLDCUP',
 ]
 
 const LEAGUE_SEASON_META: Record<
@@ -37,6 +38,7 @@ const LEAGUE_SEASON_META: Record<
 	NWSL: { fullName: "National Women's Soccer League", seasonTerm: 'kickoff', titleKeyword: 'NWSL Season', brandColor: '#003087' },
 	PWHL: { fullName: "Professional Women's Hockey League", seasonTerm: 'puck drop', titleKeyword: 'PWHL Season', brandColor: '#350282' },
 	CFB: { fullName: 'College Football', seasonTerm: 'kickoff', titleKeyword: 'College Football Season', brandColor: '#1a1a1a' },
+	WORLDCUP: { fullName: 'FIFA World Cup', seasonTerm: 'kickoff', titleKeyword: 'FIFA World Cup', brandColor: '#326295' },
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -45,17 +47,22 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	const meta = LEAGUE_SEASON_META[LEAGUE]
 	const url = `https://teamcountdown.com/${LEAGUE.toLowerCase()}/season`
 
+	const leagueLabel = getLeagueDisplayName(LEAGUE)
+	const fullName = meta?.fullName ?? leagueLabel
+	const seasonTerm = meta?.seasonTerm ?? 'kickoff'
+	// World Cup is a tournament, not a recurring season — drop the word "season"
+	// from copy ("the 2026 World Cup", not "the 2026 World Cup season").
+	const isTournament = LEAGUE === 'WORLDCUP'
+	const eventNoun = isTournament ? leagueLabel : `${leagueLabel} season`
+	const nextEvent = isTournament ? `next ${leagueLabel}` : 'next season'
+
 	const title = `How Many Days Till ${
-		meta?.titleKeyword ?? LEAGUE + ' Season'
+		meta?.titleKeyword ?? leagueLabel + ' Season'
 	} ${seasonYear}? - Team Countdown`
 
 	const description = isMidSeason
-		? `The ${seasonYear} ${LEAGUE} season is underway. Find out when the next season starts and count down to ${
-				meta?.fullName ?? LEAGUE
-		  } ${meta?.seasonTerm ?? 'kickoff'}.`
-		: `Find out exactly how many days until ${LEAGUE} season starts. Live countdown to ${
-				meta?.fullName ?? LEAGUE
-		  } ${meta?.seasonTerm ?? 'kickoff'} in ${seasonYear}.`
+		? `The ${seasonYear} ${eventNoun} is underway. Find out when the ${nextEvent} starts and count down to ${fullName} ${seasonTerm}.`
+		: `Find out exactly how many days until ${eventNoun} starts. Live countdown to ${fullName} ${seasonTerm} in ${seasonYear}.`
 
 	const seasonStartFormatted = seasonStartDate
 		? new Date(seasonStartDate).toLocaleDateString('en-US', {
@@ -68,31 +75,29 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 
 	const breadcrumbItems = [
 		{ label: 'Team Countdown', href: '/' },
-		{ label: LEAGUE, href: `/${LEAGUE.toLowerCase()}` },
+		{ label: leagueLabel, href: `/${LEAGUE.toLowerCase()}` },
 		{ label: 'Season Countdown' },
 	]
 
 	const faqEntities = [
 		{
 			'@type': 'Question',
-			name: `How many days until ${LEAGUE} season ${seasonYear}?`,
+			name: `How many days until ${eventNoun} ${seasonYear}?`,
 			acceptedAnswer: {
 				'@type': 'Answer',
 				text: isMidSeason
-					? `The ${seasonYear} ${LEAGUE} season has already started. Use the countdown above to see when the next season begins.`
-					: `Use the live countdown above for the exact days, hours, minutes, and seconds until ${LEAGUE} ${
-							meta?.seasonTerm ?? 'kickoff'
-					  } in ${seasonYear}.`,
+					? `The ${seasonYear} ${eventNoun} has already started. Use the countdown above to see when the ${nextEvent} begins.`
+					: `Use the live countdown above for the exact days, hours, minutes, and seconds until ${leagueLabel} ${seasonTerm} in ${seasonYear}.`,
 			},
 		},
 		{
 			'@type': 'Question',
-			name: `When does the ${LEAGUE} season start?`,
+			name: `When does the ${eventNoun} start?`,
 			acceptedAnswer: {
 				'@type': 'Answer',
 				text: isMidSeason
-					? `The ${seasonYear} ${LEAGUE} season is currently underway.`
-					: `The ${seasonYear} ${LEAGUE} season starts on ${seasonStartFormatted}.`,
+					? `The ${seasonYear} ${eventNoun} is currently underway.`
+					: `The ${seasonYear} ${eventNoun} starts on ${seasonStartFormatted}.`,
 			},
 		},
 	]
@@ -167,10 +172,13 @@ export default function SeasonCountdown() {
 		useLoaderData<typeof loader>()
 
 	const meta = LEAGUE_SEASON_META[LEAGUE]
+	const leagueLabel = getLeagueDisplayName(LEAGUE)
+	const isTournament = LEAGUE === 'WORLDCUP'
+	const eventNoun = isTournament ? leagueLabel : `${leagueLabel} season`
 
 	const breadcrumbItems = [
 		{ label: 'Team Countdown', href: '/' },
-		{ label: LEAGUE, href: `/${LEAGUE.toLowerCase()}` },
+		{ label: leagueLabel, href: `/${LEAGUE.toLowerCase()}` },
 		{ label: 'Season Countdown' },
 	]
 
@@ -186,14 +194,18 @@ export default function SeasonCountdown() {
 		<>
 			<div className="flex flex-col min-h-screen md:h-auto">
 				<Countdown
-					pageTitle={`${LEAGUE} Season Countdown ${seasonYear}`}
+					pageTitle={
+						isTournament
+							? `${leagueLabel} Countdown ${seasonYear}`
+							: `${leagueLabel} Season Countdown ${seasonYear}`
+					}
 					teams={teams}
 					game={seasonGame}
 					isTeamPage={false}
 					breadcrumbItems={breadcrumbItems}
 					teamPickerTeams={teams}
 					leagueBrandColor={meta?.brandColor}
-					countdownSuffix={`the ${seasonYearLong} ${getLeagueDisplayName(LEAGUE)} season`}
+					countdownSuffix={`the ${seasonYearLong} ${eventNoun}`}
 				/>
 				<Footer league={LEAGUE} dark />
 			</div>
