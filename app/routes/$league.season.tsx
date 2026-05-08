@@ -139,6 +139,8 @@ export async function loader({ params }: LoaderFunctionArgs) {
 		? meta && ['NBA', 'NHL', 'PWHL'].includes(LEAGUE)
 			? now.getFullYear() - 1
 			: now.getFullYear()
+		: LEAGUE === 'PWHL'
+		? date.getFullYear() - 1
 		: date.getFullYear()
 	const crossYear = ['NBA', 'NHL', 'PWHL'].includes(LEAGUE)
 	const seasonYear = crossYear
