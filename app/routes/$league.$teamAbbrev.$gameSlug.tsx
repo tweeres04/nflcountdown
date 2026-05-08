@@ -1,4 +1,4 @@
-import { defer, LoaderFunctionArgs } from '@remix-run/node'
+import { defer, LoaderFunctionArgs, redirect } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import { RouteErrorBoundary } from '~/components/route-error-boundary'
 
@@ -32,7 +32,7 @@ export async function loader({
 	})
 
 	if (!currentGame) {
-		throw new Response(null, { status: 404 })
+		throw redirect(`/${league}/${teamAbbrev}`, 301)
 	}
 
 	const canShowPreview =

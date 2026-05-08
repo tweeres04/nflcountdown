@@ -1,27 +1,24 @@
 import mlbTeams from '../../mlb_teams.json'
 import { uniqBy } from 'lodash-es'
-import { mlbGameToGame, mlbTeamToTeam } from '~/lib/mlbGameToGame'
-import { nbaGameToGame, nbaTeamToTeam } from '~/lib/nbaGameToGame'
-import { nflGameToGame, nflTeamToTeam } from '~/lib/nflGameToGame'
-import { nhlGameToGame, nhlTeamToTeam } from '~/lib/nhlGameToGame'
-import { wnbaGameToGame, wnbaTeamToTeam } from '~/lib/wnbaGameToGame'
-import { cplGameToGame, cplTeamToTeam } from '~/lib/cplGameToGame'
-import { mlsGameToGame, mlsTeamToTeam } from '~/lib/mlsGameToGame'
-import { nwslGameToGame, nwslTeamToTeam } from '~/lib/nwslGameToGame'
-import { pwhlGameToGame, pwhlTeamToTeam } from '~/lib/pwhlGameToGame'
-import { cfbGameToGame, cfbTeamToTeam } from '~/lib/cfbGameToGame'
-import { worldCupGameToGame, worldCupTeamToTeam } from '~/lib/worldCupGameToGame'
-import { getGameSlug } from '~/lib/getGameSlug'
+import { mlbTeamToTeam } from '~/lib/mlbGameToGame'
+import { nbaTeamToTeam } from '~/lib/nbaGameToGame'
+import { nflTeamToTeam } from '~/lib/nflGameToGame'
+import { nhlTeamToTeam } from '~/lib/nhlGameToGame'
+import { wnbaTeamToTeam } from '~/lib/wnbaGameToGame'
+import { cplTeamToTeam } from '~/lib/cplGameToGame'
+import { mlsTeamToTeam } from '~/lib/mlsGameToGame'
+import { nwslTeamToTeam } from '~/lib/nwslGameToGame'
+import { pwhlTeamToTeam } from '~/lib/pwhlGameToGame'
+import { cfbTeamToTeam } from '~/lib/cfbGameToGame'
+import { worldCupTeamToTeam } from '~/lib/worldCupGameToGame'
 import { readFile } from 'node:fs/promises'
-import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, WorldCupScheduleApi, Team, Game } from '~/lib/types'
-import { isFuture, addHours } from 'date-fns'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, WorldCupScheduleApi, Team } from '~/lib/types'
 
 export async function loader() {
 	const leagues = ['NFL', 'MLB', 'NBA', 'NHL', 'WNBA', 'CPL', 'MLS', 'NWSL', 'PWHL', 'CFB', 'WORLDCUP']
 
-	const [nflScheduleRaw, mlbScheduleRaw, nbaScheduleRaw, nhlScheduleRaw, wnbaScheduleRaw, cplScheduleRaw, mlsScheduleRaw, nwslScheduleRaw, pwhlScheduleRaw, cfbScheduleRaw, worldCupScheduleRaw] = await Promise.all([
+	const [nflScheduleRaw, nbaScheduleRaw, nhlScheduleRaw, wnbaScheduleRaw, cplScheduleRaw, mlsScheduleRaw, nwslScheduleRaw, pwhlScheduleRaw, cfbScheduleRaw, worldCupScheduleRaw] = await Promise.all([
 		readFile('data/nfl_schedule.json', 'utf-8'),
-		readFile('data/mlb_schedule.json', 'utf-8'),
 		readFile('data/nba_schedule.json', 'utf-8'),
 		readFile('data/nhl_schedule.json', 'utf-8'),
 		readFile('data/wnba_schedule.json', 'utf-8'),
@@ -34,7 +31,6 @@ export async function loader() {
 	])
 
 	const nflSchedule = JSON.parse(nflScheduleRaw) as NflScheduleApi
-	const mlbSchedule = JSON.parse(mlbScheduleRaw) as MlbScheduleApi
 	const nbaSchedule = JSON.parse(nbaScheduleRaw) as NbaScheduleApi
 	const nhlSchedule = JSON.parse(nhlScheduleRaw) as NhlScheduleApi
 	const wnbaSchedule = JSON.parse(wnbaScheduleRaw) as WnbaScheduleApi
@@ -139,36 +135,6 @@ export async function loader() {
 					'id'
 			  ).map(nflTeamToTeam)
 
-		// Get all games for sitemap
-		const games: Game[] =
-			LEAGUE === 'MLB'
-				? mlbSchedule.dates.flatMap((d) => d.games).map(mlbGameToGame)
-				: LEAGUE === 'NBA'
-				? nbaSchedule.leagueSchedule.gameDates
-						.flatMap((gd) => gd.games)
-						.filter((g) => g.homeTeam.teamId > 0)
-						.map(g => nbaGameToGame(g))
-			: LEAGUE === 'NHL'
-			? nhlSchedule.games.map(g => nhlGameToGame(g))
-			: LEAGUE === 'WNBA'
-			? wnbaSchedule.leagueSchedule.gameDates
-					.flatMap((gd) => gd.games)
-					.filter((g) => g.homeTeam.teamId > 0)
-					.map(g => wnbaGameToGame(g))
-			: LEAGUE === 'CPL'
-			? cplSchedule.matches.map(m => cplGameToGame(m))
-		: LEAGUE === 'MLS'
-		? mlsSchedule.events.map(e => mlsGameToGame(e))
-		: LEAGUE === 'NWSL'
-		? nwslSchedule.events.map(e => nwslGameToGame(e))
-		: LEAGUE === 'PWHL'
-		? pwhlSchedule.SiteKit.Scorebar.map(pwhlGameToGame)
-		: LEAGUE === 'CFB'
-		? cfbSchedule.events.map(cfbGameToGame)
-		: LEAGUE === 'WORLDCUP'
-		? worldCupSchedule.Results.map(worldCupGameToGame)
-		: nflSchedule.games.map(nflGameToGame)
-
 		// Add league index page
 		allUrls.push(`    <url>
         <loc>https://teamcountdown.com/${lowercaseLeague}</loc>
@@ -179,31 +145,14 @@ export async function loader() {
         <loc>https://teamcountdown.com/${lowercaseLeague}/season</loc>
     </url>`)
 
-		// Only include future games (same 3-hour buffer used throughout the app)
-		const futureGames = games.filter(
-			(g) => g.time && isFuture(addHours(g.time, 3))
-		)
-
 		teams.forEach((t) => {
 			const teamAbbrev = t.abbreviation.toLowerCase()
-			const teamGames = futureGames.filter(
-				(g) => g.homeTeam?.id === t.id || g.awayTeam?.id === t.id
-			)
 
-			// Team index page
+			// Team index page (game-level URLs are intentionally excluded —
+			// they're ephemeral and indexing them creates churn for Googlebot)
 			allUrls.push(`    <url>
         <loc>https://teamcountdown.com/${lowercaseLeague}/${teamAbbrev}</loc>
     </url>`)
-
-			// Individual game pages (future only)
-			teamGames.forEach((g) => {
-				const gameSlug = getGameSlug(g, t.abbreviation)
-				if (!gameSlug) return
-
-				allUrls.push(`    <url>
-        <loc>https://teamcountdown.com/${lowercaseLeague}/${teamAbbrev}/${gameSlug}</loc>
-    </url>`)
-			})
 		})
 	}
 

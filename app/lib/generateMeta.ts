@@ -175,9 +175,12 @@ export const generateMeta: MetaFunction = ({ data, params }) => {
 	// Rotate OG image URL every 2 hours so social platforms re-fetch fresh countdowns
 	const twoHourBlock = Math.floor(Date.now() / (2 * 60 * 60 * 1000))
 	const ogImage = `https://teamcountdown.com/${lowercaseLeague}/og/${lowercaseAbbreviation}?v=${twoHourBlock}`
-	const url = `https://teamcountdown.com/${lowercaseLeague}/${lowercaseAbbreviation}${
-		game ? `/${params.gameSlug}` : ''
-	}`
+	const teamUrl = `https://teamcountdown.com/${lowercaseLeague}/${lowercaseAbbreviation}`
+	const url = game ? `${teamUrl}/${params.gameSlug}` : teamUrl
+
+	// On game pages, canonicalize to the parent team page so Google
+	// consolidates ranking signals there and doesn't index ephemeral game URLs.
+	const canonicalUrl = game ? teamUrl : url
 
 	const metaTags: any[] = [
 		{ title },
@@ -189,8 +192,14 @@ export const generateMeta: MetaFunction = ({ data, params }) => {
 		{ property: 'og:image', content: ogImage },
 		{ property: 'og:description', content: description },
 		{ property: 'og:site_name', content: 'Team Countdown' },
-		{ tagName: 'link', rel: 'canonical', href: url },
+		{ tagName: 'link', rel: 'canonical', href: canonicalUrl },
 	]
+
+	// Game pages are ephemeral (slugs change every season) — keep them out
+	// of the index but let Google follow links back to the team page.
+	if (game) {
+		metaTags.push({ name: 'robots', content: 'noindex, follow' })
+	}
 
 	// Add structured data
 	if (game) {
