@@ -11,7 +11,6 @@ import TeamsDropdown from './ui/teams-dropdown'
 import { Button } from './ui/button'
 import FeedbackButton from './feedback-button'
 import InstallNotification from './install-notification'
-import Microsurvey from './microsurvey'
 import IosShareIcon from './IosShareIcon'
 import { cn } from '~/lib/utils'
 import { LeagueContext } from '~/lib/league-context'
@@ -624,7 +623,6 @@ export default function Countdown({
 					: undefined
 			}
 		/>
-			<Microsurvey />
 		</>
 	)
 }
