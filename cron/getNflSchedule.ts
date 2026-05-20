@@ -82,7 +82,7 @@ async function fetchGames(
 	accessToken: string
 ): Promise<NflApiResponse> {
 	const url = new URL('https://api.nfl.com/experience/v1/games')
-	url.searchParams.set('season', '2025')
+	url.searchParams.set('season', '2026')
 	url.searchParams.set('seasonType', seasonType)
 	url.searchParams.set('limit', '10000')
 
