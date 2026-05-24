@@ -19,7 +19,10 @@ const OUTPUT_FILE =
 async function fetchAndSaveNbaSchedule() {
 	try {
 		console.log(`Fetching NBA schedule from ${NBA_SCHEDULE_URL}...`)
-		const response = await fetch(NBA_SCHEDULE_URL)
+		// cdn.nba.com is behind Akamai, which returns 403 without a Referer.
+		const response = await fetch(NBA_SCHEDULE_URL, {
+			headers: { Referer: 'https://www.nba.com/' },
+		})
 
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`)

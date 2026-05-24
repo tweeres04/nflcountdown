@@ -19,7 +19,10 @@ const OUTPUT_FILE =
 async function fetchAndSaveWnbaSchedule() {
 	try {
 		console.log(`Fetching WNBA schedule from ${WNBA_SCHEDULE_URL}...`)
-		const response = await fetch(WNBA_SCHEDULE_URL)
+		// cdn.wnba.com is behind Akamai, which returns 403 without a Referer.
+		const response = await fetch(WNBA_SCHEDULE_URL, {
+			headers: { Referer: 'https://www.wnba.com/' },
+		})
 
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`)
