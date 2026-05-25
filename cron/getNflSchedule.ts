@@ -1,5 +1,5 @@
-import puppeteer from 'puppeteer'
 import { writeFile } from 'node:fs/promises'
+import crypto from 'node:crypto'
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
 
@@ -38,43 +38,45 @@ type SeasonType = 'REG' | 'POST'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
+// nfl.com gets an anonymous access token by POSTing these public client
+// credentials (baked into its frontend) to the identity endpoint. Replicating
+// that request directly avoids spinning up a headless browser just to sniff it.
+// These are stable, public web-client creds, but if NFL ever rotates them this
+// request will start 401ing (the verify-schedules test will catch it). To
+// refresh: open nfl.com/schedules, watch the POST to identity/v3/token in
+// devtools, and copy the new clientKey/clientSecret from the request body.
+const NFL_TOKEN_URL = 'https://api.nfl.com/identity/v3/token'
+const NFL_CLIENT_KEY = '4cFUW6DmwJpzT9L7LrG3qRAcABG5s04g'
+const NFL_CLIENT_SECRET = 'CZuvCL49d9OwfGsR'
+
 async function getAccessToken(): Promise<string> {
-	const browser = await puppeteer.launch({
-		args:
-			process.env.NODE_ENV === 'production'
-				? ['--no-sandbox', '--disable-setuid-sandbox']
-				: undefined,
-	})
-	const page = await browser.newPage()
-
-	const accessTokenPromise = new Promise<string>((resolve) => {
-		page.on('requestfinished', async (request) => {
-			if (request.url().includes('api.nfl.com')) {
-				if (
-					request.method() === 'POST' &&
-					request.url().includes('identity/v3/token')
-				) {
-					const response = await request.response()?.json()
-
-					const accessToken = response?.accessToken
-
-					resolve(accessToken)
-				}
-			}
+	const deviceInfo = Buffer.from(
+		JSON.stringify({
+			model: 'desktop',
+			osName: 'macOS',
+			osVersion: '10.15.7',
+			version: 'Chrome',
 		})
+	).toString('base64')
+
+	const response = await fetch(NFL_TOKEN_URL, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+			clientKey: NFL_CLIENT_KEY,
+			clientSecret: NFL_CLIENT_SECRET,
+			deviceId: crypto.randomUUID(),
+			deviceInfo,
+			networkType: 'other',
+		}),
 	})
 
-	await page.goto(
-		`https://www.nfl.com/schedules/${new Date().getFullYear()}/REG1/`
-	)
+	if (!response.ok) {
+		throw new Error(`Failed to get NFL access token: ${response.status}`)
+	}
 
-	await page.locator(`h1 ::-p-text(SCHEDULE)`).wait()
-
-	await accessTokenPromise
-
-	await browser.close()
-
-	return accessTokenPromise
+	const { accessToken } = (await response.json()) as { accessToken: string }
+	return accessToken
 }
 
 async function fetchGames(

@@ -11,7 +11,8 @@
 		"deploy": "./deploy.sh",
 		"typecheck": "tsc",
 		"countdown_screenshots": "npx tsx scripts/takeCountdownScreenshots.ts",
-		"get_schedule:nba": "npx tsx cron/getNbaSchedule.ts"
+		"get_schedule:nba": "npx tsx cron/getNbaSchedule.ts",
+		"verify-schedules": "vitest run --config vitest.verify.config.ts"
 	},
 	"dependencies": {
 		"@google/genai": "^1.35.0",
