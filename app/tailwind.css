@@ -45,3 +45,9 @@ h6 {
 		--sidebar-ring: 0 0% 100%;
 	}
 }
+
+/* Sidebar surface: vertical gradient echoing the homepage's dark vignette
+   colors (top-to-bottom instead of radial). Layered over --sidebar-background. */
+[data-sidebar='sidebar'] {
+	background-image: linear-gradient(to bottom, #3a3a3a, #0f0f0f);
+}
