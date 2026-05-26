@@ -7,8 +7,8 @@ import { SidebarProvider } from '~/components/ui/sidebar'
 import TeamsSidebar, { TeamsSidebarTrigger } from '~/components/teams-sidebar'
 
 export const meta: MetaFunction = () => {
-	const title = `When is the next game? - Team Countdown`
-	const description = `Get pumped for your team's next game. Add the countdown to your home screen and watch the clock tick until game day.`
+	const title = `Countdown to your team's next game - Team Countdown`
+	const description = `Live countdowns to your team's next game across the NFL, NBA, MLB, NHL, MLS and more. Pick your team and add the countdown to your home screen.`
 	const url = `https://teamcountdown.com`
 
 	const metaTags: any[] = [

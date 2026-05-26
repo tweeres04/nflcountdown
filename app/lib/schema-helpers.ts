@@ -207,7 +207,7 @@ export function generateWebSiteSchema() {
 		name: 'Team Countdown',
 		url: 'https://teamcountdown.com',
 		description:
-			'The fastest and prettiest way to check the next NFL, CFB, NBA, MLB, NHL, WNBA, or MLS game. Launches instantly from your home screen.',
+			'The fastest and prettiest way to check the next NFL, CFB, NBA, WNBA, MLB, NHL, PWHL, MLS, NWSL, or World Cup game. Launches instantly from your home screen.',
 		about: [
 			{
 				'@type': 'SportsOrganization',
