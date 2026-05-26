@@ -5,6 +5,7 @@ import { RouteErrorBoundary } from '~/components/route-error-boundary'
 import { getGameSlug } from '~/lib/getGameSlug'
 import Countdown from '~/components/countdown'
 import { getTeamAndGames } from '~/lib/getTeamAndGames'
+import { getAllTeamsByLeague } from '~/lib/getTeams'
 import { generateMeta } from '~/lib/generateMeta'
 import { getSuggestedGames } from '~/lib/getSuggestedGames'
 import { getAffiliateLinks } from '~/lib/affiliate-service'
@@ -20,10 +21,10 @@ export async function loader({
 }: LoaderFunctionArgs) {
 	redirectIfAbbreviationRenamed(league, teamAbbrev, gameSlug)
 
-	const { LEAGUE, teams, team, games } = await getTeamAndGames(
-		league,
-		teamAbbrev
-	)
+	const [{ LEAGUE, teams, team, games }, allTeams] = await Promise.all([
+		getTeamAndGames(league, teamAbbrev),
+		getAllTeamsByLeague(),
+	])
 
 	const currentGame = games.find((g: Game) => {
 		if (!g.time) return false
@@ -78,6 +79,7 @@ export async function loader({
 	return defer({
 		LEAGUE,
 		teams,
+		allTeams,
 		team,
 		game: currentGame,
 		games,
@@ -101,6 +103,7 @@ export function ErrorBoundary() {
 export default function GameCountdown() {
 	const {
 		teams,
+		allTeams,
 		team,
 		game,
 		games,
@@ -120,6 +123,7 @@ export default function GameCountdown() {
 			<Countdown
 				team={team}
 				teams={teams}
+				allTeams={allTeams}
 				games={games}
 				game={game}
 				canShowPreview={canShowPreview}

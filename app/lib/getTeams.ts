@@ -11,6 +11,7 @@ import { mlsTeamToTeam } from './mlsGameToGame'
 import { nwslTeamToTeam } from './nwslGameToGame'
 import { pwhlTeamToTeam } from './pwhlGameToGame'
 import { cfbTeamToTeam } from './cfbGameToGame'
+import { worldCupTeamToTeam } from './worldCupGameToGame'
 import type {
 	NbaScheduleApi,
 	NflScheduleApi,
@@ -21,6 +22,8 @@ import type {
 	NwslScheduleApi,
 	PwhlScheduleApi,
 	CfbScheduleApi,
+	WorldCupScheduleApi,
+	WorldCupTeamApi,
 	Team,
 } from './types'
 
@@ -110,7 +113,71 @@ export async function getTeams(league: string): Promise<Team[]> {
 			),
 			'id'
 		).map(cfbTeamToTeam)
+	} else if (LEAGUE === 'WORLDCUP') {
+		const raw = await readFile('data/worldcup_schedule.json', 'utf-8')
+		const schedule: WorldCupScheduleApi = JSON.parse(raw)
+		teams = uniqBy(
+			schedule.Results.flatMap((m) => [m.Home, m.Away]).filter(
+				(t): t is WorldCupTeamApi => t !== null && !!t.IdTeam
+			),
+			'IdTeam'
+		)
+			.map(worldCupTeamToTeam)
+			.filter((t): t is Team => t !== null)
 	}
 
 	return orderBy(teams, 'fullName')
+}
+
+export type SidebarTeam = { abbreviation: string; fullName: string }
+export type TeamsByLeague = Record<string, SidebarTeam[]>
+
+// Leagues shown in the nav (World Cup has no team list, so it ends up empty).
+const NAV_LEAGUES = [
+	'NFL',
+	'CFB',
+	'MLB',
+	'NBA',
+	'WNBA',
+	'NHL',
+	'MLS',
+	'NWSL',
+	'PWHL',
+	'WORLDCUP',
+]
+
+let allTeamsCache: { value: TeamsByLeague; expires: number } | null = null
+const ALL_TEAMS_TTL_MS = 60 * 60 * 1000 // 1 hour
+
+// Every nav league's teams (minimal fields) for the sidebar. Memoized so the
+// ~10 schedule-file reads happen at most once an hour rather than per request.
+export async function getAllTeamsByLeague(): Promise<TeamsByLeague> {
+	if (allTeamsCache && allTeamsCache.expires > Date.now()) {
+		return allTeamsCache.value
+	}
+
+	const entries = await Promise.all(
+		NAV_LEAGUES.map(async (league) => {
+			try {
+				const teams = await getTeams(league)
+				return [
+					league,
+					teams.map((t) => ({
+						abbreviation: t.abbreviation,
+						fullName: t.fullName,
+					})),
+				] as const
+			} catch (error) {
+				// One league's missing/invalid schedule file shouldn't break the
+				// nav on every page — log it and omit its teams.
+				// TODO: report to Sentry once it's set up in this project.
+				console.error(`Failed to load teams for ${league}:`, error)
+				return [league, [] as SidebarTeam[]] as const
+			}
+		})
+	)
+
+	const value = Object.fromEntries(entries) as TeamsByLeague
+	allTeamsCache = { value, expires: Date.now() + ALL_TEAMS_TTL_MS }
+	return value
 }

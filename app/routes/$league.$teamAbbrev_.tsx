@@ -5,6 +5,7 @@ import { RouteErrorBoundary } from '~/components/route-error-boundary'
 import { addHours, isFuture } from 'date-fns'
 import Countdown from '~/components/countdown'
 import { getTeamAndGames } from '~/lib/getTeamAndGames'
+import { getAllTeamsByLeague } from '~/lib/getTeams'
 import { generateMeta } from '~/lib/generateMeta'
 import { getSuggestedGames } from '~/lib/getSuggestedGames'
 import { getAffiliateLinks } from '~/lib/affiliate-service'
@@ -20,10 +21,10 @@ export async function loader({
 }: LoaderFunctionArgs) {
 	redirectIfAbbreviationRenamed(league, teamAbbrev)
 
-	const { LEAGUE, teams, team, games } = await getTeamAndGames(
-		league,
-		teamAbbrev
-	)
+	const [{ LEAGUE, teams, team, games }, allTeams] = await Promise.all([
+		getTeamAndGames(league, teamAbbrev),
+		getAllTeamsByLeague(),
+	])
 
 	const nextGame = games.find(
 		(g: Game) => g.time && isFuture(addHours(g.time, 3))
@@ -54,6 +55,7 @@ export async function loader({
 	return defer({
 		LEAGUE,
 		teams,
+		allTeams,
 		team,
 		games,
 		nextGame, // Pass to meta for SportsEvent schema on team pages
@@ -77,6 +79,7 @@ export function ErrorBoundary() {
 export default function TeamCountdown() {
 	const {
 		teams,
+		allTeams,
 		team,
 		games,
 		nextGame,
@@ -92,6 +95,7 @@ export default function TeamCountdown() {
 				pageTitle={`${team.fullName} Countdown`}
 				team={team}
 				teams={teams}
+				allTeams={allTeams}
 				games={games}
 				game={nextGame}
 				canShowPreview={canShowPreview}

@@ -37,6 +37,7 @@ import Footer from '~/components/footer'
 import { getSuggestedGames } from '~/lib/getSuggestedGames'
 import Countdown from '~/components/countdown'
 import { getSeasonStartDate } from '~/lib/getSeasonStartDate'
+import { getAllTeamsByLeague } from '~/lib/getTeams'
 
 interface LeagueMeta {
 	fullName: string
@@ -468,9 +469,10 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 			  ).map(nflTeamToTeam)
 	teams = orderBy(teams, 'fullName')
 
-	const [upcomingGames, seasonResult] = await Promise.all([
+	const [upcomingGames, seasonResult, allTeams] = await Promise.all([
 		getSuggestedGames(LEAGUE, undefined, undefined, 5),
 		getSeasonStartDate(LEAGUE),
+		getAllTeamsByLeague(),
 	])
 
 	const leagueMeta = LEAGUE_META[LEAGUE]
@@ -486,6 +488,7 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 	return json({
 		LEAGUE,
 		teams,
+		allTeams,
 		upcomingGames,
 		seasonStartDate: date.toISOString(),
 		isMidSeason,
@@ -503,7 +506,7 @@ export function ErrorBoundary() {
 }
 
 export default function LeagueIndex() {
-	const { LEAGUE, teams, upcomingGames, seasonStartDate } =
+	const { LEAGUE, teams, allTeams, upcomingGames, seasonStartDate } =
 		useLoaderData<typeof loader>()
 
 	const leagueMeta = LEAGUE_META[LEAGUE]
@@ -531,6 +534,7 @@ export default function LeagueIndex() {
 				<Countdown
 					pageTitle={`${leagueLabel} Countdown`}
 					teams={teams}
+					allTeams={allTeams}
 					game={nextGame}
 					isTeamPage={false}
 					breadcrumbItems={breadcrumbItems}

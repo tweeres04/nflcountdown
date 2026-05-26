@@ -8,7 +8,12 @@
 	}
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
 	letter-spacing: -0.02em;
 }
 
@@ -16,7 +21,6 @@ h1, h2, h3, h4, h5, h6 {
 	.bg-dark-vignette {
 		background: radial-gradient(ellipse at 50% 0%, #3a3a3a 0%, #0f0f0f 70%);
 	}
-
 }
 
 @layer components {
@@ -26,5 +30,18 @@ h1, h2, h3, h4, h5, h6 {
 		&.stone {
 			@apply decoration-stone-900/50 hover:decoration-stone-900;
 		}
+	}
+}
+@layer base {
+	:root {
+		/* Neutral dark matching the homepage dark-vignette (#0f0f0f), white text */
+		--sidebar-background: 0 0% 6%;
+		--sidebar-foreground: 0 0% 100%;
+		--sidebar-primary: 0 0% 100%;
+		--sidebar-primary-foreground: 0 0% 6%;
+		--sidebar-accent: 0 0% 16%;
+		--sidebar-accent-foreground: 0 0% 100%;
+		--sidebar-border: 0 0% 22%;
+		--sidebar-ring: 0 0% 100%;
 	}
 }

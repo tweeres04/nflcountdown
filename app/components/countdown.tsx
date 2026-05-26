@@ -7,7 +7,9 @@ import {
 	Fragment,
 } from 'react'
 import { Game, Team } from '~/lib/types'
-import TeamsDropdown from './ui/teams-dropdown'
+import type { TeamsByLeague } from '~/lib/getTeams'
+import { SidebarProvider } from './ui/sidebar'
+import TeamsSidebar, { TeamsSidebarTrigger } from './teams-sidebar'
 import { Button } from './ui/button'
 import FeedbackButton from './feedback-button'
 import InstallNotification from './install-notification'
@@ -27,7 +29,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from './ui/dialog'
-import { Calendar, Eye, Menu, ThumbsDown, ThumbsUp, Ticket } from 'lucide-react'
+import { Calendar, Eye, ThumbsDown, ThumbsUp, Ticket } from 'lucide-react'
 import { Await, Link, useFetcher } from '@remix-run/react'
 import { analytics as mixpanel } from '~/lib/analytics'
 import {
@@ -163,6 +165,7 @@ function GamePreviewDialog({
 interface CountdownProps {
 	team?: Team
 	teams: Team[]
+	allTeams: TeamsByLeague
 	games?: Game[]
 	pageTitle: React.ReactNode
 	game?: Game
@@ -236,6 +239,7 @@ export function countdownString({
 export default function Countdown({
 	team,
 	teams,
+	allTeams,
 	games = [],
 	pageTitle,
 	game,
@@ -335,7 +339,8 @@ export default function Countdown({
 		) : null
 
 	return (
-		<>
+		<SidebarProvider defaultOpen={false}>
+			<TeamsSidebar allTeams={allTeams} team={team} currentLeague={LEAGUE} />
 			<div className="font-sans text-white p-4 max-w-[500px] lg:max-w-[750px] mx-auto pb-32">
 				{/* Breadcrumb navigation */}
 				{breadcrumbItems && breadcrumbItems.length > 0 && (
@@ -366,17 +371,9 @@ export default function Countdown({
 					</Breadcrumb>
 				)}
 
-				<div className="flex gap-10">
-					<h1 className="text-2xl grow">{pageTitle}</h1>
-					<TeamsDropdown
-						teams={teams}
-						lowercaseAbbreviation={lowercaseAbbreviation}
-					>
-						<button className="px-3 py-2 flex gap-1">
-							<span className="hidden lg:inline">Teams</span>{' '}
-							<Menu className="size-6" />
-						</button>
-					</TeamsDropdown>
+				<div className="flex items-center gap-2">
+					<TeamsSidebarTrigger />
+					<h1 className="text-2xl">{pageTitle}</h1>
 				</div>
 
 				{LEAGUE === 'WORLDCUP' && team ? (
@@ -623,6 +620,6 @@ export default function Countdown({
 					: undefined
 			}
 		/>
-		</>
+		</SidebarProvider>
 	)
 }

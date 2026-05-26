@@ -8,7 +8,7 @@ import {
 	generateBreadcrumbSchema,
 	getLeagueDisplayName,
 } from '~/lib/schema-helpers'
-import { getTeams } from '~/lib/getTeams'
+import { getTeams, getAllTeamsByLeague } from '~/lib/getTeams'
 
 const SUPPORTED_LEAGUES = [
 	'NFL',
@@ -129,9 +129,10 @@ export async function loader({ params }: LoaderFunctionArgs) {
 		throw new Response(null, { status: 404 })
 	}
 
-	const [{ date, isMidSeason }, teams] = await Promise.all([
+	const [{ date, isMidSeason }, teams, allTeams] = await Promise.all([
 		getSeasonStartDate(LEAGUE),
 		getTeams(LEAGUE),
+		getAllTeamsByLeague(),
 	])
 	const meta = LEAGUE_SEASON_META[LEAGUE]
 	const now = new Date()
@@ -153,6 +154,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
 	return json({
 		LEAGUE,
 		teams,
+		allTeams,
 		seasonStartDate: date.toISOString(),
 		isMidSeason,
 		seasonYear,
@@ -170,7 +172,7 @@ export function ErrorBoundary() {
 }
 
 export default function SeasonCountdown() {
-	const { LEAGUE, teams, seasonStartDate, seasonYear, seasonYearLong } =
+	const { LEAGUE, teams, allTeams, seasonStartDate, seasonYear, seasonYearLong } =
 		useLoaderData<typeof loader>()
 
 	const meta = LEAGUE_SEASON_META[LEAGUE]
@@ -202,6 +204,7 @@ export default function SeasonCountdown() {
 							: `${leagueLabel} Season Countdown ${seasonYear}`
 					}
 					teams={teams}
+					allTeams={allTeams}
 					game={seasonGame}
 					isTeamPage={false}
 					breadcrumbItems={breadcrumbItems}

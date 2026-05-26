@@ -17,6 +17,7 @@ const buttonVariants = cva(
 			size: {
 				default: 'px-5 py-2',
 				sm: 'px-2 py-3 text-xs',
+				icon: 'justify-center p-2',
 			},
 		},
 		defaultVariants: {

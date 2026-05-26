@@ -1,7 +1,10 @@
-import { type MetaFunction } from '@remix-run/node'
-import { Button } from '~/components/ui/button'
+import { json, type MetaFunction } from '@remix-run/node'
+import { useLoaderData } from '@remix-run/react'
 import { generateWebSiteSchema } from '~/lib/schema-helpers'
+import { getAllTeamsByLeague } from '~/lib/getTeams'
 import Footer from '~/components/footer'
+import { SidebarProvider } from '~/components/ui/sidebar'
+import TeamsSidebar, { TeamsSidebarTrigger } from '~/components/teams-sidebar'
 
 export const meta: MetaFunction = () => {
 	const title = `When is the next game? - Team Countdown`
@@ -38,33 +41,51 @@ export const meta: MetaFunction = () => {
 	return metaTags
 }
 
+export async function loader() {
+	const allTeams = await getAllTeamsByLeague()
+	return json({ allTeams })
+}
+
 export default function Index() {
+	const { allTeams } = useLoaderData<typeof loader>()
+
 	const leagues = [
 		{ code: 'nfl', name: 'NFL', fullName: 'National Football League' },
 		{ code: 'cfb', name: 'CFB', fullName: 'College Football' },
 		{ code: 'nba', name: 'NBA', fullName: 'National Basketball Association' },
-		{ code: 'wnba', name: 'WNBA', fullName: "Women's National Basketball Association" },
+		{
+			code: 'wnba',
+			name: 'WNBA',
+			fullName: "Women's National Basketball Association",
+		},
 		{ code: 'mlb', name: 'MLB', fullName: 'Major League Baseball' },
 		{ code: 'nhl', name: 'NHL', fullName: 'National Hockey League' },
-		{ code: 'pwhl', name: 'PWHL', fullName: "Professional Women's Hockey League" },
+		{
+			code: 'pwhl',
+			name: 'PWHL',
+			fullName: "Professional Women's Hockey League",
+		},
 		{ code: 'mls', name: 'MLS', fullName: 'Major League Soccer' },
 		{ code: 'nwsl', name: 'NWSL', fullName: "National Women's Soccer League" },
 		{ code: 'worldcup', name: 'World Cup', fullName: 'FIFA World Cup 2026' },
 	]
 
 	return (
-		<>
-			<div className="flex flex-col min-h-screen md:h-auto">
+		<SidebarProvider defaultOpen={false}>
+			<TeamsSidebar allTeams={allTeams} />
+			<div className="flex flex-col min-h-screen md:h-auto w-full">
 				<div className="font-sans text-white p-4 max-w-[500px] lg:max-w-[750px] mx-auto space-y-12 min-h-[600px] grow pb-20">
-					<h1 className="text-3xl">Team Countdown</h1>
+					<div className="flex items-center gap-2">
+						<TeamsSidebarTrigger />
+						<h1 className="text-3xl">Team Countdown</h1>
+					</div>
 					<div className="flex flex-col gap-10">
 						<div className="space-y-5">
 							<div className="space-y-3">
-								<h2 className="text-2xl">
-									Get pumped for game day
-								</h2>
+								<h2 className="text-2xl">Get pumped for game day</h2>
 								<p className="text-white/80">
-									Pick your team. Add it to your home screen. Watch the days, hours, and minutes tick away until kickoff.
+									Pick your team. Add it to your home screen. Watch the days,
+									hours, and minutes tick away until kickoff.
 								</p>
 							</div>
 							<div className="space-y-3">
@@ -98,6 +119,6 @@ export default function Index() {
 				</div>
 				<Footer dark />
 			</div>
-		</>
+		</SidebarProvider>
 	)
 }
