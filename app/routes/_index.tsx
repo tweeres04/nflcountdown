@@ -1,6 +1,9 @@
 import { json, type MetaFunction } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import { generateWebSiteSchema } from '~/lib/schema-helpers'
+import {
+	generateOrganizationSchema,
+	generateWebSiteSchema,
+} from '~/lib/schema-helpers'
 import { getAllTeamsByLeague } from '~/lib/getTeams'
 import Footer from '~/components/footer'
 import { SidebarProvider } from '~/components/ui/sidebar'
@@ -32,6 +35,9 @@ export const meta: MetaFunction = () => {
 			tagName: 'link',
 			rel: 'canonical',
 			href: url,
+		},
+		{
+			'script:ld+json': generateOrganizationSchema(),
 		},
 		{
 			'script:ld+json': generateWebSiteSchema(),

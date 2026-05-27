@@ -200,12 +200,29 @@ export function generateSportsOrganizationSchema(league: string, url: string) {
 	}
 }
 
+export function generateOrganizationSchema() {
+	return {
+		'@context': 'https://schema.org',
+		'@type': 'Organization',
+		'@id': 'https://teamcountdown.com/#organization',
+		name: 'Team Countdown',
+		url: 'https://teamcountdown.com',
+		founder: {
+			'@type': 'Person',
+			name: 'Tyler Weeres',
+			url: 'https://tweeres.ca',
+		},
+	}
+}
+
 export function generateWebSiteSchema() {
 	return {
 		'@context': 'https://schema.org',
 		'@type': 'WebSite',
+		'@id': 'https://teamcountdown.com/#website',
 		name: 'Team Countdown',
 		url: 'https://teamcountdown.com',
+		publisher: { '@id': 'https://teamcountdown.com/#organization' },
 		description:
 			'The fastest and prettiest way to check the next NFL, CFB, NBA, WNBA, MLB, NHL, PWHL, MLS, NWSL, or World Cup game. Launches instantly from your home screen.',
 		about: [
