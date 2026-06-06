@@ -18,7 +18,6 @@ import { cn } from '~/lib/utils'
 import { LeagueContext } from '~/lib/league-context'
 import GameList from './game-list'
 import YouMightLike from './you-might-like'
-import { getGameSlug } from '~/lib/getGameSlug'
 import { addHours, isPast, isWithinInterval } from 'date-fns'
 import countdown from '../external/countdown'
 import Markdown from 'react-markdown'
@@ -539,32 +538,6 @@ export default function Countdown({
 								<Calendar className="size-5" />
 							</Button>
 
-							{/* Hidden navigation for SEO and screen readers - includes all game schedule links */}
-							{team && (
-								<nav className="sr-only" aria-label="Full schedule">
-									{games
-										.filter((g) => g.time && new Date(g.time) > new Date())
-										.map((g) => {
-											const gameSlug = getGameSlug(g, team.abbreviation)
-											const gameDate = g.time
-												? new Intl.DateTimeFormat('en-US', {
-														month: 'short',
-														day: 'numeric',
-														year: 'numeric',
-												  }).format(new Date(g.time))
-												: ''
-											return gameSlug ? (
-												<a
-													key={g.id}
-													href={`/${LEAGUE.toLowerCase()}/${team.abbreviation.toLowerCase()}/${gameSlug}`}
-												>
-													{g.homeTeam?.fullName} vs {g.awayTeam?.fullName}
-													{gameDate && ` - ${gameDate}`}
-												</a>
-											) : null
-										})}
-								</nav>
-							)}
 							{showFullSchedule && team && (
 								<GameList games={games} team={team} />
 							)}
