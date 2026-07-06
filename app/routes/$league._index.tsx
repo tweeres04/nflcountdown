@@ -31,6 +31,7 @@ import {
 import {
 	generateSportsOrganizationSchema,
 	generateBreadcrumbSchema,
+	generateLeagueSportsEventSchema,
 	getLeagueDisplayName,
 } from '~/lib/schema-helpers'
 import Footer from '~/components/footer'
@@ -316,18 +317,12 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 		...(seasonStartDate
 			? [
 					{
-						'script:ld+json': {
-							'@context': 'https://schema.org',
-							'@type': 'SportsEvent',
-							name: `${seasonYear} ${meta?.fullName ?? leagueLabel} Season`,
-							startDate: seasonStartDate,
-							location: { '@type': 'Place', name: 'North America' },
-							organizer: {
-								'@type': 'SportsOrganization',
-								name: meta?.fullName ?? leagueLabel,
-							},
-							url,
-						},
+						'script:ld+json': generateLeagueSportsEventSchema(
+							LEAGUE,
+							seasonYear,
+							seasonStartDate,
+							url
+						),
 					},
 			  ]
 			: []),

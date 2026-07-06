@@ -183,6 +183,33 @@ export function generateSportsEventSchema(
 	}
 }
 
+// Season/tournament-level SportsEvent for a league index page (e.g. /nfl, /worldcup).
+// Individual matches get their own richer SportsEvent schema on their own pages,
+// so this stays high-level and intentionally omits subEvents.
+export function generateLeagueSportsEventSchema(
+	league: string,
+	seasonYear: string,
+	seasonStartDate: string,
+	url: string
+) {
+	const fullName = getLeagueFullName(league)
+
+	return {
+		'@context': 'https://schema.org',
+		'@type': 'SportsEvent',
+		name: `${seasonYear} ${fullName} Season`,
+		startDate: seasonStartDate,
+		eventStatus: 'https://schema.org/EventScheduled',
+		sport: getSportName(league),
+		location: { '@type': 'Place', name: 'North America' },
+		organizer: {
+			'@type': 'SportsOrganization',
+			name: fullName,
+		},
+		url,
+	}
+}
+
 export function generateSportsOrganizationSchema(league: string, url: string) {
 	const lowercaseLeague = league.toLowerCase()
 	
