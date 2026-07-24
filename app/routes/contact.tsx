@@ -1,5 +1,5 @@
-import { type MetaFunction } from '@remix-run/node'
-import { Form, useSearchParams } from '@remix-run/react'
+import { json, type MetaFunction } from '@remix-run/node'
+import { Form, useLoaderData, useSearchParams } from '@remix-run/react'
 import Footer from '~/components/footer'
 import { Button } from '~/components/ui/button'
 
@@ -21,7 +21,12 @@ export const meta: MetaFunction = () => {
 	]
 }
 
+export function loader() {
+	return json({ renderedAt: Date.now() })
+}
+
 export default function Contact() {
+	const { renderedAt } = useLoaderData<typeof loader>()
 	const [searchParams] = useSearchParams()
 	const feedbackSent = searchParams.get('feedback_sent') === 'true'
 
@@ -52,6 +57,18 @@ export default function Contact() {
 							</div>
 						) : (
 							<Form method="post" action="/feedback" className="space-y-4">
+								<input type="hidden" name="_t" defaultValue={renderedAt} />
+								{/* Honeypot: real users never see or fill this */}
+								<div className="hidden" aria-hidden="true">
+									<label htmlFor="website">Website</label>
+									<input
+										type="text"
+										id="website"
+										name="website"
+										tabIndex={-1}
+										autoComplete="off"
+									/>
+								</div>
 								<div className="space-y-2">
 									<label
 										htmlFor="email"

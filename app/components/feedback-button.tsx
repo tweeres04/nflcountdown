@@ -54,6 +54,18 @@ export default function FeedbackButton() {
 					reloadDocument
 					className="space-y-3"
 				>
+					<input type="hidden" name="_t" defaultValue={Date.now()} />
+					{/* Honeypot: real users never see or fill this */}
+					<div className="hidden" aria-hidden="true">
+						<Label htmlFor="website">Website</Label>
+						<Input
+							type="text"
+							id="website"
+							name="website"
+							tabIndex={-1}
+							autoComplete="off"
+						/>
+					</div>
 					<div>
 						<Label htmlFor="email">Email (so I can respond to ya)</Label>
 						<Input name="email" id="email" type="email" required />

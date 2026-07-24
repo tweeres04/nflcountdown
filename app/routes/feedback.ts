@@ -15,7 +15,22 @@ const mg = mailgun.client({
 export async function action({ request }: ActionFunctionArgs) {
 	const referer = request.headers.get('referer')
 	const formData = await request.formData()
-	const entries = [...formData.entries()]
+
+	const newUrl = new URL(referer ?? '/')
+	newUrl.searchParams.set('feedback_sent', 'true')
+
+	const honeypotFilled = Boolean(formData.get('website'))
+	const renderedAt = Number(formData.get('_t'))
+	const submittedTooFast = !renderedAt || Date.now() - renderedAt < 3000
+
+	if (honeypotFilled || submittedTooFast) {
+		// Pretend it worked so bots don't adapt
+		return redirect(newUrl.toString())
+	}
+
+	const entries = [...formData.entries()].filter(
+		([k]) => k !== 'website' && k !== '_t'
+	)
 	entries.push(['referer', referer ?? 'Not found'])
 	const userEmail = formData.get('email') ?? undefined
 	const emailBody = `
@@ -37,9 +52,6 @@ export async function action({ request }: ActionFunctionArgs) {
 		'o:tag': [`teamcountdown_feedback`],
 		'h:Reply-To': userEmail,
 	})
-
-	const newUrl = new URL(referer ?? '/')
-	newUrl.searchParams.set('feedback_sent', 'true')
 
 	return redirect(newUrl.toString())
 }
