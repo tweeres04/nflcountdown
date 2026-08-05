@@ -76,5 +76,17 @@
 		"abbreviation": "DAL",
 		"color_1": "#003DA5",
 		"color_2": "#C4D600"
+	},
+	{
+		"team": "Toronto Tempo",
+		"abbreviation": "TOR",
+		"color_1": "#441E36",
+		"color_2": "#B3C7E7"
+	},
+	{
+		"team": "Portland Fire",
+		"abbreviation": "PDX",
+		"color_1": "#C8102E",
+		"color_2": "#CEE5EB"
 	}
 ]
