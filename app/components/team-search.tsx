@@ -39,7 +39,10 @@ function TrackQuery({ query, location }: { query: string; location: string }) {
 type Props = {
 	allTeams: TeamsByLeague
 	// Where this instance lives; sent with every analytics event.
-	location: 'homepage' | 'sidebar'
+	location: 'homepage' | 'sidebar' | 'league' | 'season'
+	// League ranked first among equally good matches (e.g. the league page's
+	// own league); the rest follow in homepage popularity order.
+	priorityLeague?: string
 	// lg is the oversized homepage hero search; default fits the sidebar.
 	size?: 'default' | 'lg'
 	// Focus this instance on cmd/ctrl+K. Only one instance per page should
@@ -52,6 +55,7 @@ type Props = {
 export default function TeamSearch({
 	allTeams,
 	location,
+	priorityLeague,
 	size = 'default',
 	shortcut = false,
 	onShortcut,
@@ -62,15 +66,18 @@ export default function TeamSearch({
 	// value → league rank so the filter can break score ties by league
 	// popularity (equally good matches, e.g. "miami", sort NFL first).
 	const leagueRankByValue = useMemo(() => {
+		const orderedLeagues = priorityLeague
+			? [priorityLeague, ...LEAGUES.filter((l) => l !== priorityLeague)]
+			: LEAGUES
 		const ranks = new Map<string, number>()
-		LEAGUES.forEach((league, rank) => {
+		orderedLeagues.forEach((league, rank) => {
 			ranks.set(getLeagueDisplayName(league).toLowerCase(), rank)
 			for (const t of allTeams[league] ?? []) {
 				ranks.set(`${league} ${t.fullName}`.toLowerCase(), rank)
 			}
 		})
 		return ranks
-	}, [allTeams])
+	}, [allTeams, priorityLeague])
 
 	// cmdk's default fuzzy score, nudged by league popularity. The nudge is
 	// far smaller than any real score difference, so it only reorders ties.

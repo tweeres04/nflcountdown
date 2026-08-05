@@ -536,6 +536,7 @@ export default function LeagueIndex() {
 					teamPickerTeams={teams}
 					suggestedGames={upcomingGames.slice(1)}
 					leagueBrandColor={leagueMeta?.brandColor}
+					searchLocation="league"
 				/>
 				<Footer league={LEAGUE} dark />
 			</div>

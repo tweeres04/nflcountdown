@@ -10,6 +10,7 @@ import { Game, Team } from '~/lib/types'
 import type { TeamsByLeague } from '~/lib/getTeams'
 import { SidebarProvider } from './ui/sidebar'
 import TeamsSidebar, { TeamsSidebarTrigger } from './teams-sidebar'
+import TeamSearch from './team-search'
 import { Button } from './ui/button'
 import FeedbackButton from './feedback-button'
 import InstallNotification from './install-notification'
@@ -176,6 +177,9 @@ interface CountdownProps {
 	teamPickerTeams?: Team[]
 	leagueBrandColor?: string
 	countdownSuffix?: string
+	// Renders the team/league search above the team picker; the value is the
+	// analytics location (league and season pages).
+	searchLocation?: 'league' | 'season'
 }
 
 function useUpdateTime() {
@@ -250,6 +254,7 @@ export default function Countdown({
 	teamPickerTeams,
 	leagueBrandColor,
 	countdownSuffix,
+	searchLocation,
 }: CountdownProps) {
 	const LEAGUE = useContext(LeagueContext)
 	useUpdateTime()
@@ -339,7 +344,13 @@ export default function Countdown({
 
 	return (
 		<SidebarProvider defaultOpen={false}>
-			<TeamsSidebar allTeams={allTeams} team={team} currentLeague={LEAGUE} />
+			<TeamsSidebar
+				allTeams={allTeams}
+				team={team}
+				currentLeague={LEAGUE}
+				// The page's own search owns cmd/ctrl+K when it renders.
+				searchShortcut={!searchLocation}
+			/>
 			<div className="font-sans text-white p-4 max-w-[500px] lg:max-w-[750px] mx-auto pb-32">
 				{/* Breadcrumb navigation */}
 				{breadcrumbItems && breadcrumbItems.length > 0 && (
@@ -549,6 +560,14 @@ export default function Countdown({
 				{teamPickerTeams && teamPickerTeams.length > 0 && (
 					<div className="mt-10 space-y-3">
 						<h2 className="text-xl">Pick your team. Get your countdown.</h2>
+						{searchLocation && (
+							<TeamSearch
+								allTeams={allTeams}
+								location={searchLocation}
+								priorityLeague={LEAGUE}
+								shortcut
+							/>
+						)}
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 							{teamPickerTeams.map((t) => (
 								<Link

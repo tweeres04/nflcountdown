@@ -211,6 +211,7 @@ export default function SeasonCountdown() {
 					teamPickerTeams={teams}
 					leagueBrandColor={meta?.brandColor}
 					countdownSuffix={`the ${seasonYearLong} ${eventNoun}`}
+					searchLocation="season"
 				/>
 				<Footer league={LEAGUE} dark />
 			</div>
