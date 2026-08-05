@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { defaultFilter } from 'cmdk'
+import { defaultFilter, useCommandState } from 'cmdk'
 import {
 	Command,
 	CommandEmpty,
@@ -10,14 +10,36 @@ import {
 import { LEAGUES, teamLogo } from '~/lib/leagues'
 import type { TeamsByLeague } from '~/lib/getTeams'
 import { getLeagueDisplayName, getLeagueFullName } from '~/lib/schema-helpers'
+import { analytics as mixpanel } from '~/lib/analytics'
 
 // Decorative logo; the item text is the accessible label.
 function Logo({ src }: { src: string }) {
 	return <img src={src} alt="" className="size-6 shrink-0 object-contain" />
 }
 
+// Tracks settled queries: fires once the query stops changing for a second.
+// Lives inside <Command> so useCommandState can read the result count,
+// which makes zero-result queries findable in Mixpanel.
+function TrackQuery({ query, location }: { query: string; location: string }) {
+	const results = useCommandState((state) => state.filtered.count)
+
+	useEffect(() => {
+		if (!query) {
+			return
+		}
+		const handle = setTimeout(() => {
+			mixpanel.track('search', { query, results, location })
+		}, 1000)
+		return () => clearTimeout(handle)
+	}, [query, results, location])
+
+	return null
+}
+
 type Props = {
 	allTeams: TeamsByLeague
+	// Where this instance lives; sent with every analytics event.
+	location: 'homepage' | 'sidebar'
 	// lg is the oversized homepage hero search; default fits the sidebar.
 	size?: 'default' | 'lg'
 	// Focus this instance on cmd/ctrl+K. Only one instance per page should
@@ -29,6 +51,7 @@ type Props = {
 
 export default function TeamSearch({
 	allTeams,
+	location,
 	size = 'default',
 	shortcut = false,
 	onShortcut,
@@ -67,6 +90,7 @@ export default function TeamSearch({
 		function handleKeyDown(event: KeyboardEvent) {
 			if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
 				event.preventDefault()
+				mixpanel.track('focus search with keyboard shortcut', { location })
 				onShortcut?.()
 				// Focus next frame so a sidebar opened by onShortcut has rendered
 				requestAnimationFrame(() => inputRef.current?.focus())
@@ -74,7 +98,7 @@ export default function TeamSearch({
 		}
 		document.addEventListener('keydown', handleKeyDown)
 		return () => document.removeEventListener('keydown', handleKeyDown)
-	}, [shortcut, onShortcut])
+	}, [shortcut, onShortcut, location])
 
 	return (
 		// The `dark` class opts descendants into the ui components' dark:
@@ -91,6 +115,7 @@ export default function TeamSearch({
 				onValueChange={setQuery}
 				className={size === 'lg' ? 'h-14 text-lg' : undefined}
 			/>
+			<TrackQuery query={query} location={location} />
 			{/* Only show results while typing; otherwise the full team list
 			    would dump onto the page below the input. */}
 			{query ? (
@@ -103,9 +128,16 @@ export default function TeamSearch({
 								key={league}
 								value={getLeagueDisplayName(league)}
 								keywords={[getLeagueFullName(league)]}
-								onSelect={() =>
+								onSelect={() => {
+									mixpanel.track('select search result', {
+										query,
+										result: getLeagueDisplayName(league),
+										resultType: 'league',
+										league,
+										location,
+									})
 									window.location.assign(`/${lowercaseLeague}`)
-								}
+								}}
 								className="gap-3 py-2"
 							>
 								<Logo src={`/logos/${lowercaseLeague}.svg`} />
@@ -127,11 +159,18 @@ export default function TeamSearch({
 									key={`${league}-${t.abbreviation}`}
 									value={`${league} ${t.fullName}`}
 									keywords={[t.abbreviation]}
-									onSelect={() =>
+									onSelect={() => {
+										mixpanel.track('select search result', {
+											query,
+											result: t.fullName,
+											resultType: 'team',
+											league,
+											location,
+										})
 										window.location.assign(
 											`/${lowercaseLeague}/${abbrev}`
 										)
-									}
+									}}
 									className="gap-3 py-2"
 								>
 									<Logo src={teamLogo(league, abbrev)} />

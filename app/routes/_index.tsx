@@ -95,7 +95,12 @@ export default function Index() {
 									hours, and minutes tick away until kickoff.
 								</p>
 							</div>
-							<TeamSearch allTeams={allTeams} size="lg" shortcut />
+							<TeamSearch
+								allTeams={allTeams}
+								location="homepage"
+								size="lg"
+								shortcut
+							/>
 							<div className="space-y-3">
 								<h3 className="text-xl">Choose your league:</h3>
 								<div className="flex flex-col gap-3">

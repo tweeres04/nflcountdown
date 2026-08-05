@@ -69,6 +69,7 @@ export default function TeamsSidebar({
 				</a>
 				<TeamSearch
 					allTeams={allTeams}
+					location="sidebar"
 					shortcut={searchShortcut}
 					onShortcut={() => setOpen(true)}
 				/>
