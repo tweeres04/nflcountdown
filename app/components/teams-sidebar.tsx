@@ -20,27 +20,9 @@ import {
 import type { TeamsByLeague } from '~/lib/getTeams'
 import { Team } from '~/lib/types'
 import { getLeagueDisplayName } from '~/lib/schema-helpers'
+import { LEAGUES, teamLogo } from '~/lib/leagues'
 import { cn } from '~/lib/utils'
-
-const LEAGUES = [
-	'NFL',
-	'CFB',
-	'MLB',
-	'NBA',
-	'WNBA',
-	'NHL',
-	'MLS',
-	'NWSL',
-	'PWHL',
-	'WORLDCUP',
-]
-
-// NFL team logos live at the logos root; every other league is namespaced.
-function teamLogo(league: string, lowercaseAbbrev: string) {
-	return league === 'NFL'
-		? `/logos/${lowercaseAbbrev}.svg`
-		: `/logos/${league.toLowerCase()}/${lowercaseAbbrev}.svg`
-}
+import TeamSearch from '~/components/team-search'
 
 // Decorative league/team logo (the adjacent text is the accessible label).
 function Logo({ src }: { src: string }) {
@@ -66,10 +48,18 @@ type Props = {
 	team?: Team
 	// Undefined on the homepage, where no league is current.
 	currentLeague?: string
+	// The homepage turns this off since its hero search owns cmd/ctrl+K.
+	searchShortcut?: boolean
 }
 
-export default function TeamsSidebar({ allTeams, team, currentLeague }: Props) {
+export default function TeamsSidebar({
+	allTeams,
+	team,
+	currentLeague,
+	searchShortcut = true,
+}: Props) {
 	const currentAbbrev = team?.abbreviation?.toLowerCase()
+	const { setOpen } = useSidebar()
 
 	return (
 		<Sidebar>
@@ -77,6 +67,11 @@ export default function TeamsSidebar({ allTeams, team, currentLeague }: Props) {
 				<a href="/" className="px-2 text-lg font-semibold">
 					Team Countdown
 				</a>
+				<TeamSearch
+					allTeams={allTeams}
+					shortcut={searchShortcut}
+					onShortcut={() => setOpen(true)}
+				/>
 			</SidebarHeader>
 			<SidebarContent>
 				{/* Real <nav> landmark so screen readers get a named navigation region

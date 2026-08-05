@@ -1,0 +1,150 @@
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { defaultFilter } from 'cmdk'
+import {
+	Command,
+	CommandEmpty,
+	CommandInput,
+	CommandItem,
+	CommandList,
+} from '~/components/ui/command'
+import { LEAGUES, teamLogo } from '~/lib/leagues'
+import type { TeamsByLeague } from '~/lib/getTeams'
+import { getLeagueDisplayName, getLeagueFullName } from '~/lib/schema-helpers'
+
+// Decorative logo; the item text is the accessible label.
+function Logo({ src }: { src: string }) {
+	return <img src={src} alt="" className="size-6 shrink-0 object-contain" />
+}
+
+type Props = {
+	allTeams: TeamsByLeague
+	// lg is the oversized homepage hero search; default fits the sidebar.
+	size?: 'default' | 'lg'
+	// Focus this instance on cmd/ctrl+K. Only one instance per page should
+	// register it.
+	shortcut?: boolean
+	// Runs before the shortcut focuses the input (e.g. open the sidebar).
+	onShortcut?: () => void
+}
+
+export default function TeamSearch({
+	allTeams,
+	size = 'default',
+	shortcut = false,
+	onShortcut,
+}: Props) {
+	const [query, setQuery] = useState('')
+	const inputRef = useRef<HTMLInputElement>(null)
+
+	// value → league rank so the filter can break score ties by league
+	// popularity (equally good matches, e.g. "miami", sort NFL first).
+	const leagueRankByValue = useMemo(() => {
+		const ranks = new Map<string, number>()
+		LEAGUES.forEach((league, rank) => {
+			ranks.set(getLeagueDisplayName(league).toLowerCase(), rank)
+			for (const t of allTeams[league] ?? []) {
+				ranks.set(`${league} ${t.fullName}`.toLowerCase(), rank)
+			}
+		})
+		return ranks
+	}, [allTeams])
+
+	// cmdk's default fuzzy score, nudged by league popularity. The nudge is
+	// far smaller than any real score difference, so it only reorders ties.
+	function filter(value: string, search: string, keywords?: string[]) {
+		const score = defaultFilter(value, search, keywords)
+		if (score === 0) {
+			return 0
+		}
+		const rank = leagueRankByValue.get(value.toLowerCase()) ?? LEAGUES.length
+		return score + (LEAGUES.length - rank) / 10000
+	}
+
+	useEffect(() => {
+		if (!shortcut) {
+			return
+		}
+		function handleKeyDown(event: KeyboardEvent) {
+			if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+				event.preventDefault()
+				onShortcut?.()
+				// Focus next frame so a sidebar opened by onShortcut has rendered
+				requestAnimationFrame(() => inputRef.current?.focus())
+			}
+		}
+		document.addEventListener('keydown', handleKeyDown)
+		return () => document.removeEventListener('keydown', handleKeyDown)
+	}, [shortcut, onShortcut])
+
+	return (
+		// The `dark` class opts descendants into the ui components' dark:
+		// variants; it doesn't apply to this element itself, so the root
+		// surface colors are set explicitly.
+		<Command
+			filter={filter}
+			className="dark rounded-lg border border-stone-700 bg-stone-950 text-stone-50 shadow-md"
+		>
+			<CommandInput
+				ref={inputRef}
+				placeholder="Search any team or league…"
+				value={query}
+				onValueChange={setQuery}
+				className={size === 'lg' ? 'h-14 text-lg' : undefined}
+			/>
+			{/* Only show results while typing; otherwise the full team list
+			    would dump onto the page below the input. */}
+			{query ? (
+				<CommandList>
+					<CommandEmpty>No teams or leagues found.</CommandEmpty>
+					{LEAGUES.map((league) => {
+						const lowercaseLeague = league.toLowerCase()
+						return (
+							<CommandItem
+								key={league}
+								value={getLeagueDisplayName(league)}
+								keywords={[getLeagueFullName(league)]}
+								onSelect={() =>
+									window.location.assign(`/${lowercaseLeague}`)
+								}
+								className="gap-3 py-2"
+							>
+								<Logo src={`/logos/${lowercaseLeague}.svg`} />
+								<span className="font-semibold">
+									{getLeagueDisplayName(league)}
+								</span>
+								<span className="text-stone-400">
+									{getLeagueFullName(league)}
+								</span>
+							</CommandItem>
+						)
+					})}
+					{LEAGUES.flatMap((league) => {
+						const lowercaseLeague = league.toLowerCase()
+						return (allTeams[league] ?? []).map((t) => {
+							const abbrev = t.abbreviation.toLowerCase()
+							return (
+								<CommandItem
+									key={`${league}-${t.abbreviation}`}
+									value={`${league} ${t.fullName}`}
+									keywords={[t.abbreviation]}
+									onSelect={() =>
+										window.location.assign(
+											`/${lowercaseLeague}/${abbrev}`
+										)
+									}
+									className="gap-3 py-2"
+								>
+									<Logo src={teamLogo(league, abbrev)} />
+									{t.fullName}
+									<span className="ml-auto text-xs text-stone-400">
+										{getLeagueDisplayName(league)}
+									</span>
+								</CommandItem>
+							)
+						})
+					})}
+				</CommandList>
+			) : null}
+		</Command>
+	)
+}

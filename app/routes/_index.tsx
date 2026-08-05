@@ -8,6 +8,7 @@ import { getAllTeamsByLeague } from '~/lib/getTeams'
 import Footer from '~/components/footer'
 import { SidebarProvider } from '~/components/ui/sidebar'
 import TeamsSidebar, { TeamsSidebarTrigger } from '~/components/teams-sidebar'
+import TeamSearch from '~/components/team-search'
 
 export const meta: MetaFunction = () => {
 	const title = `Countdown to your team's next game - Team Countdown`
@@ -78,7 +79,7 @@ export default function Index() {
 
 	return (
 		<SidebarProvider defaultOpen={false}>
-			<TeamsSidebar allTeams={allTeams} />
+			<TeamsSidebar allTeams={allTeams} searchShortcut={false} />
 			<div className="flex flex-col min-h-screen md:h-auto w-full">
 				<div className="font-sans text-white p-4 max-w-[500px] lg:max-w-[750px] mx-auto space-y-12 min-h-[600px] grow pb-20">
 					<div className="flex items-center gap-2">
@@ -94,6 +95,7 @@ export default function Index() {
 									hours, and minutes tick away until kickoff.
 								</p>
 							</div>
+							<TeamSearch allTeams={allTeams} size="lg" shortcut />
 							<div className="space-y-3">
 								<h3 className="text-xl">Choose your league:</h3>
 								<div className="flex flex-col gap-3">
