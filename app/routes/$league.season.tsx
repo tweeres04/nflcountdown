@@ -47,6 +47,49 @@ const LEAGUE_SEASON_META: Record<
 	WORLDCUP: { fullName: 'FIFA World Cup', seasonTerm: 'kickoff', titleKeyword: 'FIFA World Cup', brandColor: '#326295' },
 }
 
+// Single source for the season FAQ so the visible section and the FAQPage
+// JSON-LD stay identical — Google requires marked-up FAQ content to be
+// visible on the page.
+function buildSeasonFaqs(
+	LEAGUE: string,
+	seasonYear: string,
+	isMidSeason: boolean,
+	seasonStartDate: string | undefined
+): { question: string; answer: string }[] {
+	const meta = LEAGUE_SEASON_META[LEAGUE]
+	const leagueLabel = getLeagueDisplayName(LEAGUE)
+	const seasonTerm = meta?.seasonTerm ?? 'kickoff'
+	// World Cup is a tournament, not a recurring season — drop the word "season"
+	// from copy ("the 2026 World Cup", not "the 2026 World Cup season").
+	const isTournament = LEAGUE === 'WORLDCUP'
+	const eventNoun = isTournament ? leagueLabel : `${leagueLabel} season`
+	const nextEvent = isTournament ? `next ${leagueLabel}` : 'next season'
+
+	const seasonStartFormatted = seasonStartDate
+		? new Date(seasonStartDate).toLocaleDateString('en-US', {
+				weekday: 'long',
+				month: 'long',
+				day: 'numeric',
+				year: 'numeric',
+		  })
+		: ''
+
+	return [
+		{
+			question: `How many days until ${eventNoun} ${seasonYear}?`,
+			answer: isMidSeason
+				? `The ${seasonYear} ${eventNoun} has already started. Use the countdown above to see when the ${nextEvent} begins.`
+				: `Use the live countdown above for the exact days, hours, minutes, and seconds until ${leagueLabel} ${seasonTerm} in ${seasonYear}.`,
+		},
+		{
+			question: `When does the ${eventNoun} start?`,
+			answer: isMidSeason
+				? `The ${seasonYear} ${eventNoun} is currently underway.`
+				: `The ${seasonYear} ${eventNoun} starts on ${seasonStartFormatted}.`,
+		},
+	]
+}
+
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	if (!data) return []
 	const { LEAGUE, seasonYear, seasonStartDate, isMidSeason } = data
@@ -70,43 +113,22 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 		? `The ${seasonYear} ${eventNoun} is underway. Find out when the ${nextEvent} starts and count down to ${fullName} ${seasonTerm}.`
 		: `Find out exactly how many days until ${eventNoun} starts. Live countdown to ${fullName} ${seasonTerm} in ${seasonYear}.`
 
-	const seasonStartFormatted = seasonStartDate
-		? new Date(seasonStartDate).toLocaleDateString('en-US', {
-				weekday: 'long',
-				month: 'long',
-				day: 'numeric',
-				year: 'numeric',
-		  })
-		: ''
-
 	const breadcrumbItems = [
 		{ label: 'Team Countdown', href: '/' },
 		{ label: leagueLabel, href: `/${LEAGUE.toLowerCase()}` },
 		{ label: 'Season Countdown' },
 	]
 
-	const faqEntities = [
-		{
-			'@type': 'Question',
-			name: `How many days until ${eventNoun} ${seasonYear}?`,
-			acceptedAnswer: {
-				'@type': 'Answer',
-				text: isMidSeason
-					? `The ${seasonYear} ${eventNoun} has already started. Use the countdown above to see when the ${nextEvent} begins.`
-					: `Use the live countdown above for the exact days, hours, minutes, and seconds until ${leagueLabel} ${seasonTerm} in ${seasonYear}.`,
-			},
-		},
-		{
-			'@type': 'Question',
-			name: `When does the ${eventNoun} start?`,
-			acceptedAnswer: {
-				'@type': 'Answer',
-				text: isMidSeason
-					? `The ${seasonYear} ${eventNoun} is currently underway.`
-					: `The ${seasonYear} ${eventNoun} starts on ${seasonStartFormatted}.`,
-			},
-		},
-	]
+	const faqEntities = buildSeasonFaqs(
+		LEAGUE,
+		seasonYear,
+		isMidSeason,
+		seasonStartDate
+	).map((faq) => ({
+		'@type': 'Question',
+		name: faq.question,
+		acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+	}))
 
 	return [
 		{ title },
@@ -178,8 +200,15 @@ export function ErrorBoundary() {
 }
 
 export default function SeasonCountdown() {
-	const { LEAGUE, teams, allTeams, seasonStartDate, seasonYear, seasonYearLong } =
-		useLoaderData<typeof loader>()
+	const {
+		LEAGUE,
+		teams,
+		allTeams,
+		seasonStartDate,
+		isMidSeason,
+		seasonYear,
+		seasonYearLong,
+	} = useLoaderData<typeof loader>()
 
 	const meta = LEAGUE_SEASON_META[LEAGUE]
 	const leagueLabel = getLeagueDisplayName(LEAGUE)
@@ -200,6 +229,8 @@ export default function SeasonCountdown() {
 		startTimeTbd: false,
 	}
 
+	const faqs = buildSeasonFaqs(LEAGUE, seasonYear, isMidSeason, seasonStartDate)
+
 	return (
 		<>
 			<div className="flex flex-col min-h-screen md:h-auto">
@@ -218,6 +249,7 @@ export default function SeasonCountdown() {
 					leagueBrandColor={meta?.brandColor}
 					countdownSuffix={`the ${seasonYearLong} ${eventNoun}`}
 					searchLocation="season"
+					faqs={faqs}
 				/>
 				<Footer league={LEAGUE} dark />
 			</div>
