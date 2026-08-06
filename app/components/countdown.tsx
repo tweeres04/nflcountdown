@@ -438,7 +438,11 @@ export default function Countdown({
 					{canShare && (
 						<Button
 							onClick={() => {
-								const shareUrl = `${document.location.href}?utm_source=teamcountdown&utm_medium=share_button`
+								// searchParams.set dedupes, so re-sharing an already-shared
+								// URL doesn't stack utm params
+								const shareUrl = new URL(document.location.href)
+								shareUrl.searchParams.set('utm_source', 'teamcountdown')
+								shareUrl.searchParams.set('utm_medium', 'share_button')
 								const trackingProps = {
 									team: team?.fullName ?? null,
 									league: LEAGUE,
@@ -447,10 +451,11 @@ export default function Countdown({
 								}
 								mixpanel.track('click share button', trackingProps)
 								if (hasShareAPI) {
+									// No title/text: it would freeze the countdown at
+									// share time, while the OG unfurl stays fresh
 									navigator
 										.share({
-											title: shareTitle,
-											url: shareUrl,
+											url: shareUrl.toString(),
 										})
 										.then(() => {
 											mixpanel.track('share completed', trackingProps)
@@ -458,7 +463,7 @@ export default function Countdown({
 										.catch(() => {})
 								} else {
 									navigator.clipboard
-										.writeText(shareUrl)
+										.writeText(shareUrl.toString())
 										.then(() => {
 											setCopied(true)
 											setTimeout(() => setCopied(false), 2000)
