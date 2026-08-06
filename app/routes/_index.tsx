@@ -82,7 +82,7 @@ export default function Index() {
 		{ code: 'nwsl', name: 'NWSL', fullName: "National Women's Soccer League" },
 		{ code: 'cpl', name: 'CPL', fullName: 'Canadian Premier League' },
 		{ code: 'nsl', name: 'NSL', fullName: 'Northern Super League' },
-		{ code: 'worldcup', name: 'World Cup', fullName: 'FIFA World Cup 2026' },
+		{ code: 'worldcup', name: 'World Cup', fullName: 'FIFA World Cup' },
 	]
 
 	return (

@@ -105,7 +105,7 @@ export function getLeagueSameAs(league: string): string {
 		NWSL: 'https://www.nwslsoccer.com',
 		PWHL: 'https://www.thepwhl.com',
 		CFB: 'https://www.ncaa.com/sports/football/fbs',
-		WORLDCUP: 'https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026',
+		WORLDCUP: 'https://www.fifa.com/en/tournaments/mens/worldcup',
 	}
 	return officialUrls[league] || ''
 }
