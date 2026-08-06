@@ -104,15 +104,28 @@ export default function TeamSearch({
 		return ranks
 	}, [allTeams, priorityLeague])
 
+	const leagueValues = useMemo(
+		() => new Set(LEAGUES.map((l) => getLeagueDisplayName(l).toLowerCase())),
+		[]
+	)
+
 	// cmdk's default fuzzy score, nudged by league popularity. The nudge is
 	// far smaller than any real score difference, so it only reorders ties.
+	// Leagues that genuinely match float above team results ("world" shows
+	// World Cup and Women's World Cup before 48 team rows). The 0.5 cutoff
+	// separates real matches (measured ≥0.89) from junk fuzzy subsequences
+	// like "seatt" → "National Ba*S*k*E*tball *A*ssocia*T*ion" (≤0.003).
 	function filter(value: string, search: string, keywords?: string[]) {
 		const score = defaultFilter(value, search, keywords)
 		if (score === 0) {
 			return 0
 		}
 		const rank = leagueRankByValue.get(value.toLowerCase()) ?? LEAGUES.length
-		return score + (LEAGUES.length - rank) / 10000
+		const nudged = score + (LEAGUES.length - rank) / 10000
+		if (score > 0.5 && leagueValues.has(value.toLowerCase())) {
+			return nudged + 1
+		}
+		return nudged
 	}
 
 	useEffect(() => {
@@ -199,9 +212,7 @@ export default function TeamSearch({
 											league,
 											location,
 										})
-										window.location.assign(
-											`/${lowercaseLeague}/${abbrev}`
-										)
+										window.location.assign(`/${lowercaseLeague}/${abbrev}`)
 									}}
 									className="gap-3 py-2"
 								>
