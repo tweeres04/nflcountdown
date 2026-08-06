@@ -12,7 +12,7 @@ import TeamSearch from '~/components/team-search'
 
 export const meta: MetaFunction = () => {
 	const title = `Countdown to your team's next game - Team Countdown`
-	const description = `Get pumped for game day. World Cup, NFL, CFB, NBA, WNBA, MLB, NHL, PWHL, MLS and NWSL. Pick your team and add it to your home screen.`
+	const description = `Get pumped for game day. World Cup, NFL, CFB, CFL, NBA, WNBA, CEBL, MLB, NHL, PWHL, MLS, NWSL, CPL and NSL. Pick your team and add it to your home screen.`
 	const url = `https://teamcountdown.com`
 
 	const metaTags: any[] = [
@@ -59,11 +59,17 @@ export default function Index() {
 	const leagues = [
 		{ code: 'nfl', name: 'NFL', fullName: 'National Football League' },
 		{ code: 'cfb', name: 'CFB', fullName: 'College Football' },
+		{ code: 'cfl', name: 'CFL', fullName: 'Canadian Football League' },
 		{ code: 'nba', name: 'NBA', fullName: 'National Basketball Association' },
 		{
 			code: 'wnba',
 			name: 'WNBA',
 			fullName: "Women's National Basketball Association",
+		},
+		{
+			code: 'cebl',
+			name: 'CEBL',
+			fullName: 'Canadian Elite Basketball League',
 		},
 		{ code: 'mlb', name: 'MLB', fullName: 'Major League Baseball' },
 		{ code: 'nhl', name: 'NHL', fullName: 'National Hockey League' },
@@ -74,6 +80,8 @@ export default function Index() {
 		},
 		{ code: 'mls', name: 'MLS', fullName: 'Major League Soccer' },
 		{ code: 'nwsl', name: 'NWSL', fullName: "National Women's Soccer League" },
+		{ code: 'cpl', name: 'CPL', fullName: 'Canadian Premier League' },
+		{ code: 'nsl', name: 'NSL', fullName: 'Northern Super League' },
 		{ code: 'worldcup', name: 'World Cup', fullName: 'FIFA World Cup 2026' },
 	]
 

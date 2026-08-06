@@ -7,13 +7,16 @@ import { nflTeamToTeam } from './nflGameToGame'
 import { nhlTeamToTeam } from './nhlGameToGame'
 import { wnbaTeamToTeam } from './wnbaGameToGame'
 import { cplTeamToTeam } from './cplGameToGame'
+import { cflTeamToTeam } from './cflGameToGame'
+import { nslTeamToTeam } from './nslGameToGame'
+import { ceblTeamToTeam } from './ceblGameToGame'
 import { mlsTeamToTeam } from './mlsGameToGame'
 import { nwslTeamToTeam } from './nwslGameToGame'
 import { pwhlTeamToTeam } from './pwhlGameToGame'
 import { cfbTeamToTeam } from './cfbGameToGame'
 import { worldCupTeamToTeam } from './worldCupGameToGame'
 import { getAllGames } from './getAllGames'
-import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, WorldCupScheduleApi, Team } from './types'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, CflScheduleApi, NslScheduleApi, CeblScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, WorldCupScheduleApi, Team } from './types'
 
 export async function getTeamAndGames(
 	league: string | undefined,
@@ -22,7 +25,7 @@ export async function getTeamAndGames(
 	const LEAGUE = league?.toUpperCase() ?? 'NFL'
 
 	// Validate league
-	if (!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA', 'CPL', 'MLS', 'NWSL', 'PWHL', 'CFB', 'WORLDCUP'].includes(LEAGUE)) {
+	if (!['NFL', 'NBA', 'MLB', 'NHL', 'WNBA', 'CPL', 'CFL', 'NSL', 'CEBL', 'MLS', 'NWSL', 'PWHL', 'CFB', 'WORLDCUP'].includes(LEAGUE)) {
 		throw new Response(null, { status: 404 })
 	}
 
@@ -72,6 +75,28 @@ export async function getTeamAndGames(
 			cplSchedule.matches.flatMap((m) => [m.home, m.away]),
 			'teamId'
 		).map(cplTeamToTeam)
+	} else if (LEAGUE === 'CEBL') {
+		const raw = await readFile('data/cebl_schedule.json', 'utf-8')
+		const ceblSchedule: CeblScheduleApi = JSON.parse(raw)
+		teams = uniqBy(ceblSchedule.games, 'home_team_id').map((g) =>
+			ceblTeamToTeam(g.home_team_id, g.home_team_name)
+		)
+	} else if (LEAGUE === 'CFL') {
+		const raw = await readFile('data/cfl_schedule.json', 'utf-8')
+		const cflSchedule: CflScheduleApi = JSON.parse(raw)
+		teams = uniqBy(
+			cflSchedule.rounds.flatMap((r) => r.tournaments).map((g) => g.homeSquad),
+			'id'
+		).map(cflTeamToTeam)
+	} else if (LEAGUE === 'NSL') {
+		const raw = await readFile('data/nsl_schedule.json', 'utf-8')
+		const nslSchedule: NslScheduleApi = JSON.parse(raw)
+		teams = uniqBy(
+			nslSchedule.events.flatMap((e) =>
+				e.competitions[0].competitors.map((c) => c.team)
+			),
+			'id'
+		).map(nslTeamToTeam)
 	} else if (LEAGUE === 'MLS') {
 		const raw = await readFile('data/mls_schedule.json', 'utf-8')
 		const mlsSchedule: MlsScheduleApi = JSON.parse(raw)

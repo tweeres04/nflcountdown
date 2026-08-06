@@ -523,6 +523,25 @@ npm run dev
 - **13 teams** (2026 season)
 - **Season**: May - September
 
+### CFL (Canadian Football League)
+- **API**: Official scoreboard feed (`cflscoreboard.cfl.ca/json/scoreboard/rounds.json`) — the source behind cfl.ca/schedule. ESPN dropped CFL data after 2023; don't use it. Top-level array of rounds (`PRE`/`REG`/`POST`) with games in `tournaments`; the cron drops preseason and wraps the array in `{ rounds }`. Playoff placeholder games have `TBD` squads — the colors-file whitelist filters them out.
+- **Feed quirk**: says "Ottawa RedBlacks"; the colors file's `team`/`nickname` fields normalize naming (`cflTeamToTeam` prefers them over feed names).
+- **Logos**: All 9 teams + league logo extracted as real vector SVGs from the CFL's shared WordPress theme sprite (`cfl.ca/wp-content/themes/cfl.ca/common/images/icons/icons.data.svg.css` — data-URI SVGs per `.icon-logo-{city}` rule). Wikipedia lacks current SVGs for Edmonton (reverted to classic EE, only old elk-head SVG exists) and Montreal.
+- **9 teams**, season June - November, `kickoff`, countdown uses "the" prefix
+
+### NSL (Northern Super League)
+- **API**: ESPN (`site.api.espn.com/apis/site/v2/sports/soccer/can.w.nsl/scoreboard?limit=1000&dates=YYYY0401-YYYY1130`) — identical format to MLS/NWSL, reuses MLS type aliases. The `dates` range selects the season; the response's `season.year` always reports the current season regardless, so don't trust it.
+- **Logos**: Wikipedia SVGs (mix of `wikipedia/en/` fair-use and `commons/` paths). Wikimedia 403s default curl user agents — send a browser UA. League logo is a mint (#00FFB9) wordmark that works on dark backgrounds.
+- **6 teams** (2026), season April - November, `kickoff`, soccer "no the" countdown copy
+- **Abbreviations**: plain city codes (VAN/CAL/TOR/OTT/MON/HAL)
+
+### CEBL (Canadian Elite Basketball League)
+- **API**: `api.data.cebl.ca/games/{year}/` with `X-Api-Key: 800chyzv2hvur3z0ogh39cve2zok0c` (public client key from the cebl-stats-hub.web.app JS bundle — re-extract if 401s start). Trailing slash required. The cron picks the year from `/seasons/` (`is_active`, falling back to max year) and wraps the array in `{ games }`.
+- **No abbreviations in the API** — games carry only `home_team_id`/`home_team_name`. `cebl_colors.json` has a `teamId` field and teams join by id; the VAN/CGY/SSK codes come from FIBA LiveStats.
+- **Logos**: PNG only (official CDN `storage.googleapis.com/cebl-project.appspot.com/icons/{slug}.png`); no vector team marks exist anywhere. Team "SVGs" are 512×512 wrappers embedding the PNGs (PWHL precedent). League logo is a real white/gold SVG.
+- **Off-season**: the season runs May - early August; after finals there's nothing scheduled until the next season publishes (~Feb-Mar). The fetcher keeps serving the most recent season and the site falls back to the calculated season-start rule.
+- **10 teams** (2026: Saskatchewan Rattlers became Saskatoon Mamba, new teamId 56), `tip-off`
+
 ---
 
 ## Common Pitfalls

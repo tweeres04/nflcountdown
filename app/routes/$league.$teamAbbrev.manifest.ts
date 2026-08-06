@@ -7,13 +7,16 @@ import { nflTeamToTeam } from '~/lib/nflGameToGame'
 import { nhlTeamToTeam } from '~/lib/nhlGameToGame'
 import { wnbaTeamToTeam } from '~/lib/wnbaGameToGame'
 import { cplTeamToTeam } from '~/lib/cplGameToGame'
+import { cflTeamToTeam } from '~/lib/cflGameToGame'
+import { nslTeamToTeam } from '~/lib/nslGameToGame'
+import { ceblTeamToTeam } from '~/lib/ceblGameToGame'
 import { mlsTeamToTeam } from '~/lib/mlsGameToGame'
 import { nwslTeamToTeam } from '~/lib/nwslGameToGame'
 import { pwhlTeamToTeam } from '~/lib/pwhlGameToGame'
 import { cfbTeamToTeam } from '~/lib/cfbGameToGame'
 import { worldCupTeamToTeam } from '~/lib/worldCupGameToGame'
 import { readFile } from 'node:fs/promises'
-import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, WorldCupScheduleApi, Team } from '~/lib/types'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, CflScheduleApi, NslScheduleApi, CeblScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, WorldCupScheduleApi, Team } from '~/lib/types'
 
 export async function loader({
 	params: { league, teamAbbrev },
@@ -31,6 +34,12 @@ export async function loader({
 			? 'data/wnba_schedule.json'
 			: LEAGUE === 'CPL'
 			? 'data/cpl_schedule.json'
+		: LEAGUE === 'CFL'
+		? 'data/cfl_schedule.json'
+		: LEAGUE === 'NSL'
+		? 'data/nsl_schedule.json'
+		: LEAGUE === 'CEBL'
+		? 'data/cebl_schedule.json'
 		: LEAGUE === 'MLS'
 		? 'data/mls_schedule.json'
 		: LEAGUE === 'NWSL'
@@ -77,6 +86,24 @@ export async function loader({
 					(scheduleParsed as CplScheduleApi).matches.flatMap((m) => [m.home, m.away]),
 					'teamId'
 			  ).map(cplTeamToTeam)
+		: LEAGUE === 'CFL'
+		? uniqBy(
+				(scheduleParsed as CflScheduleApi).rounds
+					.flatMap((r) => r.tournaments)
+					.map((g) => g.homeSquad),
+				'id'
+		  ).map(cflTeamToTeam)
+		: LEAGUE === 'NSL'
+		? uniqBy(
+				(scheduleParsed as NslScheduleApi).events.flatMap((e) =>
+					e.competitions[0].competitors.map((c) => c.team)
+				),
+				'id'
+		  ).map(nslTeamToTeam)
+		: LEAGUE === 'CEBL'
+		? uniqBy((scheduleParsed as CeblScheduleApi).games, 'home_team_id').map(
+				(g) => ceblTeamToTeam(g.home_team_id, g.home_team_name)
+		  )
 		: LEAGUE === 'MLS'
 		? uniqBy(
 				(scheduleParsed as MlsScheduleApi).events.flatMap((e) => 

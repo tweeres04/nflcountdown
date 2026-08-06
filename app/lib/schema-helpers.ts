@@ -13,6 +13,8 @@ export function getSportName(league: string): string {
 			return 'Basketball'
 		case 'WNBA':
 			return 'Basketball'
+		case 'CEBL':
+			return 'Basketball'
 		case 'MLB':
 			return 'Baseball'
 		case 'NHL':
@@ -21,6 +23,10 @@ export function getSportName(league: string): string {
 			return 'Soccer'
 		case 'CPL':
 			return 'Soccer'
+		case 'NSL':
+			return 'Soccer'
+		case 'CFL':
+			return 'Canadian Football'
 		case 'NWSL':
 			return 'Soccer'
 		case 'PWHL':
@@ -47,7 +53,7 @@ export function getLeagueDisplayName(league: string): string {
 
 // Soccer leagues — used to drop the "the" prefix in countdown copy
 // (e.g. "till Seattle play next" vs "till the Sounders play next").
-export const SOCCER_LEAGUES = new Set(['CPL', 'MLS', 'NWSL', 'WORLDCUP'])
+export const SOCCER_LEAGUES = new Set(['CPL', 'MLS', 'NWSL', 'NSL', 'WORLDCUP'])
 
 export function getLeagueFullName(league: string): string {
 	switch (league) {
@@ -65,6 +71,12 @@ export function getLeagueFullName(league: string): string {
 			return 'Major League Soccer'
 		case 'CPL':
 			return 'Canadian Premier League'
+		case 'CFL':
+			return 'Canadian Football League'
+		case 'NSL':
+			return 'Northern Super League'
+		case 'CEBL':
+			return 'Canadian Elite Basketball League'
 		case 'NWSL':
 			return "National Women's Soccer League"
 		case 'PWHL':
@@ -87,6 +99,9 @@ export function getLeagueSameAs(league: string): string {
 		NHL: 'https://www.nhl.com',
 		MLS: 'https://www.mlssoccer.com',
 		CPL: 'https://canpl.ca',
+		CFL: 'https://www.cfl.ca',
+		NSL: 'https://nsl.ca',
+		CEBL: 'https://www.cebl.ca',
 		NWSL: 'https://www.nwslsoccer.com',
 		PWHL: 'https://www.thepwhl.com',
 		CFB: 'https://www.ncaa.com/sports/football/fbs',
@@ -251,7 +266,7 @@ export function generateWebSiteSchema() {
 		url: 'https://teamcountdown.com',
 		publisher: { '@id': 'https://teamcountdown.com/#organization' },
 		description:
-			'The fastest and prettiest way to check the next NFL, CFB, NBA, WNBA, MLB, NHL, PWHL, MLS, NWSL, or World Cup game. Launches instantly from your home screen.',
+			'The fastest and prettiest way to check the next NFL, CFB, CFL, NBA, WNBA, CEBL, MLB, NHL, PWHL, MLS, NWSL, CPL, NSL, or World Cup game. Launches instantly from your home screen.',
 		about: [
 			{
 				'@type': 'SportsOrganization',
@@ -260,6 +275,10 @@ export function generateWebSiteSchema() {
 			{
 				'@type': 'SportsOrganization',
 				name: 'College Football',
+			},
+			{
+				'@type': 'SportsOrganization',
+				name: 'Canadian Football League',
 			},
 			{
 				'@type': 'SportsOrganization',
@@ -279,11 +298,23 @@ export function generateWebSiteSchema() {
 			},
 			{
 				'@type': 'SportsOrganization',
+				name: 'Canadian Elite Basketball League',
+			},
+			{
+				'@type': 'SportsOrganization',
 				name: 'Major League Soccer',
 			},
 			{
 				'@type': 'SportsOrganization',
 				name: "National Women's Soccer League",
+			},
+			{
+				'@type': 'SportsOrganization',
+				name: 'Canadian Premier League',
+			},
+			{
+				'@type': 'SportsOrganization',
+				name: 'Northern Super League',
 			},
 			{
 				'@type': 'SportsOrganization',

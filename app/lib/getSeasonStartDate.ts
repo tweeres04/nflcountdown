@@ -70,6 +70,9 @@ function lastWeekdayOfMonth(
  *   WNBA - 3rd Friday of May
  *   MLS  - Last Saturday of February
  *   CPL  - 2nd Saturday of April
+ *   CFL  - 1st Thursday of June
+ *   NSL  - 3rd Saturday of April
+ *   CEBL - 2nd Saturday of May
  */
 function calculateSeasonStartDate(league: string, year: number): Date {
 	const LEAGUE = league.toUpperCase()
@@ -135,6 +138,36 @@ function calculateSeasonStartDate(league: string, year: number): Date {
 		// 2nd Saturday of April
 		date = nthWeekdayOfMonth(year, 3, isSaturday, nextSaturday, 2)
 		date.setUTCHours(19, 0, 0, 0) // 3:00 PM EDT (UTC-4) = 19:00 UTC
+		return date
+	}
+
+	if (LEAGUE === 'CFL') {
+		// 1st Thursday of June
+		date = nthWeekdayOfMonth(
+			year,
+			5,
+			(d) => d.getDay() === 4,
+			(d) => {
+				const diff = (4 - d.getDay() + 7) % 7 || 7
+				return addDays(d, diff)
+			},
+			1
+		)
+		date.setUTCHours(23, 0, 0, 0) // 7:00 PM EDT (UTC-4) = 23:00 UTC
+		return date
+	}
+
+	if (LEAGUE === 'NSL') {
+		// 3rd Saturday of April
+		date = nthWeekdayOfMonth(year, 3, isSaturday, nextSaturday, 3)
+		date.setUTCHours(19, 0, 0, 0) // 3:00 PM EDT (UTC-4) = 19:00 UTC
+		return date
+	}
+
+	if (LEAGUE === 'CEBL') {
+		// 2nd Saturday of May
+		date = nthWeekdayOfMonth(year, 4, isSaturday, nextSaturday, 2)
+		date.setUTCHours(23, 0, 0, 0) // 7:00 PM EDT (UTC-4) = 23:00 UTC
 		return date
 	}
 

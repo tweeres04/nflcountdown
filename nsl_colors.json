@@ -1,0 +1,38 @@
+[
+	{
+		"team": "Vancouver Rise FC",
+		"abbreviation": "VAN",
+		"color_1": "#85B09A",
+		"color_2": "#DCCC8F"
+	},
+	{
+		"team": "Calgary Wild FC",
+		"abbreviation": "CAL",
+		"color_1": "#FF0028",
+		"color_2": "#300047"
+	},
+	{
+		"team": "AFC Toronto",
+		"abbreviation": "TOR",
+		"color_1": "#ED3425",
+		"color_2": "#631127"
+	},
+	{
+		"team": "Ottawa Rapid FC",
+		"abbreviation": "OTT",
+		"color_1": "#55CEE6",
+		"color_2": "#152029"
+	},
+	{
+		"team": "Montreal Roses FC",
+		"abbreviation": "MON",
+		"color_1": "#647DFF",
+		"color_2": "#D1AE6F"
+	},
+	{
+		"team": "Halifax Tides FC",
+		"abbreviation": "HAL",
+		"color_1": "#4FC4BA",
+		"color_2": "#261F35"
+	}
+]

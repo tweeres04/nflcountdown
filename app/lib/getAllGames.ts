@@ -5,12 +5,15 @@ import { nflGameToGame } from './nflGameToGame'
 import { nhlGameToGame } from './nhlGameToGame'
 import { wnbaGameToGame } from './wnbaGameToGame'
 import { cplGameToGame } from './cplGameToGame'
+import { cflGameToGame } from './cflGameToGame'
+import { nslGameToGame } from './nslGameToGame'
+import { ceblGameToGame } from './ceblGameToGame'
 import { mlsGameToGame } from './mlsGameToGame'
 import { nwslGameToGame } from './nwslGameToGame'
 import { pwhlGameToGame } from './pwhlGameToGame'
 import { cfbGameToGame } from './cfbGameToGame'
 import { worldCupGameToGame } from './worldCupGameToGame'
-import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, WorldCupScheduleApi, Game } from './types'
+import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, CflScheduleApi, NslScheduleApi, CeblScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, WorldCupScheduleApi, Game } from './types'
 
 /**
  * Loads all games for a given league from JSON schedule files.
@@ -64,6 +67,24 @@ export async function getAllGames(league: string, viewingTeamAbbrev?: string): P
 		const raw = await readFile('data/cpl_schedule.json', 'utf-8')
 		const cplSchedule: CplScheduleApi = JSON.parse(raw)
 		return cplSchedule.matches.map(m => cplGameToGame(m, viewingTeamAbbrev))
+	}
+
+	if (LEAGUE === 'CEBL') {
+		const raw = await readFile('data/cebl_schedule.json', 'utf-8')
+		const ceblSchedule: CeblScheduleApi = JSON.parse(raw)
+		return ceblSchedule.games.map(ceblGameToGame)
+	}
+
+	if (LEAGUE === 'CFL') {
+		const raw = await readFile('data/cfl_schedule.json', 'utf-8')
+		const cflSchedule: CflScheduleApi = JSON.parse(raw)
+		return cflSchedule.rounds.flatMap((r) => r.tournaments).map(cflGameToGame)
+	}
+
+	if (LEAGUE === 'NSL') {
+		const raw = await readFile('data/nsl_schedule.json', 'utf-8')
+		const nslSchedule: NslScheduleApi = JSON.parse(raw)
+		return nslSchedule.events.map(e => nslGameToGame(e, viewingTeamAbbrev))
 	}
 
 	if (LEAGUE === 'MLS') {

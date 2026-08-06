@@ -1,0 +1,65 @@
+[
+	{
+		"team": "BC Lions",
+		"nickname": "Lions",
+		"abbreviation": "BC",
+		"color_1": "#F15623",
+		"color_2": "#000000"
+	},
+	{
+		"team": "Calgary Stampeders",
+		"nickname": "Stampeders",
+		"abbreviation": "CGY",
+		"color_1": "#CC202C",
+		"color_2": "#000000"
+	},
+	{
+		"team": "Edmonton Elks",
+		"nickname": "Elks",
+		"abbreviation": "EDM",
+		"color_1": "#2B5134",
+		"color_2": "#FFB819"
+	},
+	{
+		"team": "Hamilton Tiger-Cats",
+		"nickname": "Tiger-Cats",
+		"abbreviation": "HAM",
+		"color_1": "#231F20",
+		"color_2": "#FCB525"
+	},
+	{
+		"team": "Montreal Alouettes",
+		"nickname": "Alouettes",
+		"abbreviation": "MTL",
+		"color_1": "#D70F27",
+		"color_2": "#071D49"
+	},
+	{
+		"team": "Ottawa Redblacks",
+		"nickname": "Redblacks",
+		"abbreviation": "OTT",
+		"color_1": "#AC1F2D",
+		"color_2": "#000000"
+	},
+	{
+		"team": "Saskatchewan Roughriders",
+		"nickname": "Roughriders",
+		"abbreviation": "SSK",
+		"color_1": "#006241",
+		"color_2": "#B5B7BB"
+	},
+	{
+		"team": "Toronto Argonauts",
+		"nickname": "Argonauts",
+		"abbreviation": "TOR",
+		"color_1": "#0A2240",
+		"color_2": "#5F8DB5"
+	},
+	{
+		"team": "Winnipeg Blue Bombers",
+		"nickname": "Blue Bombers",
+		"abbreviation": "WPG",
+		"color_1": "#1E3D79",
+		"color_2": "#BA9459"
+	}
+]

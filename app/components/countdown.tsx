@@ -398,12 +398,14 @@ export default function Countdown({
 					<img
 						src={logo}
 						className={cn(
-							'mx-auto',
+							'mx-auto object-contain',
 							LEAGUE === 'NHL' ||
 								LEAGUE === 'CFB' ||
+								LEAGUE === 'CFL' ||
 								LEAGUE === 'CPL' ||
 								LEAGUE === 'MLS' ||
 								LEAGUE === 'NWSL' ||
+								LEAGUE === 'NSL' ||
 								LEAGUE === 'PWHL' ||
 								LEAGUE === 'WORLDCUP'
 								? 'h-[256px] md:h-[384px] my-8'

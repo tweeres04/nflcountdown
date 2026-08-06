@@ -7,6 +7,9 @@ import { nflTeamToTeam } from './nflGameToGame'
 import { nhlTeamToTeam } from './nhlGameToGame'
 import { wnbaTeamToTeam } from './wnbaGameToGame'
 import { cplTeamToTeam } from './cplGameToGame'
+import { cflTeamToTeam } from './cflGameToGame'
+import { nslTeamToTeam } from './nslGameToGame'
+import { ceblTeamToTeam } from './ceblGameToGame'
 import { mlsTeamToTeam } from './mlsGameToGame'
 import { nwslTeamToTeam } from './nwslGameToGame'
 import { pwhlTeamToTeam } from './pwhlGameToGame'
@@ -18,6 +21,9 @@ import type {
 	NhlScheduleApi,
 	WnbaScheduleApi,
 	CplScheduleApi,
+	CflScheduleApi,
+	NslScheduleApi,
+	CeblScheduleApi,
 	MlsScheduleApi,
 	NwslScheduleApi,
 	PwhlScheduleApi,
@@ -74,6 +80,28 @@ export async function getTeams(league: string): Promise<Team[]> {
 			schedule.matches.flatMap((m) => [m.home, m.away]),
 			'teamId'
 		).map(cplTeamToTeam)
+	} else if (LEAGUE === 'CEBL') {
+		const raw = await readFile('data/cebl_schedule.json', 'utf-8')
+		const schedule: CeblScheduleApi = JSON.parse(raw)
+		teams = uniqBy(schedule.games, 'home_team_id').map((g) =>
+			ceblTeamToTeam(g.home_team_id, g.home_team_name)
+		)
+	} else if (LEAGUE === 'CFL') {
+		const raw = await readFile('data/cfl_schedule.json', 'utf-8')
+		const schedule: CflScheduleApi = JSON.parse(raw)
+		teams = uniqBy(
+			schedule.rounds.flatMap((r) => r.tournaments).map((g) => g.homeSquad),
+			'id'
+		).map(cflTeamToTeam)
+	} else if (LEAGUE === 'NSL') {
+		const raw = await readFile('data/nsl_schedule.json', 'utf-8')
+		const schedule: NslScheduleApi = JSON.parse(raw)
+		teams = uniqBy(
+			schedule.events.flatMap((e) =>
+				e.competitions[0].competitors.map((c) => c.team)
+			),
+			'id'
+		).map(nslTeamToTeam)
 	} else if (LEAGUE === 'MLS') {
 		const raw = await readFile('data/mls_schedule.json', 'utf-8')
 		const schedule: MlsScheduleApi = JSON.parse(raw)
@@ -136,12 +164,16 @@ export type TeamsByLeague = Record<string, SidebarTeam[]>
 const NAV_LEAGUES = [
 	'NFL',
 	'CFB',
+	'CFL',
 	'MLB',
 	'NBA',
 	'WNBA',
+	'CEBL',
 	'NHL',
 	'MLS',
 	'NWSL',
+	'CPL',
+	'NSL',
 	'PWHL',
 	'WORLDCUP',
 ]

@@ -1,0 +1,82 @@
+[
+	{
+		"team": "Vancouver Bandits",
+		"nickname": "Bandits",
+		"abbreviation": "VAN",
+		"teamId": 16,
+		"color_1": "#081C32",
+		"color_2": "#EE4C0C"
+	},
+	{
+		"team": "Calgary Surge",
+		"nickname": "Surge",
+		"abbreviation": "CGY",
+		"teamId": 17,
+		"color_1": "#E91C2E",
+		"color_2": "#B22A2E"
+	},
+	{
+		"team": "Edmonton Stingers",
+		"nickname": "Stingers",
+		"abbreviation": "EDM",
+		"teamId": 18,
+		"color_1": "#0F173B",
+		"color_2": "#FED12A"
+	},
+	{
+		"team": "Saskatoon Mamba",
+		"nickname": "Mamba",
+		"abbreviation": "SSK",
+		"teamId": 56,
+		"color_1": "#C423BF",
+		"color_2": "#630068"
+	},
+	{
+		"team": "Winnipeg Sea Bears",
+		"nickname": "Sea Bears",
+		"abbreviation": "WPG",
+		"teamId": 24,
+		"color_1": "#00AFAA",
+		"color_2": "#040707"
+	},
+	{
+		"team": "Niagara River Lions",
+		"nickname": "River Lions",
+		"abbreviation": "NRL",
+		"teamId": 14,
+		"color_1": "#6BBD47",
+		"color_2": "#1D2122"
+	},
+	{
+		"team": "Brampton Honey Badgers",
+		"nickname": "Honey Badgers",
+		"abbreviation": "BHB",
+		"teamId": 19,
+		"color_1": "#111111",
+		"color_2": "#FBBA12"
+	},
+	{
+		"team": "Scarborough Shooting Stars",
+		"nickname": "Shooting Stars",
+		"abbreviation": "SSS",
+		"teamId": 22,
+		"color_1": "#11DAF8",
+		"color_2": "#2D2926"
+	},
+	{
+		"team": "Ottawa BlackJacks",
+		"nickname": "BlackJacks",
+		"abbreviation": "OTT",
+		"teamId": 20,
+		"color_1": "#1C1A1A",
+		"color_2": "#A6192E"
+	},
+	{
+		"team": "Montreal Alliance",
+		"nickname": "Alliance",
+		"abbreviation": "MTL",
+		"teamId": 21,
+		"color_1": "#1E3365",
+		"color_2": "#D21D5B"
+	}
+]

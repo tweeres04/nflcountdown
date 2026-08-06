@@ -1,0 +1,64 @@
+import nslColors from '../../nsl_colors.json'
+import { Team, Game, NslTeamApi, NslEventApi } from './types'
+
+export function nslTeamToTeam({
+	id,
+	abbreviation,
+	displayName,
+	shortDisplayName,
+	color,
+	alternateColor,
+}: NslTeamApi): Team {
+	const colorData = nslColors.find((c) => c.abbreviation === abbreviation)
+
+	if (!colorData) {
+		console.error('No colors found for NSL team', displayName, abbreviation)
+	}
+
+	return {
+		id: id,
+		nickName: shortDisplayName,
+		fullName: displayName,
+		abbreviation: abbreviation,
+		primaryColor: colorData?.color_1 || color || '#000000',
+		secondaryColor: colorData?.color_2 || alternateColor || '#333333',
+	}
+}
+
+/**
+ * Transforms an ESPN NSL API event object to the unified Game type.
+ * @param event - Raw event object from ESPN API
+ * @param viewingTeamAbbrev - Optional team abbreviation of the team page being viewed.
+ */
+export function nslGameToGame(
+	event: NslEventApi,
+	viewingTeamAbbrev?: string
+): Game {
+	const competition = event.competitions[0]
+	if (!competition) {
+		throw new Error(`No competition found for event ${event.id}`)
+	}
+
+	const homeCompetitor = competition.competitors.find(
+		(c) => c.homeAway === 'home'
+	)
+	const awayCompetitor = competition.competitors.find(
+		(c) => c.homeAway === 'away'
+	)
+
+	if (!homeCompetitor || !awayCompetitor) {
+		throw new Error(`Missing home or away competitor for event ${event.id}`)
+	}
+
+	const broadcasts = competition.broadcasts || []
+	const broadcastNames = broadcasts.flatMap((b) => b.names).join(', ')
+
+	return {
+		id: event.id,
+		time: event.date,
+		homeTeam: nslTeamToTeam(homeCompetitor.team),
+		awayTeam: nslTeamToTeam(awayCompetitor.team),
+		startTimeTbd: false,
+		broadcast: broadcastNames || null,
+	}
+}

@@ -172,6 +172,63 @@ export type NwslCompetitionApi = MlsCompetitionApi
 export type NwslEventApi = MlsEventApi
 export type NwslScheduleApi = MlsScheduleApi
 
+// CFL official scoreboard feed (cflscoreboard.cfl.ca/json/scoreboard/rounds.json).
+// The raw feed is a top-level array of rounds; the cron wraps it in { rounds }.
+export interface CflSquadApi {
+	id: number
+	name: string
+	shortName: string
+	score: number | null
+}
+
+export interface CflGameApi {
+	id: number
+	date: string
+	status: string
+	homeSquad: CflSquadApi
+	awaySquad: CflSquadApi
+}
+
+export interface CflRoundApi {
+	id: number
+	status: string
+	name: string
+	type: string // 'PRE' | 'REG' | 'POST'
+	number: number
+	startDate: string
+	endDate: string
+	tournaments: CflGameApi[]
+}
+
+export interface CflScheduleApi {
+	rounds: CflRoundApi[]
+}
+
+// CEBL API (api.data.cebl.ca/games/{year}/). The raw feed is a top-level
+// array of games with no team abbreviations — teams join to cebl_colors.json
+// by team id. The cron wraps the array in { games }.
+export interface CeblGameApi {
+	id: number
+	start_time_utc: string
+	home_team_id: number
+	home_team_name: string
+	away_team_id: number
+	away_team_name: string
+	competition: string // 'REGULAR' | 'FINALS'
+	status: string // 'SCHEDULED' | 'COMPLETE'
+}
+
+export interface CeblScheduleApi {
+	games: CeblGameApi[]
+}
+
+// NSL (Northern Super League) uses the same ESPN API format as MLS
+export type NslTeamApi = MlsTeamApi
+export type NslCompetitorApi = MlsCompetitorApi
+export type NslCompetitionApi = MlsCompetitionApi
+export type NslEventApi = MlsEventApi
+export type NslScheduleApi = MlsScheduleApi
+
 // CFB uses the same ESPN API format as MLS
 export type CfbTeamApi = MlsTeamApi
 export type CfbCompetitorApi = MlsCompetitorApi

@@ -6,6 +6,9 @@ import { nflTeamToTeam } from '~/lib/nflGameToGame'
 import { nhlTeamToTeam } from '~/lib/nhlGameToGame'
 import { wnbaTeamToTeam } from '~/lib/wnbaGameToGame'
 import { cplTeamToTeam } from '~/lib/cplGameToGame'
+import { cflTeamToTeam } from '~/lib/cflGameToGame'
+import { nslTeamToTeam } from '~/lib/nslGameToGame'
+import { ceblTeamToTeam } from '~/lib/ceblGameToGame'
 import { mlsTeamToTeam } from '~/lib/mlsGameToGame'
 import { nwslTeamToTeam } from '~/lib/nwslGameToGame'
 import { pwhlTeamToTeam } from '~/lib/pwhlGameToGame'
@@ -14,7 +17,7 @@ import { worldCupTeamToTeam } from '~/lib/worldCupGameToGame'
 import { readFile } from 'node:fs/promises'
 import { getAllGames } from '~/lib/getAllGames'
 import { getLastChangeTimes } from '~/lib/sitemap-lastmod'
-import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, WorldCupScheduleApi, Team } from '~/lib/types'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, CflScheduleApi, NslScheduleApi, CeblScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, WorldCupScheduleApi, Team } from '~/lib/types'
 
 // Teams/leagues with no games played yet get no lastmod — we don't have a
 // trustworthy change date for them, and omitting is more honest than guessing.
@@ -25,14 +28,17 @@ function urlXml(loc: string, lastmod?: number | null) {
 }
 
 export async function loader() {
-	const leagues = ['NFL', 'MLB', 'NBA', 'NHL', 'WNBA', 'CPL', 'MLS', 'NWSL', 'PWHL', 'CFB', 'WORLDCUP']
+	const leagues = ['NFL', 'MLB', 'NBA', 'NHL', 'WNBA', 'CEBL', 'CPL', 'CFL', 'NSL', 'MLS', 'NWSL', 'PWHL', 'CFB', 'WORLDCUP']
 
-	const [nflScheduleRaw, nbaScheduleRaw, nhlScheduleRaw, wnbaScheduleRaw, cplScheduleRaw, mlsScheduleRaw, nwslScheduleRaw, pwhlScheduleRaw, cfbScheduleRaw, worldCupScheduleRaw] = await Promise.all([
+	const [nflScheduleRaw, nbaScheduleRaw, nhlScheduleRaw, wnbaScheduleRaw, ceblScheduleRaw, cplScheduleRaw, cflScheduleRaw, nslScheduleRaw, mlsScheduleRaw, nwslScheduleRaw, pwhlScheduleRaw, cfbScheduleRaw, worldCupScheduleRaw] = await Promise.all([
 		readFile('data/nfl_schedule.json', 'utf-8'),
 		readFile('data/nba_schedule.json', 'utf-8'),
 		readFile('data/nhl_schedule.json', 'utf-8'),
 		readFile('data/wnba_schedule.json', 'utf-8'),
+		readFile('data/cebl_schedule.json', 'utf-8'),
 		readFile('data/cpl_schedule.json', 'utf-8'),
+		readFile('data/cfl_schedule.json', 'utf-8'),
+		readFile('data/nsl_schedule.json', 'utf-8'),
 		readFile('data/mls_schedule.json', 'utf-8'),
 		readFile('data/nwsl_schedule.json', 'utf-8'),
 		readFile('data/pwhl_schedule.json', 'utf-8'),
@@ -44,7 +50,10 @@ export async function loader() {
 	const nbaSchedule = JSON.parse(nbaScheduleRaw) as NbaScheduleApi
 	const nhlSchedule = JSON.parse(nhlScheduleRaw) as NhlScheduleApi
 	const wnbaSchedule = JSON.parse(wnbaScheduleRaw) as WnbaScheduleApi
+	const ceblSchedule = JSON.parse(ceblScheduleRaw) as CeblScheduleApi
 	const cplSchedule = JSON.parse(cplScheduleRaw) as CplScheduleApi
+	const cflSchedule = JSON.parse(cflScheduleRaw) as CflScheduleApi
+	const nslSchedule = JSON.parse(nslScheduleRaw) as NslScheduleApi
 	const mlsSchedule = JSON.parse(mlsScheduleRaw) as MlsScheduleApi
 	const nwslSchedule = JSON.parse(nwslScheduleRaw) as NwslScheduleApi
 	const pwhlSchedule = JSON.parse(pwhlScheduleRaw) as PwhlScheduleApi
@@ -95,6 +104,24 @@ export async function loader() {
 						cplSchedule.matches.flatMap((m) => [m.home, m.away]),
 						'teamId'
 				  ).map(cplTeamToTeam)
+				: LEAGUE === 'CFL'
+				? uniqBy(
+						cflSchedule.rounds
+							.flatMap((r) => r.tournaments)
+							.map((g) => g.homeSquad),
+						'id'
+				  ).map(cflTeamToTeam)
+				: LEAGUE === 'NSL'
+				? uniqBy(
+						nslSchedule.events.flatMap((e) =>
+							e.competitions[0].competitors.map((c) => c.team)
+						),
+						'id'
+				  ).map(nslTeamToTeam)
+				: LEAGUE === 'CEBL'
+				? uniqBy(ceblSchedule.games, 'home_team_id').map((g) =>
+						ceblTeamToTeam(g.home_team_id, g.home_team_name)
+				  )
 			: LEAGUE === 'MLS'
 			? uniqBy(
 					mlsSchedule.events.flatMap((e) => 
