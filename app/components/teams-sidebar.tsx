@@ -25,8 +25,25 @@ import { cn } from '~/lib/utils'
 import TeamSearch from '~/components/team-search'
 
 // Decorative league/team logo (the adjacent text is the accessible label).
-function Logo({ src }: { src: string }) {
-	return <img src={src} alt="" className="size-5 shrink-0 object-contain" />
+// fallbackSrc covers teams whose logo doesn't exist yet (e.g. WWC nations
+// before their flags are added) — swap to the league logo instead of
+// showing a broken image.
+function Logo({ src, fallbackSrc }: { src: string; fallbackSrc?: string }) {
+	return (
+		<img
+			src={src}
+			alt=""
+			className="size-5 shrink-0 object-contain"
+			onError={
+				fallbackSrc
+					? (e) => {
+							e.currentTarget.onerror = null
+							e.currentTarget.src = fallbackSrc
+					  }
+					: undefined
+			}
+		/>
+	)
 }
 
 // Button that opens the nav sidebar.
@@ -154,7 +171,10 @@ export default function TeamsSidebar({
 																	}
 																>
 																	<a href={`/${lowercaseLeague}/${abbrev}`}>
-																		<Logo src={teamLogo(league, abbrev)} />
+																		<Logo
+																			src={teamLogo(league, abbrev)}
+																			fallbackSrc={`/logos/${lowercaseLeague}.svg`}
+																		/>
 																		<span>{t.fullName}</span>
 																	</a>
 																</SidebarMenuSubButton>

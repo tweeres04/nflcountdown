@@ -14,10 +14,11 @@ import { nwslTeamToTeam } from '~/lib/nwslGameToGame'
 import { pwhlTeamToTeam } from '~/lib/pwhlGameToGame'
 import { cfbTeamToTeam } from '~/lib/cfbGameToGame'
 import { worldCupTeamToTeam } from '~/lib/worldCupGameToGame'
+import { wwcTeamToTeam } from '~/lib/wwcGameToGame'
 import { readFile } from 'node:fs/promises'
 import { getAllGames } from '~/lib/getAllGames'
 import { getLastChangeTimes } from '~/lib/sitemap-lastmod'
-import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, CflScheduleApi, NslScheduleApi, CeblScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, WorldCupScheduleApi, Team } from '~/lib/types'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, CflScheduleApi, NslScheduleApi, CeblScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, WorldCupScheduleApi, WwcScheduleApi, WwcTeamApi, Team } from '~/lib/types'
 
 // Teams/leagues with no games played yet get no lastmod — we don't have a
 // trustworthy change date for them, and omitting is more honest than guessing.
@@ -28,9 +29,9 @@ function urlXml(loc: string, lastmod?: number | null) {
 }
 
 export async function loader() {
-	const leagues = ['NFL', 'MLB', 'NBA', 'NHL', 'WNBA', 'CEBL', 'CPL', 'CFL', 'NSL', 'MLS', 'NWSL', 'PWHL', 'CFB', 'WORLDCUP']
+	const leagues = ['NFL', 'MLB', 'NBA', 'NHL', 'WNBA', 'CEBL', 'CPL', 'CFL', 'NSL', 'MLS', 'NWSL', 'PWHL', 'CFB', 'WORLDCUP', 'WWC']
 
-	const [nflScheduleRaw, nbaScheduleRaw, nhlScheduleRaw, wnbaScheduleRaw, ceblScheduleRaw, cplScheduleRaw, cflScheduleRaw, nslScheduleRaw, mlsScheduleRaw, nwslScheduleRaw, pwhlScheduleRaw, cfbScheduleRaw, worldCupScheduleRaw] = await Promise.all([
+	const [nflScheduleRaw, nbaScheduleRaw, nhlScheduleRaw, wnbaScheduleRaw, ceblScheduleRaw, cplScheduleRaw, cflScheduleRaw, nslScheduleRaw, mlsScheduleRaw, nwslScheduleRaw, pwhlScheduleRaw, cfbScheduleRaw, worldCupScheduleRaw, wwcScheduleRaw] = await Promise.all([
 		readFile('data/nfl_schedule.json', 'utf-8'),
 		readFile('data/nba_schedule.json', 'utf-8'),
 		readFile('data/nhl_schedule.json', 'utf-8'),
@@ -44,6 +45,7 @@ export async function loader() {
 		readFile('data/pwhl_schedule.json', 'utf-8'),
 		readFile('data/cfb_schedule.json', 'utf-8'),
 		readFile('data/worldcup_schedule.json', 'utf-8'),
+		readFile('data/wwc_schedule.json', 'utf-8'),
 	])
 
 	const nflSchedule = JSON.parse(nflScheduleRaw) as NflScheduleApi
@@ -59,6 +61,7 @@ export async function loader() {
 	const pwhlSchedule = JSON.parse(pwhlScheduleRaw) as PwhlScheduleApi
 	const cfbSchedule = JSON.parse(cfbScheduleRaw) as CfbScheduleApi
 	const worldCupSchedule = JSON.parse(worldCupScheduleRaw) as WorldCupScheduleApi
+	const wwcSchedule = JSON.parse(wwcScheduleRaw) as WwcScheduleApi
 
 	const now = Date.now()
 	let allUrls: string[] = []
@@ -155,6 +158,15 @@ export async function loader() {
 					'IdTeam'
 			  )
 					.map(worldCupTeamToTeam)
+					.filter((t): t is Team => t !== null) as Team[])
+			: LEAGUE === 'WWC'
+			? (uniqBy(
+					wwcSchedule.Results.flatMap((m) => [m.Home, m.Away]).filter(
+						(t): t is WwcTeamApi => t !== null && !!t.IdTeam
+					),
+					'IdTeam'
+			  )
+					.map(wwcTeamToTeam)
 					.filter((t): t is Team => t !== null) as Team[])
 			: uniqBy(
 					nflSchedule.games.map((g) => g.homeTeam),

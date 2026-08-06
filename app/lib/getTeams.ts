@@ -15,6 +15,7 @@ import { nwslTeamToTeam } from './nwslGameToGame'
 import { pwhlTeamToTeam } from './pwhlGameToGame'
 import { cfbTeamToTeam } from './cfbGameToGame'
 import { worldCupTeamToTeam } from './worldCupGameToGame'
+import { wwcTeamToTeam } from './wwcGameToGame'
 import type {
 	NbaScheduleApi,
 	NflScheduleApi,
@@ -30,6 +31,8 @@ import type {
 	CfbScheduleApi,
 	WorldCupScheduleApi,
 	WorldCupTeamApi,
+	WwcScheduleApi,
+	WwcTeamApi,
 	Team,
 } from './types'
 
@@ -152,6 +155,17 @@ export async function getTeams(league: string): Promise<Team[]> {
 		)
 			.map(worldCupTeamToTeam)
 			.filter((t): t is Team => t !== null)
+	} else if (LEAGUE === 'WWC') {
+		const raw = await readFile('data/wwc_schedule.json', 'utf-8')
+		const schedule: WwcScheduleApi = JSON.parse(raw)
+		teams = uniqBy(
+			schedule.Results.flatMap((m) => [m.Home, m.Away]).filter(
+				(t): t is WwcTeamApi => t !== null && !!t.IdTeam
+			),
+			'IdTeam'
+		)
+			.map(wwcTeamToTeam)
+			.filter((t): t is Team => t !== null)
 	}
 
 	return orderBy(teams, 'fullName')
@@ -176,6 +190,7 @@ const NAV_LEAGUES = [
 	'NSL',
 	'PWHL',
 	'WORLDCUP',
+	'WWC',
 ]
 
 let allTeamsCache: { value: TeamsByLeague; expires: number } | null = null

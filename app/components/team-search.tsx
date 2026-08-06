@@ -13,8 +13,25 @@ import { getLeagueDisplayName, getLeagueFullName } from '~/lib/schema-helpers'
 import { analytics as mixpanel } from '~/lib/analytics'
 
 // Decorative logo; the item text is the accessible label.
-function Logo({ src }: { src: string }) {
-	return <img src={src} alt="" className="size-6 shrink-0 object-contain" />
+// fallbackSrc covers teams whose logo doesn't exist yet (e.g. WWC nations
+// before their flags are added) — swap to the league logo instead of
+// showing a broken image.
+function Logo({ src, fallbackSrc }: { src: string; fallbackSrc?: string }) {
+	return (
+		<img
+			src={src}
+			alt=""
+			className="size-6 shrink-0 object-contain"
+			onError={
+				fallbackSrc
+					? (e) => {
+							e.currentTarget.onerror = null
+							e.currentTarget.src = fallbackSrc
+					  }
+					: undefined
+			}
+		/>
+	)
 }
 
 // Tracks settled queries: fires once the query stops changing for a second.
@@ -188,7 +205,10 @@ export default function TeamSearch({
 									}}
 									className="gap-3 py-2"
 								>
-									<Logo src={teamLogo(league, abbrev)} />
+									<Logo
+										src={teamLogo(league, abbrev)}
+										fallbackSrc={`/logos/${lowercaseLeague}.svg`}
+									/>
 									{t.fullName}
 									<span className="ml-auto text-xs text-stone-400">
 										{getLeagueDisplayName(league)}

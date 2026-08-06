@@ -201,6 +201,15 @@ function calculateSeasonStartDate(league: string, year: number): Date {
 		return date
 	}
 
+	if (LEAGUE === 'WWC') {
+		// Women's World Cups run every 4 years; 2027 opens June 24 in Brazil.
+		// Pick the next tournament year from `year` (2027, 2031, 2035, ...)
+		let wwcYear = year
+		while ((wwcYear - 2027) % 4 !== 0 || wwcYear < 2027) wwcYear++
+		date = new Date(Date.UTC(wwcYear, 5, 24, 19, 0, 0))
+		return date
+	}
+
 	// Fallback: first day of next year
 	return new Date(year + 1, 0, 1)
 }

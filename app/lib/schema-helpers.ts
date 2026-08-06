@@ -35,6 +35,8 @@ export function getSportName(league: string): string {
 			return 'American Football'
 		case 'WORLDCUP':
 			return 'Soccer'
+		case 'WWC':
+			return 'Soccer'
 		default:
 			return 'Sports'
 	}
@@ -46,6 +48,8 @@ export function getLeagueDisplayName(league: string): string {
 	switch (league) {
 		case 'WORLDCUP':
 			return 'World Cup'
+		case 'WWC':
+			return "Women's World Cup"
 		default:
 			return league
 	}
@@ -53,7 +57,18 @@ export function getLeagueDisplayName(league: string): string {
 
 // Soccer leagues — used to drop the "the" prefix in countdown copy
 // (e.g. "till Seattle play next" vs "till the Sounders play next").
-export const SOCCER_LEAGUES = new Set(['CPL', 'MLS', 'NWSL', 'NSL', 'WORLDCUP'])
+export const SOCCER_LEAGUES = new Set([
+	'CPL',
+	'MLS',
+	'NWSL',
+	'NSL',
+	'WORLDCUP',
+	'WWC',
+])
+
+// Tournaments, not recurring seasons — copy drops the word "season"
+// ("the 2027 Women's World Cup", not "the 2027 Women's World Cup season").
+export const TOURNAMENT_LEAGUES = new Set(['WORLDCUP', 'WWC'])
 
 export function getLeagueFullName(league: string): string {
 	switch (league) {
@@ -85,6 +100,8 @@ export function getLeagueFullName(league: string): string {
 			return 'College Football'
 		case 'WORLDCUP':
 			return 'FIFA World Cup'
+		case 'WWC':
+			return "FIFA Women's World Cup"
 		default:
 			return league
 	}
@@ -106,6 +123,7 @@ export function getLeagueSameAs(league: string): string {
 		PWHL: 'https://www.thepwhl.com',
 		CFB: 'https://www.ncaa.com/sports/football/fbs',
 		WORLDCUP: 'https://www.fifa.com/en/tournaments/mens/worldcup',
+		WWC: 'https://www.fifa.com/en/tournaments/womens/womensworldcup',
 	}
 	return officialUrls[league] || ''
 }
@@ -212,12 +230,11 @@ export function generateLeagueSportsEventSchema(
 	return {
 		'@context': 'https://schema.org',
 		'@type': 'SportsEvent',
-		// The World Cup is a tournament — "2026 FIFA World Cup", not
+		// World Cups are tournaments — "2026 FIFA World Cup", not
 		// "2026 FIFA World Cup Season"
-		name:
-			league === 'WORLDCUP'
-				? `${seasonYear} ${fullName}`
-				: `${seasonYear} ${fullName} Season`,
+		name: TOURNAMENT_LEAGUES.has(league)
+			? `${seasonYear} ${fullName}`
+			: `${seasonYear} ${fullName} Season`,
 		startDate: seasonStartDate,
 		eventStatus: 'https://schema.org/EventScheduled',
 		sport: getSportName(league),
@@ -271,7 +288,7 @@ export function generateWebSiteSchema() {
 		url: 'https://teamcountdown.com',
 		publisher: { '@id': 'https://teamcountdown.com/#organization' },
 		description:
-			'The fastest and prettiest way to check the next NFL, CFB, CFL, NBA, WNBA, CEBL, MLB, NHL, PWHL, MLS, NWSL, CPL, NSL, or World Cup game. Launches instantly from your home screen.',
+			"The fastest and prettiest way to check the next NFL, CFB, CFL, NBA, WNBA, CEBL, MLB, NHL, PWHL, MLS, NWSL, CPL, NSL, World Cup, or Women's World Cup game. Launches instantly from your home screen.",
 		about: [
 			{
 				'@type': 'SportsOrganization',
@@ -328,6 +345,10 @@ export function generateWebSiteSchema() {
 			{
 				'@type': 'SportsOrganization',
 				name: 'FIFA World Cup',
+			},
+			{
+				'@type': 'SportsOrganization',
+				name: "FIFA Women's World Cup",
 			},
 		],
 	}

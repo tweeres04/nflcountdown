@@ -13,7 +13,8 @@ import { nwslGameToGame } from './nwslGameToGame'
 import { pwhlGameToGame } from './pwhlGameToGame'
 import { cfbGameToGame } from './cfbGameToGame'
 import { worldCupGameToGame } from './worldCupGameToGame'
-import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, CflScheduleApi, NslScheduleApi, CeblScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, WorldCupScheduleApi, Game } from './types'
+import { wwcGameToGame } from './wwcGameToGame'
+import { MlbScheduleApi, NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, CflScheduleApi, NslScheduleApi, CeblScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, WorldCupScheduleApi, WwcScheduleApi, Game } from './types'
 
 /**
  * Loads all games for a given league from JSON schedule files.
@@ -115,6 +116,12 @@ export async function getAllGames(league: string, viewingTeamAbbrev?: string): P
 		const raw = await readFile('data/worldcup_schedule.json', 'utf-8')
 		const wcSchedule: WorldCupScheduleApi = JSON.parse(raw)
 		return wcSchedule.Results.map(worldCupGameToGame)
+	}
+
+	if (LEAGUE === 'WWC') {
+		const raw = await readFile('data/wwc_schedule.json', 'utf-8')
+		const wwcSchedule: WwcScheduleApi = JSON.parse(raw)
+		return wwcSchedule.Results.map(wwcGameToGame)
 	}
 
 	return []

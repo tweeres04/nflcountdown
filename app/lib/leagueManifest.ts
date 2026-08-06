@@ -16,6 +16,7 @@ const LEAGUE_MANIFEST: Record<
 	PWHL: { fullName: 'PWHL Countdown', shortName: 'PWHL', brandColor: '#350282' },
 	CFB: { fullName: 'College Football Countdown', shortName: 'CFB', brandColor: '#1a1a1a' },
 	WORLDCUP: { fullName: 'FIFA World Cup Countdown', shortName: 'World Cup', brandColor: '#326295' },
+	WWC: { fullName: "FIFA Women's World Cup Countdown", shortName: "Women's World Cup", brandColor: '#006341' },
 }
 
 export function buildLeagueManifest(league: string | undefined, path: string) {

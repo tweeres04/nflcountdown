@@ -401,6 +401,12 @@ export default function Countdown({
 				) : (
 					<img
 						src={logo}
+						// Teams whose logo doesn't exist yet (e.g. WWC nations before
+						// their flags are added) fall back to the league logo
+						onError={(e) => {
+							e.currentTarget.onerror = null
+							e.currentTarget.src = `/logos/${LEAGUE.toLowerCase()}.svg`
+						}}
 						className={cn(
 							'mx-auto object-contain',
 							LEAGUE === 'NHL' ||
@@ -411,7 +417,8 @@ export default function Countdown({
 								LEAGUE === 'NWSL' ||
 								LEAGUE === 'NSL' ||
 								LEAGUE === 'PWHL' ||
-								LEAGUE === 'WORLDCUP'
+								LEAGUE === 'WORLDCUP' ||
+								LEAGUE === 'WWC'
 								? 'h-[256px] md:h-[384px] my-8'
 								: 'w-[256px] h-[256px] md:w-[384px] md:h-[384px]',
 							{ 'py-8 lg:py-16': LEAGUE === 'MLB' }
@@ -596,6 +603,10 @@ export default function Countdown({
 											LEAGUE === 'NFL' ? '' : `${LEAGUE.toLowerCase()}/`
 										}${t.abbreviation.toLowerCase()}.svg`}
 										alt={`${t.fullName} logo`}
+										onError={(e) => {
+											e.currentTarget.onerror = null
+											e.currentTarget.src = `/logos/${LEAGUE.toLowerCase()}.svg`
+										}}
 										className="h-10 w-10 object-contain flex-shrink-0"
 									/>
 									<div className="text-base font-semibold text-white">

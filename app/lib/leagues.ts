@@ -17,6 +17,7 @@ export const LEAGUES = [
 	'CPL',
 	'NSL',
 	'WORLDCUP',
+	'WWC',
 ]
 
 // NFL team logos live at the logos root; every other league is namespaced.

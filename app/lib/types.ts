@@ -300,3 +300,8 @@ export interface WorldCupMatchApi {
 export interface WorldCupScheduleApi {
 	Results: WorldCupMatchApi[]
 }
+
+// Women's World Cup uses the same FIFA API format as the men's World Cup
+export type WwcTeamApi = WorldCupTeamApi
+export type WwcMatchApi = WorldCupMatchApi
+export type WwcScheduleApi = WorldCupScheduleApi

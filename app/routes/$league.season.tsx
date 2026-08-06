@@ -7,6 +7,7 @@ import { getSeasonStartDate } from '~/lib/getSeasonStartDate'
 import {
 	generateBreadcrumbSchema,
 	getLeagueDisplayName,
+	TOURNAMENT_LEAGUES,
 } from '~/lib/schema-helpers'
 import { getTeams, getAllTeamsByLeague } from '~/lib/getTeams'
 
@@ -25,6 +26,7 @@ const SUPPORTED_LEAGUES = [
 	'PWHL',
 	'CFB',
 	'WORLDCUP',
+	'WWC',
 ]
 
 const LEAGUE_SEASON_META: Record<
@@ -45,6 +47,7 @@ const LEAGUE_SEASON_META: Record<
 	PWHL: { fullName: "Professional Women's Hockey League", seasonTerm: 'puck drop', titleKeyword: 'PWHL Season', brandColor: '#350282' },
 	CFB: { fullName: 'College Football', seasonTerm: 'kickoff', titleKeyword: 'College Football Season', brandColor: '#1a1a1a' },
 	WORLDCUP: { fullName: 'FIFA World Cup', seasonTerm: 'kickoff', titleKeyword: 'FIFA World Cup', brandColor: '#326295' },
+	WWC: { fullName: "FIFA Women's World Cup", seasonTerm: 'kickoff', titleKeyword: "FIFA Women's World Cup", brandColor: '#006341' },
 }
 
 // Single source for the season FAQ so the visible section and the FAQPage
@@ -61,7 +64,7 @@ function buildSeasonFaqs(
 	const seasonTerm = meta?.seasonTerm ?? 'kickoff'
 	// World Cup is a tournament, not a recurring season — drop the word "season"
 	// from copy ("the 2026 World Cup", not "the 2026 World Cup season").
-	const isTournament = LEAGUE === 'WORLDCUP'
+	const isTournament = TOURNAMENT_LEAGUES.has(LEAGUE)
 	const eventNoun = isTournament ? leagueLabel : `${leagueLabel} season`
 	const nextEvent = isTournament ? `next ${leagueLabel}` : 'next season'
 
@@ -101,7 +104,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	const seasonTerm = meta?.seasonTerm ?? 'kickoff'
 	// World Cup is a tournament, not a recurring season — drop the word "season"
 	// from copy ("the 2026 World Cup", not "the 2026 World Cup season").
-	const isTournament = LEAGUE === 'WORLDCUP'
+	const isTournament = TOURNAMENT_LEAGUES.has(LEAGUE)
 	const eventNoun = isTournament ? leagueLabel : `${leagueLabel} season`
 	const nextEvent = isTournament ? `next ${leagueLabel}` : 'next season'
 
@@ -212,7 +215,7 @@ export default function SeasonCountdown() {
 
 	const meta = LEAGUE_SEASON_META[LEAGUE]
 	const leagueLabel = getLeagueDisplayName(LEAGUE)
-	const isTournament = LEAGUE === 'WORLDCUP'
+	const isTournament = TOURNAMENT_LEAGUES.has(LEAGUE)
 	const eventNoun = isTournament ? leagueLabel : `${leagueLabel} season`
 
 	const breadcrumbItems = [

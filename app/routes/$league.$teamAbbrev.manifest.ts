@@ -15,8 +15,9 @@ import { nwslTeamToTeam } from '~/lib/nwslGameToGame'
 import { pwhlTeamToTeam } from '~/lib/pwhlGameToGame'
 import { cfbTeamToTeam } from '~/lib/cfbGameToGame'
 import { worldCupTeamToTeam } from '~/lib/worldCupGameToGame'
+import { wwcTeamToTeam } from '~/lib/wwcGameToGame'
 import { readFile } from 'node:fs/promises'
-import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, CflScheduleApi, NslScheduleApi, CeblScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, WorldCupScheduleApi, Team } from '~/lib/types'
+import { NbaScheduleApi, NflScheduleApi, NhlScheduleApi, WnbaScheduleApi, CplScheduleApi, CflScheduleApi, NslScheduleApi, CeblScheduleApi, MlsScheduleApi, NwslScheduleApi, PwhlScheduleApi, CfbScheduleApi, WorldCupScheduleApi, WwcScheduleApi, WwcTeamApi, Team } from '~/lib/types'
 
 export async function loader({
 	params: { league, teamAbbrev },
@@ -50,6 +51,8 @@ export async function loader({
 		? 'data/cfb_schedule.json'
 		: LEAGUE === 'WORLDCUP'
 		? 'data/worldcup_schedule.json'
+		: LEAGUE === 'WWC'
+		? 'data/wwc_schedule.json'
 		: 'data/nfl_schedule.json'
 
 	const scheduleRaw = await readFile(scheduleFile, 'utf-8')
@@ -143,6 +146,16 @@ export async function loader({
 				'IdTeam'
 		  )
 				.map(worldCupTeamToTeam)
+				.filter((t): t is Team => t !== null) as Team[])
+		: LEAGUE === 'WWC'
+		? (uniqBy(
+				(scheduleParsed as WwcScheduleApi).Results.flatMap((m) => [
+					m.Home,
+					m.Away,
+				]).filter((t): t is WwcTeamApi => t !== null && !!t.IdTeam),
+				'IdTeam'
+		  )
+				.map(wwcTeamToTeam)
 				.filter((t): t is Team => t !== null) as Team[])
 		: uniqBy(
 				(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),

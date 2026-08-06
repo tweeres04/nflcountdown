@@ -523,6 +523,13 @@ npm run dev
 - **13 teams** (2026 season)
 - **Season**: May - September
 
+### WWC (FIFA Women's World Cup)
+- **API**: Same FIFA API as the men's World Cup — `api.fifa.com/api/v3/calendar/matches?idSeason=289120` (Brazil 2027, idCompetition=103). Find future season ids via `api.fifa.com/api/v3/seasons?idCompetition=103`. Types alias the `WorldCup*` types.
+- **Launched pre-schedule**: FIFA lists the season with real dates but zero matches until the calendar publishes. The site handles this: empty team list (plain nav link), countdown falls back to the calculated rule (June 24, quadrennial from 2027). Teams/matches flow in automatically from the daily cron.
+- **Tournament copy**: `TOURNAMENT_LEAGUES` set in schema-helpers drops the word "season" for both World Cups — add future tournaments there, not via `=== 'WORLDCUP'` checks.
+- **Logo**: Wikipedia's emblem SVG is black-on-transparent; the site copy has `fill="white"` added to the root `<svg>` so unfilled (default-black) paths render white on dark backgrounds while the trophy's explicit fills are untouched.
+- **When teams qualify** (late 2026 – early 2027): add nations to `wwc_colors.json` (seeded with Brazil) and copy their flag SVGs from `public/logos/worldcup/` into `public/logos/wwc/` (same nations, same flags), plus flag-icons for any nation not in the men's set.
+
 ### CFL (Canadian Football League)
 - **API**: Official scoreboard feed (`cflscoreboard.cfl.ca/json/scoreboard/rounds.json`) — the source behind cfl.ca/schedule. ESPN dropped CFL data after 2023; don't use it. Top-level array of rounds (`PRE`/`REG`/`POST`) with games in `tournaments`; the cron drops preseason and wraps the array in `{ rounds }`. Playoff placeholder games have `TBD` squads — the colors-file whitelist filters them out.
 - **Feed quirk**: says "Ottawa RedBlacks"; the colors file's `team`/`nickname` fields normalize naming (`cflTeamToTeam` prefers them over feed names).

@@ -12,7 +12,7 @@ import TeamSearch from '~/components/team-search'
 
 export const meta: MetaFunction = () => {
 	const title = `Countdown to your team's next game - Team Countdown`
-	const description = `Get pumped for game day. World Cup, NFL, CFB, CFL, NBA, WNBA, CEBL, MLB, NHL, PWHL, MLS, NWSL, CPL and NSL. Pick your team and add it to your home screen.`
+	const description = `Get pumped for game day. World Cup, Women's World Cup, NFL, CFB, CFL, NBA, WNBA, CEBL, MLB, NHL, PWHL, MLS, NWSL, CPL and NSL. Pick your team and add it to your home screen.`
 	const url = `https://teamcountdown.com`
 
 	const metaTags: any[] = [
@@ -83,6 +83,11 @@ export default function Index() {
 		{ code: 'cpl', name: 'CPL', fullName: 'Canadian Premier League' },
 		{ code: 'nsl', name: 'NSL', fullName: 'Northern Super League' },
 		{ code: 'worldcup', name: 'World Cup', fullName: 'FIFA World Cup' },
+		{
+			code: 'wwc',
+			name: "Women's World Cup",
+			fullName: "FIFA Women's World Cup",
+		},
 	]
 
 	return (

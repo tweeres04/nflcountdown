@@ -17,6 +17,7 @@ import { nwslTeamToTeam } from '~/lib/nwslGameToGame'
 import { pwhlTeamToTeam } from '~/lib/pwhlGameToGame'
 import { cfbTeamToTeam } from '~/lib/cfbGameToGame'
 import { worldCupTeamToTeam } from '~/lib/worldCupGameToGame'
+import { wwcTeamToTeam } from '~/lib/wwcGameToGame'
 import { readFile } from 'node:fs/promises'
 import {
 	NbaScheduleApi,
@@ -32,6 +33,8 @@ import {
 	PwhlScheduleApi,
 	CfbScheduleApi,
 	WorldCupScheduleApi,
+	WwcScheduleApi,
+	WwcTeamApi,
 	Team,
 } from '~/lib/types'
 import {
@@ -39,6 +42,7 @@ import {
 	generateBreadcrumbSchema,
 	generateLeagueSportsEventSchema,
 	getLeagueDisplayName,
+	TOURNAMENT_LEAGUES,
 } from '~/lib/schema-helpers'
 import Footer from '~/components/footer'
 import { getSuggestedGames } from '~/lib/getSuggestedGames'
@@ -213,6 +217,17 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		seasonMonths: 'June to July',
 		brandColor: '#326295', // FIFA corporate blue
 	},
+	WWC: {
+		fullName: "FIFA Women's World Cup",
+		shortName: "Women's World Cup",
+		seasonTerm: 'kickoff',
+		titleKeyword: "Women's World Cup",
+		crossYear: false,
+		teamCount: 32,
+		seasonLength: '64 matches',
+		seasonMonths: 'June to July',
+		brandColor: '#006341', // dark green from the Brasil 2027 palette
+	},
 }
 
 function formatSeasonYear(year: number, crossYear: boolean): string {
@@ -233,10 +248,7 @@ function buildLeagueFaqs(
 ): { question: string; answer: string }[] {
 	const leagueLabel = getLeagueDisplayName(LEAGUE)
 	const meta = LEAGUE_META[LEAGUE]
-	// World Cup is a tournament, not a recurring season — drop the word
-	// "season" from copy ("the 2026 World Cup", not "the 2026 World Cup
-	// season"), same as the season route.
-	const isTournament = LEAGUE === 'WORLDCUP'
+	const isTournament = TOURNAMENT_LEAGUES.has(LEAGUE)
 	const eventNoun = isTournament ? leagueLabel : `${leagueLabel} season`
 
 	const seasonStartFormatted = seasonStartDate
@@ -323,7 +335,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	const url = `https://teamcountdown.com/${lowercaseLeague}`
 	const ogImage = LEAGUE === 'NFL' ? 'og.png' : `${lowercaseLeague}-og.png`
 
-	const isTournament = LEAGUE === 'WORLDCUP'
+	const isTournament = TOURNAMENT_LEAGUES.has(LEAGUE)
 	const eventNoun = isTournament ? leagueLabel : `${leagueLabel} season`
 
 	const title = `${leagueLabel} Game Countdown - Team Countdown ${seasonYear}`
@@ -415,6 +427,7 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 			'PWHL',
 			'CFB',
 			'WORLDCUP',
+			'WWC',
 		].includes(LEAGUE)
 	) {
 		throw new Response(null, { status: 404 })
@@ -447,6 +460,8 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 			? 'data/cfb_schedule.json'
 			: LEAGUE === 'WORLDCUP'
 			? 'data/worldcup_schedule.json'
+			: LEAGUE === 'WWC'
+			? 'data/wwc_schedule.json'
 			: 'data/nfl_schedule.json'
 
 	const scheduleRaw = await readFile(scheduleFile, 'utf-8')
@@ -550,6 +565,16 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 					'IdTeam'
 			  )
 					.map(worldCupTeamToTeam)
+					.filter((t): t is Team => t !== null) as Team[])
+			: LEAGUE === 'WWC'
+			? (uniqBy(
+					(scheduleParsed as WwcScheduleApi).Results.flatMap((m) => [
+						m.Home,
+						m.Away,
+					]).filter((t): t is WwcTeamApi => t !== null && !!t.IdTeam),
+					'IdTeam'
+			  )
+					.map(wwcTeamToTeam)
 					.filter((t): t is Team => t !== null) as Team[])
 			: uniqBy(
 					(scheduleParsed as NflScheduleApi).games.map((g) => g.homeTeam),
