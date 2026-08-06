@@ -62,6 +62,14 @@ export default function TeamSearch({
 }: Props) {
 	const [query, setQuery] = useState('')
 	const inputRef = useRef<HTMLInputElement>(null)
+	const listRef = useRef<HTMLDivElement>(null)
+
+	// cmdk scrolls its selected item into view while results re-sort, which
+	// can leave the list partially scrolled on open. Pin it back to the top
+	// (after cmdk's frame) so the best match is always visible.
+	useEffect(() => {
+		requestAnimationFrame(() => listRef.current?.scrollTo({ top: 0 }))
+	}, [query])
 
 	// value → league rank so the filter can break score ties by league
 	// popularity (equally good matches, e.g. "miami", sort NFL first).
@@ -126,7 +134,7 @@ export default function TeamSearch({
 			{/* Only show results while typing; otherwise the full team list
 			    would dump onto the page below the input. */}
 			{query ? (
-				<CommandList>
+				<CommandList ref={listRef}>
 					<CommandEmpty>No teams or leagues found.</CommandEmpty>
 					{LEAGUES.map((league) => {
 						const lowercaseLeague = league.toLowerCase()
