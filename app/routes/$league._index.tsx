@@ -209,7 +209,7 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		titleKeyword: 'World Cup',
 		crossYear: false,
 		teamCount: 48,
-		seasonLength: '104 matches across the tournament',
+		seasonLength: '104 matches',
 		seasonMonths: 'June to July',
 		brandColor: '#326295', // FIFA corporate blue
 	},
@@ -222,27 +222,22 @@ function formatSeasonYear(year: number, crossYear: boolean): string {
 	return String(year)
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => {
-	const LEAGUE = data?.LEAGUE ?? 'NFL'
+// Single source for the league FAQ so the visible section and the FAQPage
+// JSON-LD stay identical — Google requires marked-up FAQ content to be
+// visible on the page.
+function buildLeagueFaqs(
+	LEAGUE: string,
+	seasonYear: string,
+	isMidSeason: boolean,
+	seasonStartDate: string | undefined
+): { question: string; answer: string }[] {
 	const leagueLabel = getLeagueDisplayName(LEAGUE)
-	const lowercaseLeague = LEAGUE.toLowerCase()
 	const meta = LEAGUE_META[LEAGUE]
-	const isMidSeason = data?.isMidSeason ?? false
-	const seasonYear = data?.seasonYear ?? String(new Date().getFullYear())
-	const seasonStartDate = data?.seasonStartDate
-	const url = `https://teamcountdown.com/${lowercaseLeague}`
-	const ogImage = LEAGUE === 'NFL' ? 'og.png' : `${lowercaseLeague}-og.png`
-
-	const title = `${leagueLabel} Game Countdown - Team Countdown ${seasonYear}`
-
-	const description = isMidSeason
-		? `The ${seasonYear} ${leagueLabel} season is underway. Live countdown to the next game. Pick your team for a personalized countdown.`
-		: `Countdown to the first ${leagueLabel} game of ${seasonYear}. Pick your team and add the countdown to your home screen.`
-
-	const breadcrumbItems = [
-		{ label: 'Team Countdown', href: '/' },
-		{ label: leagueLabel },
-	]
+	// World Cup is a tournament, not a recurring season — drop the word
+	// "season" from copy ("the 2026 World Cup", not "the 2026 World Cup
+	// season"), same as the season route.
+	const isTournament = LEAGUE === 'WORLDCUP'
+	const eventNoun = isTournament ? leagueLabel : `${leagueLabel} season`
 
 	const seasonStartFormatted = seasonStartDate
 		? new Date(seasonStartDate).toLocaleDateString('en-US', {
@@ -261,9 +256,11 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 		  })
 		: ''
 
-	// Next season year for mid-season references
+	// Next season year for mid-season references (World Cups are quadrennial)
 	const nextSeasonStartYear = isMidSeason
-		? meta?.crossYear
+		? isTournament
+			? new Date().getFullYear() + 4
+			: meta?.crossYear
 			? new Date().getFullYear()
 			: new Date().getFullYear() + 1
 		: null
@@ -271,58 +268,85 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 		? formatSeasonYear(nextSeasonStartYear, meta?.crossYear ?? false)
 		: null
 
-	const faqEntities = [
+	return [
 		// Q1+Q2: same questions, conditional answers
 		{
-			'@type': 'Question',
-			name: `How many days until the ${leagueLabel} season starts?`,
-			acceptedAnswer: {
-				'@type': 'Answer',
-				text: isMidSeason
-					? `The ${seasonYear} ${leagueLabel} season has already started. The next season is expected to begin in ${
-							meta?.seasonMonths?.split(' to ')[0] ?? 'fall'
-					  } ${nextSeasonYear}. Pick your team above to count down to their next game.`
-					: `The ${seasonYear} ${leagueLabel} season starts on ${seasonStartFormattedShort}. Use the live countdown above for the exact days, hours, minutes, and seconds remaining.`,
-			},
+			question: `How many days until the ${eventNoun} starts?`,
+			answer: isMidSeason
+				? `The ${seasonYear} ${eventNoun} has already started. The next ${
+						isTournament ? leagueLabel : 'season'
+				  } is expected to begin in ${
+						meta?.seasonMonths?.split(' to ')[0] ?? 'fall'
+				  } ${nextSeasonYear}. Pick your team above to count down to their next game.`
+				: `The ${seasonYear} ${eventNoun} starts on ${seasonStartFormattedShort}. Use the live countdown above for the exact days, hours, minutes, and seconds remaining.`,
 		},
 		{
-			'@type': 'Question',
-			name: `When does the ${leagueLabel} season start?`,
-			acceptedAnswer: {
-				'@type': 'Answer',
-				text: isMidSeason
-					? `The current ${leagueLabel} season began in ${
-							meta?.seasonMonths?.split(' to ')[0] ?? 'fall'
-					  } ${seasonYear}. The next ${leagueLabel} season is expected to start in ${
-							meta?.seasonMonths?.split(' to ')[0] ?? 'fall'
-					  } ${nextSeasonYear}.`
-					: `${leagueLabel} ${
-							meta?.seasonTerm ?? 'kickoff'
-					  } is on ${seasonStartFormatted}.`,
-			},
+			question: `When does the ${eventNoun} start?`,
+			answer: isMidSeason
+				? `The current ${eventNoun} began in ${
+						meta?.seasonMonths?.split(' to ')[0] ?? 'fall'
+				  } ${seasonYear}. The next ${eventNoun} is expected to start in ${
+						meta?.seasonMonths?.split(' to ')[0] ?? 'fall'
+				  } ${nextSeasonYear}.`
+				: `${leagueLabel} ${
+						meta?.seasonTerm ?? 'kickoff'
+				  } is on ${seasonStartFormatted}.`,
 		},
 		// Q3+Q4: static evergreen entries
 		{
-			'@type': 'Question',
-			name: `How many teams are in the ${leagueLabel}?`,
-			acceptedAnswer: {
-				'@type': 'Answer',
-				text: `The ${meta?.fullName ?? leagueLabel} has ${
-					meta?.teamCount ?? ''
-				} teams.`,
-			},
+			question: `How many teams are in the ${leagueLabel}?`,
+			answer: `The ${meta?.fullName ?? leagueLabel} has ${
+				meta?.teamCount ?? ''
+			} teams.`,
 		},
 		{
-			'@type': 'Question',
-			name: `How long is the ${leagueLabel} season?`,
-			acceptedAnswer: {
-				'@type': 'Answer',
-				text: `The ${leagueLabel} regular season runs ${
-					meta?.seasonLength ?? ''
-				}, typically from ${meta?.seasonMonths ?? ''}.`,
-			},
+			question: `How long is the ${eventNoun}?`,
+			answer: isTournament
+				? `The ${leagueLabel} runs ${
+						meta?.seasonLength ?? ''
+				  }, typically from ${meta?.seasonMonths ?? ''}.`
+				: `The ${leagueLabel} regular season runs ${
+						meta?.seasonLength ?? ''
+				  }, typically from ${meta?.seasonMonths ?? ''}.`,
 		},
 	]
+}
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+	const LEAGUE = data?.LEAGUE ?? 'NFL'
+	const leagueLabel = getLeagueDisplayName(LEAGUE)
+	const lowercaseLeague = LEAGUE.toLowerCase()
+	const meta = LEAGUE_META[LEAGUE]
+	const isMidSeason = data?.isMidSeason ?? false
+	const seasonYear = data?.seasonYear ?? String(new Date().getFullYear())
+	const seasonStartDate = data?.seasonStartDate
+	const url = `https://teamcountdown.com/${lowercaseLeague}`
+	const ogImage = LEAGUE === 'NFL' ? 'og.png' : `${lowercaseLeague}-og.png`
+
+	const isTournament = LEAGUE === 'WORLDCUP'
+	const eventNoun = isTournament ? leagueLabel : `${leagueLabel} season`
+
+	const title = `${leagueLabel} Game Countdown - Team Countdown ${seasonYear}`
+
+	const description = isMidSeason
+		? `The ${seasonYear} ${eventNoun} is underway. Live countdown to the next game. Pick your team for a personalized countdown.`
+		: `Countdown to the first ${leagueLabel} game of ${seasonYear}. Pick your team and add the countdown to your home screen.`
+
+	const breadcrumbItems = [
+		{ label: 'Team Countdown', href: '/' },
+		{ label: leagueLabel },
+	]
+
+	const faqEntities = buildLeagueFaqs(
+		LEAGUE,
+		seasonYear,
+		isMidSeason,
+		seasonStartDate
+	).map((faq) => ({
+		'@type': 'Question',
+		name: faq.question,
+		acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+	}))
 
 	const metaTags: any[] = [
 		{ title },
@@ -347,7 +371,9 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 			'script:ld+json': {
 				'@context': 'https://schema.org',
 				'@type': 'WebPage',
-				name: `${leagueLabel} Season Countdown`,
+				name: isTournament
+					? `${leagueLabel} Countdown`
+					: `${leagueLabel} Season Countdown`,
 				description,
 				url,
 				about: { '@type': 'SportsOrganization', name: meta?.fullName },
@@ -568,8 +594,15 @@ export function ErrorBoundary() {
 }
 
 export default function LeagueIndex() {
-	const { LEAGUE, teams, allTeams, upcomingGames, seasonStartDate } =
-		useLoaderData<typeof loader>()
+	const {
+		LEAGUE,
+		teams,
+		allTeams,
+		upcomingGames,
+		seasonStartDate,
+		isMidSeason,
+		seasonYear,
+	} = useLoaderData<typeof loader>()
 
 	const leagueMeta = LEAGUE_META[LEAGUE]
 	const leagueLabel = getLeagueDisplayName(LEAGUE)
@@ -590,6 +623,8 @@ export default function LeagueIndex() {
 	// Next game is either the soonest upcoming game or the season opener
 	const nextGame = upcomingGames[0] ?? seasonGame
 
+	const faqs = buildLeagueFaqs(LEAGUE, seasonYear, isMidSeason, seasonStartDate)
+
 	return (
 		<>
 			<div className="flex flex-col min-h-screen md:h-auto">
@@ -604,6 +639,7 @@ export default function LeagueIndex() {
 					suggestedGames={upcomingGames.slice(1)}
 					leagueBrandColor={leagueMeta?.brandColor}
 					searchLocation="league"
+					faqs={faqs}
 				/>
 				<Footer league={LEAGUE} dark />
 			</div>

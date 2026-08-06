@@ -180,6 +180,9 @@ interface CountdownProps {
 	// Renders the team/league search above the team picker; the value is the
 	// analytics location (league and season pages).
 	searchLocation?: 'league' | 'season'
+	// Visible FAQ section at the bottom of the page; must stay identical to
+	// the page's FAQPage JSON-LD.
+	faqs?: { question: string; answer: string }[]
 }
 
 function useUpdateTime() {
@@ -255,6 +258,7 @@ export default function Countdown({
 	leagueBrandColor,
 	countdownSuffix,
 	searchLocation,
+	faqs,
 }: CountdownProps) {
 	const LEAGUE = useContext(LeagueContext)
 	useUpdateTime()
@@ -604,6 +608,18 @@ export default function Countdown({
 						league={LEAGUE}
 						title={!team ? 'Upcoming games' : undefined}
 					/>
+				)}
+
+				{faqs && faqs.length > 0 && (
+					<div className="mt-10 space-y-6">
+						<h2 className="text-xl">{getLeagueDisplayName(LEAGUE)} FAQ</h2>
+						{faqs.map((faq) => (
+							<div key={faq.question} className="space-y-1">
+								<h3 className="text-base font-semibold">{faq.question}</h3>
+								<p className="text-white/80">{faq.answer}</p>
+							</div>
+						))}
+					</div>
 				)}
 			</div>
 		<InstallNotification

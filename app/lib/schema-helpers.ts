@@ -212,7 +212,12 @@ export function generateLeagueSportsEventSchema(
 	return {
 		'@context': 'https://schema.org',
 		'@type': 'SportsEvent',
-		name: `${seasonYear} ${fullName} Season`,
+		// The World Cup is a tournament — "2026 FIFA World Cup", not
+		// "2026 FIFA World Cup Season"
+		name:
+			league === 'WORLDCUP'
+				? `${seasonYear} ${fullName}`
+				: `${seasonYear} ${fullName} Season`,
 		startDate: seasonStartDate,
 		eventStatus: 'https://schema.org/EventScheduled',
 		sport: getSportName(league),
