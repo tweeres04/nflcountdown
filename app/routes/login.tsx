@@ -12,6 +12,7 @@ import {
 	useNavigation,
 	useSearchParams,
 } from '@remix-run/react'
+import GoogleIcon from '~/components/GoogleIcon'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
@@ -64,7 +65,11 @@ export default function Login() {
 	const navigation = useNavigation()
 	const [searchParams] = useSearchParams()
 	const pendingSave = searchParams.get('save')
+	const googleFailed = searchParams.get('error') === 'google'
 	const submitting = navigation.state === 'submitting'
+	const googleHref = pendingSave
+		? `/auth/google?save=${encodeURIComponent(pendingSave)}`
+		: '/auth/google'
 
 	return (
 		<div className="flex flex-col min-h-screen">
@@ -108,10 +113,20 @@ export default function Login() {
 						{actionData?.error ? (
 							<p className="text-sm text-red-300">{actionData.error}</p>
 						) : null}
-						<Button type="submit" disabled={submitting}>
+						<Button type="submit" fullWidth disabled={submitting}>
 							{submitting ? 'Logging in...' : 'Log in'}
 						</Button>
 					</Form>
+					{googleFailed ? (
+						<p className="text-sm text-red-300">
+							Google sign-in didn&apos;t work. Try again?
+						</p>
+					) : null}
+					<Button asChild>
+						<a href={googleHref}>
+							Continue with Google <GoogleIcon className="size-5" />
+						</a>
+					</Button>
 					<p className="text-white/80">
 						<Link to="/forgot-password" className="content-link">
 							Forgot your password?

@@ -12,6 +12,7 @@ import {
 	useNavigation,
 	useSearchParams,
 } from '@remix-run/react'
+import GoogleIcon from '~/components/GoogleIcon'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
@@ -80,6 +81,9 @@ export default function Signup() {
 	const [searchParams] = useSearchParams()
 	const pendingSave = searchParams.get('save')
 	const submitting = navigation.state === 'submitting'
+	const googleHref = pendingSave
+		? `/auth/google?save=${encodeURIComponent(pendingSave)}`
+		: '/auth/google'
 
 	return (
 		<div className="flex flex-col min-h-screen">
@@ -125,10 +129,15 @@ export default function Signup() {
 						{actionData?.error ? (
 							<p className="text-sm text-red-300">{actionData.error}</p>
 						) : null}
-						<Button type="submit" disabled={submitting}>
+						<Button type="submit" fullWidth disabled={submitting}>
 							{submitting ? 'Creating account...' : 'Create account'}
 						</Button>
 					</Form>
+					<Button asChild>
+						<a href={googleHref}>
+							Continue with Google <GoogleIcon className="size-5" />
+						</a>
+					</Button>
 					<p className="text-white/80">
 						Already have an account?{' '}
 						<Link

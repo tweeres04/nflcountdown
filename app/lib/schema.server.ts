@@ -14,7 +14,9 @@ import {
 export const users = sqliteTable('users', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
 	email: text('email').notNull().unique(),
-	password: text('password').notNull(),
+	// Null for accounts created via Google sign-in (they can set one later
+	// through the password reset flow)
+	password: text('password'),
 	createdAt: integer('created_at', { mode: 'timestamp' })
 		.notNull()
 		.default(sql`(unixepoch())`),

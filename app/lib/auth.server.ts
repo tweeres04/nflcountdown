@@ -68,7 +68,8 @@ export async function verifyLogin(email: string, password: string) {
 	const user = await db.query.users.findFirst({
 		where: eq(users.email, email),
 	})
-	const validPassword = user
+	// Google-created accounts have no password until they set one via reset
+	const validPassword = user?.password
 		? await argon2.verify(user.password, password)
 		: false
 	return validPassword && user ? { id: user.id, email: user.email } : null

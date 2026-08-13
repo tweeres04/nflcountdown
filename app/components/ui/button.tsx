@@ -19,6 +19,10 @@ const buttonVariants = cva(
 				sm: 'px-2 py-3 text-xs',
 				icon: 'justify-center p-2',
 			},
+			// Stays full width on desktop instead of shrinking to fit
+			fullWidth: {
+				true: 'lg:w-full',
+			},
 		},
 		defaultVariants: {
 			variant: 'default',
@@ -34,11 +38,11 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-	({ className, variant, size, asChild = false, ...props }, ref) => {
+	({ className, variant, size, fullWidth, asChild = false, ...props }, ref) => {
 		const Comp = asChild ? Slot : 'button'
 		return (
 			<Comp
-				className={cn(buttonVariants({ variant, size }), className)}
+				className={cn(buttonVariants({ variant, size, fullWidth }), className)}
 				ref={ref}
 				{...props}
 			/>
