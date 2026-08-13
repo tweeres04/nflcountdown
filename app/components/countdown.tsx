@@ -15,6 +15,7 @@ import { Button } from './ui/button'
 import FeedbackButton from './feedback-button'
 import InstallNotification from './install-notification'
 import IosShareIcon from './IosShareIcon'
+import SaveButton from './save-button'
 import { cn } from '~/lib/utils'
 import { LeagueContext } from '~/lib/league-context'
 import GameList from './game-list'
@@ -491,6 +492,7 @@ export default function Countdown({
 							)}
 						</Button>
 					)}
+					<SaveButton league={LEAGUE} teamName={team?.fullName} />
 					{affiliateLinks && (
 						<Suspense
 							fallback={

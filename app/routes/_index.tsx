@@ -1,14 +1,24 @@
-import { json, type MetaFunction } from '@remix-run/node'
-import { useLoaderData } from '@remix-run/react'
+import {
+	json,
+	type LoaderFunctionArgs,
+	type MetaFunction,
+} from '@remix-run/node'
+import { Link, useLoaderData } from '@remix-run/react'
 import {
 	generateOrganizationSchema,
 	generateWebSiteSchema,
 } from '~/lib/schema-helpers'
 import { getAllTeamsByLeague } from '~/lib/getTeams'
 import Footer from '~/components/footer'
+import MiniCountdown from '~/components/mini-countdown'
 import { SidebarProvider } from '~/components/ui/sidebar'
 import TeamsSidebar, { TeamsSidebarTrigger } from '~/components/teams-sidebar'
 import TeamSearch from '~/components/team-search'
+import {
+	getSavedPagesData,
+	type SavedPageData,
+} from '~/lib/savedPages.server'
+import { getUser } from '~/lib/session.server'
 
 export const meta: MetaFunction = () => {
 	const title = `Countdown to your team's next game - Team Countdown`
@@ -48,13 +58,20 @@ export const meta: MetaFunction = () => {
 	return metaTags
 }
 
-export async function loader() {
-	const allTeams = await getAllTeamsByLeague()
-	return json({ allTeams })
+export async function loader({ request }: LoaderFunctionArgs) {
+	const [allTeams, savedPages] = await Promise.all([
+		getAllTeamsByLeague(),
+		// An untyped [] here infers never[], which Remix's Jsonify turns
+		// into null[] — poisoning the serialized union with null
+		getUser(request).then((user) =>
+			user ? getSavedPagesData(user.id) : Promise.resolve<SavedPageData[]>([])
+		),
+	])
+	return json({ allTeams, savedPages })
 }
 
 export default function Index() {
-	const { allTeams } = useLoaderData<typeof loader>()
+	const { allTeams, savedPages } = useLoaderData<typeof loader>()
 
 	const leagues = [
 		{ code: 'nfl', name: 'NFL', fullName: 'National Football League' },
@@ -101,19 +118,53 @@ export default function Index() {
 					</div>
 					<div className="flex flex-col gap-10">
 						<div className="space-y-5">
-							<div className="space-y-3">
-								<h2 className="text-2xl">Get pumped for game day</h2>
-								<p className="text-white/80">
-									Pick your team. Add it to your home screen. Watch the days,
-									hours, and minutes tick away until kickoff.
-								</p>
-							</div>
 							<TeamSearch
 								allTeams={allTeams}
 								location="homepage"
 								size="lg"
 								shortcut
 							/>
+							{savedPages.length > 0 && (
+								<div className="space-y-3">
+									<h2 className="text-2xl">Saved pages</h2>
+									<div className="flex flex-col gap-3">
+										{savedPages.map((page) => (
+											<Link
+												key={page.path}
+												to={page.path}
+												className="flex items-center gap-4 py-2 content-link group"
+											>
+												<img
+													src={page.logo}
+													alt={`${page.title} logo`}
+													className="h-10 w-10 object-contain flex-shrink-0"
+												/>
+												<div className="flex flex-col items-start gap-0.5">
+													<div className="text-base font-semibold text-white">
+														{page.title}
+													</div>
+													{page.gameTime ? (
+														<MiniCountdown gameTime={page.gameTime} />
+													) : (
+														<div className="text-sm text-white/60">
+															No upcoming games
+														</div>
+													)}
+												</div>
+											</Link>
+										))}
+									</div>
+								</div>
+							)}
+							{savedPages.length === 0 && (
+								<div className="space-y-3">
+									<h2 className="text-2xl">Get pumped for game day</h2>
+									<p className="text-white/80">
+										Pick your team. Add it to your home screen. Watch the days,
+										hours, and minutes tick away until kickoff.
+									</p>
+								</div>
+							)}
 							<div className="space-y-3">
 								<h3 className="text-xl">Choose your league:</h3>
 								<div className="flex flex-col gap-3">

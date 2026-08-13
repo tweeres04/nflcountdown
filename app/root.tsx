@@ -20,6 +20,8 @@ import {
 
 import { LeagueContext } from './lib/league-context'
 import { LoaderFunctionArgs } from '@remix-run/node'
+import { getUser } from './lib/session.server'
+import { getSavedPaths } from './lib/savedPages.server'
 
 // NHL slug to abbreviation mapping for legacy nhlcountdown.tweeres.com redirects
 const nhlSlugToAbbrev: Record<string, string> = {
@@ -57,7 +59,7 @@ const nhlSlugToAbbrev: Record<string, string> = {
 	'kraken': 'sea',
 }
 
-export function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
 	const url = new URL(request.url)
 	if (url.hostname.endsWith('.ca')) {
 		url.hostname = `teamcountdown.com`
@@ -134,11 +136,19 @@ export function loader({ request }: LoaderFunctionArgs) {
 	const AHREFS_KEY = process.env.AHREFS_KEY
 	const MIXPANEL_TOKEN = process.env.MIXPANEL_TOKEN
 	const MIXPANEL_TOKEN_LEGACY = process.env.MIXPANEL_TOKEN_LEGACY
+
+	// Saved paths live here so the save button on any page knows its state.
+	// Anonymous requests (no session cookie) skip the db entirely.
+	const user = await getUser(request)
+	const savedPaths = user ? await getSavedPaths(user.id) : []
+
 	return json({
 		GTAG_ID,
 		AHREFS_KEY,
 		MIXPANEL_TOKEN,
 		MIXPANEL_TOKEN_LEGACY,
+		user,
+		savedPaths,
 	})
 }
 

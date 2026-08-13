@@ -4,9 +4,11 @@ import {
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from '~/components/ui/collapsible'
+import { Form, useRouteLoaderData } from '@remix-run/react'
 import {
 	Sidebar,
 	SidebarContent,
+	SidebarFooter,
 	SidebarGroup,
 	SidebarHeader,
 	SidebarMenu,
@@ -69,6 +71,12 @@ type Props = {
 	searchShortcut?: boolean
 }
 
+// The root loader returns a plain Response on redirect paths, which breaks
+// useRouteLoaderData<typeof loader> inference — so type just what we need
+interface RootLoaderData {
+	user?: { id: number; email: string } | null
+}
+
 export default function TeamsSidebar({
 	allTeams,
 	team,
@@ -77,6 +85,8 @@ export default function TeamsSidebar({
 }: Props) {
 	const currentAbbrev = team?.abbreviation?.toLowerCase()
 	const { setOpen } = useSidebar()
+	const rootData = useRouteLoaderData('root') as RootLoaderData | undefined
+	const user = rootData?.user ?? null
 
 	return (
 		<Sidebar>
@@ -191,6 +201,17 @@ export default function TeamsSidebar({
 					</SidebarGroup>
 				</nav>
 			</SidebarContent>
+			<SidebarFooter>
+				{user ? (
+					<Form method="post" action="/logout">
+						<SidebarMenuButton type="submit">Log out</SidebarMenuButton>
+					</Form>
+				) : (
+					<SidebarMenuButton asChild>
+						<a href="/login">Log in</a>
+					</SidebarMenuButton>
+				)}
+			</SidebarFooter>
 		</Sidebar>
 	)
 }
