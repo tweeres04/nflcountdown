@@ -203,9 +203,14 @@ export default function TeamsSidebar({
 			</SidebarContent>
 			<SidebarFooter>
 				{user ? (
-					<Form method="post" action="/logout">
-						<SidebarMenuButton type="submit">Log out</SidebarMenuButton>
-					</Form>
+					<>
+						<div className="px-2 text-xs text-sidebar-foreground/70 truncate">
+							{user.email}
+						</div>
+						<Form method="post" action="/logout">
+							<SidebarMenuButton type="submit">Log out</SidebarMenuButton>
+						</Form>
+					</>
 				) : (
 					<SidebarMenuButton asChild>
 						<a href="/login">Log in</a>
