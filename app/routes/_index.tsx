@@ -128,7 +128,7 @@ export default function Index() {
 							/>
 							{savedPages.length > 0 && (
 								<div className="space-y-3">
-									<h2 className="text-2xl">Saved pages</h2>
+									<h2 className="text-2xl">Saved</h2>
 									<div className="flex flex-col gap-3">
 										{savedPages.map((page) => (
 											<Link
