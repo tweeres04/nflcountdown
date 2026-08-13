@@ -10,6 +10,7 @@
 		"start": "remix-serve ./build/server/index.js",
 		"start:docker": "drizzle-kit push && remix-serve ./build/server/index.js",
 		"db:push": "drizzle-kit push",
+		"db:download": "./scripts/db-download.sh",
 		"deploy": "./deploy.sh",
 		"typecheck": "tsc",
 		"countdown_screenshots": "npx tsx scripts/takeCountdownScreenshots.ts",
