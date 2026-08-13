@@ -10,6 +10,7 @@ import {
 } from '~/lib/schema-helpers'
 import { getAllTeamsByLeague } from '~/lib/getTeams'
 import Footer from '~/components/footer'
+import InstallNotification from '~/components/install-notification'
 import MiniCountdown from '~/components/mini-countdown'
 import { SidebarProvider } from '~/components/ui/sidebar'
 import TeamsSidebar, { TeamsSidebarTrigger } from '~/components/teams-sidebar'
@@ -114,6 +115,7 @@ export default function Index() {
 				<div className="font-sans text-white p-4 max-w-[500px] lg:max-w-[750px] mx-auto space-y-12 min-h-[600px] grow pb-20">
 					<div className="flex items-center gap-2">
 						<TeamsSidebarTrigger />
+						<img src="/icon.svg" alt="" className="size-8" />
 						<h1 className="text-3xl">Team Countdown</h1>
 					</div>
 					<div className="flex flex-col gap-10">
@@ -195,6 +197,10 @@ export default function Index() {
 					</div>
 				</div>
 				<Footer dark />
+				{/* Once pages are saved, the homepage is the app worth installing */}
+				{savedPages.length > 0 && (
+					<InstallNotification className="bg-[#111111]" />
+				)}
 			</div>
 		</SidebarProvider>
 	)

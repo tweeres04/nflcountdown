@@ -178,7 +178,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			  }${lowercaseAbbreviation}.${filetype}`
 			: LEAGUE
 			? `/logos/${lowercaseLeague}.${filetype}`
-			: `/logos/nfl.${filetype}`
+			: // No team or league: the Team Countdown brand icon
+			filetype === 'svg'
+			? '/icon.svg'
+			: '/favicon-32.png'
 
 	const { deferredPrompt } = useDeferredInstallPrompt()
 
@@ -213,7 +216,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
 					/>
 				) : league ? (
 					<link rel="manifest" href={`/${league.toLowerCase()}/manifest`} />
-				) : null}
+				) : (
+					<link rel="manifest" href="/manifest" />
+				)}
+				{/* Homepage/static pages only — on team pages iOS would take
+				    this over the team logo from the manifest */}
+				{!league && (
+					<link rel="apple-touch-icon" href="/apple-touch-icon-180.png" />
+				)}
 				<link rel="preconnect" href="https://fonts.googleapis.com" />
 				<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 				<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500;1,9..40,600;1,9..40,700&display=swap" rel="stylesheet" />
