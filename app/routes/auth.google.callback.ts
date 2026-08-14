@@ -4,6 +4,7 @@ import {
 	getGoogleEmail,
 	oauthStateCookie,
 } from '~/lib/googleAuth.server'
+import { setProfileEmail, trackFromServer } from '~/lib/analytics.server'
 import { parseSavablePath, savePage } from '~/lib/savedPages.server'
 import { createUserSession } from '~/lib/session.server'
 
@@ -29,6 +30,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 			await savePage(user.id, path)
 		}
 	}
+
+	trackFromServer(request, user.id, user.created ? 'sign up' : 'log in', {
+		method: 'google',
+	})
+	setProfileEmail(request, user.id, email)
 
 	return createUserSession(user.id, '/')
 }
