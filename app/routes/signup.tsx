@@ -14,6 +14,8 @@ import {
 } from '@remix-run/react'
 import GoogleIcon from '~/components/GoogleIcon'
 import { Button } from '~/components/ui/button'
+import { setProfileEmail, trackFromServer } from '~/lib/analytics.server'
+import { analytics as mixpanel } from '~/lib/analytics'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import Footer from '~/components/footer'
@@ -71,6 +73,9 @@ export async function action({ request }: ActionFunctionArgs) {
 	}
 
 	await applyPendingSave(user.id, formData)
+
+	trackFromServer(request, user.id, 'sign up', { method: 'password' })
+	setProfileEmail(request, user.id, email)
 
 	return createUserSession(user.id, '/')
 }
@@ -134,7 +139,12 @@ export default function Signup() {
 						</Button>
 					</Form>
 					<Button asChild>
-						<a href={googleHref}>
+						<a
+							href={googleHref}
+							onClick={() =>
+								mixpanel.track('click continue with google', { page: 'signup' })
+							}
+						>
 							Continue with Google <GoogleIcon className="size-5" />
 						</a>
 					</Button>

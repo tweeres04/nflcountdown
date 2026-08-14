@@ -25,6 +25,7 @@ import { getLeagueDisplayName } from '~/lib/schema-helpers'
 import { LEAGUES, teamLogo } from '~/lib/leagues'
 import { cn } from '~/lib/utils'
 import TeamSearch from '~/components/team-search'
+import { analytics as mixpanel } from '~/lib/analytics'
 
 // Decorative league/team logo (the adjacent text is the accessible label).
 // fallbackSrc covers teams whose logo doesn't exist yet (e.g. WWC nations
@@ -208,7 +209,14 @@ export default function TeamsSidebar({
 							{user.email}
 						</div>
 						<Form method="post" action="/logout">
-							<SidebarMenuButton type="submit">Log out</SidebarMenuButton>
+							<SidebarMenuButton
+								type="submit"
+								// The next person on this device shouldn't inherit the
+								// identity; the log out event itself is tracked server-side
+								onClick={() => mixpanel.reset()}
+							>
+								Log out
+							</SidebarMenuButton>
 						</Form>
 					</>
 				) : (

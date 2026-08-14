@@ -1,7 +1,12 @@
 import { ActionFunctionArgs, redirect } from '@remix-run/node'
-import { logout } from '~/lib/session.server'
+import { trackFromServer } from '~/lib/analytics.server'
+import { getUserId, logout } from '~/lib/session.server'
 
 export async function action({ request }: ActionFunctionArgs) {
+	const userId = await getUserId(request)
+	if (userId) {
+		trackFromServer(request, userId, 'log out')
+	}
 	return logout(request)
 }
 

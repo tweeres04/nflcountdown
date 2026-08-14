@@ -16,6 +16,7 @@ import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import Footer from '~/components/footer'
+import { trackFromServer } from '~/lib/analytics.server'
 import { updatePassword, validatePassword } from '~/lib/auth.server'
 import {
 	consumeResetToken,
@@ -56,6 +57,8 @@ export async function action({ request }: ActionFunctionArgs) {
 	}
 
 	await updatePassword(resetToken.userId, password)
+
+	trackFromServer(request, resetToken.userId, 'complete password reset')
 
 	return createUserSession(resetToken.userId, '/')
 }

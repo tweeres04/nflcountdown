@@ -1,4 +1,5 @@
 import { ActionFunctionArgs, json, redirect } from '@remix-run/node'
+import { trackFromServer } from '~/lib/analytics.server'
 import { getUser } from '~/lib/session.server'
 import {
 	parseSavablePath,
@@ -26,12 +27,15 @@ export async function action({ request }: ActionFunctionArgs) {
 	// A click before hydration submits as a document POST — send those back
 	// to the page. Fetcher submissions get json and revalidate in place.
 	const documentPost = request.headers.get('sec-fetch-mode') === 'navigate'
+	const league = path.split('/')[1].toUpperCase()
 
 	if (intent === 'unsave') {
 		await unsavePage(user.id, path)
+		trackFromServer(request, user.id, 'unsave page', { path, league })
 		return documentPost ? redirect(path) : json({ saved: false })
 	}
 
 	await savePage(user.id, path)
+	trackFromServer(request, user.id, 'save page', { path, league })
 	return documentPost ? redirect(path) : json({ saved: true })
 }

@@ -85,10 +85,10 @@ export async function findOrCreateGoogleUser(email: string) {
 		where: eq(users.email, email),
 		columns: { id: true },
 	})
-	if (existing) return existing
+	if (existing) return { id: existing.id, created: false }
 	const [user] = await db
 		.insert(users)
 		.values({ email })
 		.returning({ id: users.id })
-	return user
+	return { id: user.id, created: true }
 }

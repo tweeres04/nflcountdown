@@ -27,7 +27,7 @@ export async function createResetToken(email: string) {
 		tokenHash: hashToken(token),
 		expiresAt: new Date(Date.now() + TOKEN_TTL_MS),
 	})
-	return token
+	return { token, userId: user.id }
 }
 
 // Look up a live token without consuming it (for rendering the reset form)

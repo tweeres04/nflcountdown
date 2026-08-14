@@ -8,6 +8,7 @@ import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import Footer from '~/components/footer'
+import { trackFromServer } from '~/lib/analytics.server'
 import { normalizeEmail, validateEmail } from '~/lib/auth.server'
 import { sendPasswordResetEmail } from '~/lib/email.server'
 import { createResetToken } from '~/lib/passwordReset.server'
@@ -36,13 +37,14 @@ export async function action({ request }: ActionFunctionArgs) {
 
 	// Same response whether or not the account exists, so the form can't be
 	// used to probe which emails are signed up
-	const token = await createResetToken(email)
-	if (token) {
+	const reset = await createResetToken(email)
+	if (reset) {
+		trackFromServer(request, reset.userId, 'request password reset')
 		const origin =
 			process.env.NODE_ENV === 'production'
 				? 'https://teamcountdown.com'
 				: new URL(request.url).origin
-		const resetUrl = `${origin}/reset-password?token=${token}`
+		const resetUrl = `${origin}/reset-password?token=${reset.token}`
 		if (process.env.NODE_ENV !== 'production') {
 			console.log(`Password reset link: ${resetUrl}`)
 		}

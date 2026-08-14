@@ -11,7 +11,9 @@ import {
 	useParams,
 } from '@remix-run/react'
 import './tailwind.css'
+import { useEffect } from 'react'
 import { cn } from './lib/utils'
+import { analytics as mixpanel } from './lib/analytics'
 
 import {
 	DeferredInstallPromptContext,
@@ -156,7 +158,17 @@ export const teamGradientClass = 'bg-fixed bg-gradient-to-b from-[var(--color-pr
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	const loaderData = useLoaderData<typeof loader>() ?? {} // empty object in case we're in an error page
-	const { GTAG_ID, AHREFS_KEY, MIXPANEL_TOKEN, MIXPANEL_TOKEN_LEGACY } = loaderData
+	const { GTAG_ID, AHREFS_KEY, MIXPANEL_TOKEN, MIXPANEL_TOKEN_LEGACY, user } =
+		loaderData
+
+	// Ties this device's anonymous history to the account, so server-side
+	// auth/save events (keyed by user id) land on the same Mixpanel user
+	const userId = user?.id
+	useEffect(() => {
+		if (userId) {
+			mixpanel.identify(String(userId))
+		}
+	}, [userId])
 	const { league, teamAbbrev } = useParams()
 	const LEAGUE = league?.toUpperCase() ?? ''
 	const lowercaseAbbreviation = teamAbbrev?.toLowerCase()

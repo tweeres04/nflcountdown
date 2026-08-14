@@ -40,4 +40,14 @@ export const analytics = {
 		mixpanel.register(...args)
 		getLegacy()?.register(...args)
 	},
+
+	identify(...args: Parameters<typeof mixpanel.identify>) {
+		mixpanel.identify(...args)
+		getLegacy()?.identify(...args)
+	},
+
+	reset() {
+		mixpanel.reset()
+		getLegacy()?.reset()
+	},
 }
