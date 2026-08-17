@@ -314,29 +314,31 @@ export default function Countdown({
 			? game?.homeTeam
 			: game?.awayTeam
 
+	const isHomeGame = game?.homeTeam?.abbreviation === team?.abbreviation
+
 	const gameMatchupInfo =
 		game?.awayTeam && game?.homeTeam ? (
 			!team ? (
-				// League page: show both teams
+				// League page: show both teams, home team first to match "vs"
 				<div className="text-sm" suppressHydrationWarning>
-					<Link
-						to={`/${LEAGUE.toLowerCase()}/${game.awayTeam.abbreviation.toLowerCase()}`}
-						className="content-link"
-					>
-						{game.awayTeam.fullName}
-					</Link>
-					{' vs '}
 					<Link
 						to={`/${LEAGUE.toLowerCase()}/${game.homeTeam.abbreviation.toLowerCase()}`}
 						className="content-link"
 					>
 						{game.homeTeam.fullName}
 					</Link>
+					{' vs '}
+					<Link
+						to={`/${LEAGUE.toLowerCase()}/${game.awayTeam.abbreviation.toLowerCase()}`}
+						className="content-link"
+					>
+						{game.awayTeam.fullName}
+					</Link>
 				</div>
 			) : opposingTeam ? (
-				// Team page: show "vs [opponent]"
+				// Team page: "vs" when hosting, "at" when visiting
 				<div className="text-sm" suppressHydrationWarning>
-					vs{' '}
+					{isHomeGame ? 'vs' : 'at'}{' '}
 					<Link
 						to={`/${LEAGUE.toLowerCase()}/${opposingTeam.abbreviation.toLowerCase()}`}
 						className="content-link"
