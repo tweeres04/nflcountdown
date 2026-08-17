@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { GoogleGenAI } from '@google/genai'
 import { Game, Team } from './types'
+import { matchupPreposition } from './matchupPreposition'
 
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_AI_API_KEY })
 
@@ -106,7 +107,9 @@ IMPORTANT:
 - Avoid the use of em dashes
 
 <league>${league}</league>
-<matchup>${team.fullName} vs ${opponentTeam?.fullName || 'TBD'}</matchup>
+<matchup>${team.fullName} ${matchupPreposition(game, team.abbreviation)} ${
+		opponentTeam?.fullName || 'TBD'
+	}</matchup>
 <game-date>${gameDate}</game-date>`
 
 	try {

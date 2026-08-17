@@ -16,6 +16,12 @@ export type Game = {
 	awayTeam: Team | null
 	startTimeTbd: boolean | null
 	broadcast?: string | null
+	/**
+	 * True when the game is at neither team's home venue, so neither "vs" nor
+	 * "at" describes it — see matchupPreposition. Only set for the leagues whose
+	 * feeds report it; undefined elsewhere means "not known", not "not neutral".
+	 */
+	neutralSite?: boolean | null
 }
 
 // API Types for raw data parsing
@@ -147,6 +153,8 @@ export interface MlsCompetitionApi {
 	id: string
 	date: string
 	timeValid?: boolean
+	// ESPN sets this on CFB (bowls and kickoff games); absent from the MLS feed
+	neutralSite?: boolean
 	broadcasts?: Array<{
 		market: string
 		names: string[]

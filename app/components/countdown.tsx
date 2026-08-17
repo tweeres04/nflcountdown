@@ -18,6 +18,7 @@ import IosShareIcon from './IosShareIcon'
 import SaveButton from './save-button'
 import { cn } from '~/lib/utils'
 import { LeagueContext } from '~/lib/league-context'
+import { matchupPreposition } from '~/lib/matchupPreposition'
 import GameList from './game-list'
 import YouMightLike from './you-might-like'
 import { addHours, isPast, isWithinInterval } from 'date-fns'
@@ -314,8 +315,6 @@ export default function Countdown({
 			? game?.homeTeam
 			: game?.awayTeam
 
-	const isHomeGame = game?.homeTeam?.abbreviation === team?.abbreviation
-
 	const gameMatchupInfo =
 		game?.awayTeam && game?.homeTeam ? (
 			!team ? (
@@ -338,7 +337,7 @@ export default function Countdown({
 			) : opposingTeam ? (
 				// Team page: "vs" when hosting, "at" when visiting
 				<div className="text-sm" suppressHydrationWarning>
-					{isHomeGame ? 'vs' : 'at'}{' '}
+					{matchupPreposition(game, team.abbreviation)}{' '}
 					<Link
 						to={`/${LEAGUE.toLowerCase()}/${opposingTeam.abbreviation.toLowerCase()}`}
 						className="content-link"

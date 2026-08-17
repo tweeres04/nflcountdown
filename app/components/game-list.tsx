@@ -1,6 +1,7 @@
 import { Link, useParams } from '@remix-run/react'
 import { Game, Team } from '~/lib/types'
 import { getGameSlug } from '~/lib/getGameSlug'
+import { matchupPreposition } from '~/lib/matchupPreposition'
 
 interface GameListProps {
 	games: Game[]
@@ -34,8 +35,7 @@ export default function GameList({ games, team }: GameListProps) {
 						</div>
 						{opponent ? (
 							<>
-								{g.homeTeam?.abbreviation === team.abbreviation ? 'vs' : 'at'}{' '}
-								{opponent.fullName}
+								{matchupPreposition(g, team.abbreviation)} {opponent.fullName}
 							</>
 						) : null}
 					</>

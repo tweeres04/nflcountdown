@@ -7,6 +7,7 @@ import {
 	type BreadcrumbItem,
 } from './schema-helpers'
 import { getGameSlug } from './getGameSlug'
+import { matchupPreposition } from './matchupPreposition'
 
 interface MetaParams {
 	LEAGUE: string
@@ -46,7 +47,10 @@ export function getTeamNextGameDescription(
 		month: 'short',
 		day: 'numeric',
 	}).format(new Date(nextGame.time))
-	return `Next game: vs ${opponent} on ${dateFormatted}.`
+	return `Next game: ${matchupPreposition(
+		nextGame,
+		team.abbreviation
+	)} ${opponent} on ${dateFormatted}.`
 }
 
 export function generateTitle(
@@ -66,7 +70,10 @@ export function generateTitle(
 			  )
 			: ''
 		const gameDateStringForTitle = game.time ? ` - ${gameDateFormatted}` : ''
-		return `${team.fullName} vs ${opponent}${gameDateStringForTitle} - Team Countdown`
+		return `${team.fullName} ${matchupPreposition(
+			game,
+			team.abbreviation
+		)} ${opponent}${gameDateStringForTitle} - Team Countdown`
 	}
 
 	if (BIG_LEAGUES.has(league)) {
@@ -92,7 +99,10 @@ export function generateDescription(
 					new Date(game.time)
 			  )}`
 			: ''
-		return `Countdown to ${team.fullName} vs ${opponent}${gameDateStringForDescription}. Launches instantly from your home screen.`
+		return `Countdown to ${team.fullName} ${matchupPreposition(
+			game,
+			team.abbreviation
+		)} ${opponent}${gameDateStringForDescription}. Launches instantly from your home screen.`
 	}
 
 	const nextGameInfo = getTeamNextGameDescription(team, nextGame)

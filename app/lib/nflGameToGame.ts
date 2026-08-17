@@ -21,5 +21,6 @@ export function nflGameToGame(nflGame: any): Game {
 		awayTeam: nflTeamToTeam(nflGame.awayTeam),
 		startTimeTbd: false,
 		broadcast,
+		neutralSite: nflGame.neutralSite ?? null,
 	}
 }

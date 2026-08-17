@@ -55,5 +55,6 @@ export function nhlGameToGame(nhlGame: any, viewingTeamAbbrev?: string): Game {
 		awayTeam: nhlTeamToTeam(nhlGame.awayTeam),
 		startTimeTbd: false,
 		broadcast,
+		neutralSite: nhlGame.neutralSite ?? null,
 	}
 }

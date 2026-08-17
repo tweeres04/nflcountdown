@@ -3,6 +3,7 @@ import { useLoaderData } from '@remix-run/react'
 import { RouteErrorBoundary } from '~/components/route-error-boundary'
 
 import { getGameSlug } from '~/lib/getGameSlug'
+import { matchupPreposition } from '~/lib/matchupPreposition'
 import Countdown from '~/components/countdown'
 import { getTeamAndGames } from '~/lib/getTeamAndGames'
 import { getAllTeamsByLeague } from '~/lib/getTeams'
@@ -129,7 +130,8 @@ export default function GameCountdown() {
 				canShowPreview={canShowPreview}
 				pageTitle={
 					<>
-						{team.fullName} vs {opposingTeam?.fullName ?? 'TBD'}
+						{team.fullName} {matchupPreposition(game, team.abbreviation)}{' '}
+						{opposingTeam?.fullName ?? 'TBD'}
 					</>
 				}
 				breadcrumbItems={breadcrumbItems}

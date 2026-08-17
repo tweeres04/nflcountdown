@@ -7,6 +7,7 @@ import { getTeamAndGames } from './getTeamAndGames'
 import { getSuggestedGames } from './getSuggestedGames'
 import { getSeasonStartDate } from './getSeasonStartDate'
 import { getGameSlug } from './getGameSlug'
+import { matchupPreposition } from './matchupPreposition'
 import { getLeagueDisplayName } from './schema-helpers'
 import { Game } from './types'
 
@@ -138,7 +139,10 @@ async function resolveSavedPage(path: string): Promise<SavedPageData> {
 					: game.homeTeam
 			return {
 				path,
-				title: `${team.fullName} vs ${opponent?.fullName ?? 'TBD'}`,
+				title: `${team.fullName} ${matchupPreposition(
+					game,
+					team.abbreviation
+				)} ${opponent?.fullName ?? 'TBD'}`,
 				logo,
 				gameTime: game.time,
 			}

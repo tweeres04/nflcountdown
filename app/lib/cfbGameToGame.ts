@@ -60,5 +60,6 @@ export function cfbGameToGame(event: CfbEventApi): Game {
 		awayTeam: cfbTeamToTeam(awayCompetitor.team),
 		startTimeTbd,
 		broadcast: broadcastNames || null,
+		neutralSite: competition.neutralSite ?? null,
 	}
 }

@@ -1,5 +1,6 @@
 import wwcColors from '../../wwc_colors.json'
 import { Team, Game, WwcTeamApi, WwcMatchApi } from './types'
+import { isNeutralVenue } from './worldCupGameToGame'
 
 export function wwcTeamToTeam(apiTeam: WwcTeamApi): Team | null {
 	if (!apiTeam.IdTeam || !apiTeam.Abbreviation) {
@@ -29,5 +30,6 @@ export function wwcGameToGame(match: WwcMatchApi): Game {
 		homeTeam: match.Home ? wwcTeamToTeam(match.Home) : null,
 		awayTeam: match.Away ? wwcTeamToTeam(match.Away) : null,
 		startTimeTbd: false,
+		neutralSite: isNeutralVenue(match),
 	}
 }
