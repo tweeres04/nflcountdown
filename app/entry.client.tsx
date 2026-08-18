@@ -5,15 +5,13 @@
  */
 
 import { RemixBrowser } from '@remix-run/react'
-import { Config } from 'mixpanel-browser'
+import mixpanel, { Config } from 'mixpanel-browser'
 import { startTransition, StrictMode } from 'react'
 import { hydrateRoot } from 'react-dom/client'
-import { initAnalytics, analytics } from '~/lib/analytics'
 
 declare global {
 	interface Window {
 		mixpanelToken: string
-		mixpanelTokenLegacy: string
 		gtag: (...args: unknown[]) => void
 	}
 }
@@ -31,7 +29,7 @@ if (!window.mixpanelToken) {
 	throw 'No mixpanel token'
 }
 
-// Initialize Mixpanel (primary + legacy for parallel logging)
+// Initialize Mixpanel
 const mixpanelConfig: Partial<Config> = {
 	debug: process.env.NODE_ENV === 'development',
 	track_pageview: true,
@@ -50,17 +48,13 @@ const mixpanelConfig: Partial<Config> = {
 	record_mask_text_selector: '',
 }
 
-initAnalytics(
-	window.mixpanelToken,
-	window.mixpanelTokenLegacy || undefined,
-	mixpanelConfig
-)
+mixpanel.init(window.mixpanelToken, mixpanelConfig)
 
 // Track whether app is opened in standalone mode (added to home screen)
 const isStandalone = window.matchMedia('(display-mode: standalone)').matches
 
 // Register as Mixpanel super property (attached to all events)
-analytics.register({ isStandalone })
+mixpanel.register({ isStandalone })
 
 // Add to GA as event parameter (attached to all events)
 if (typeof window.gtag === 'function') {

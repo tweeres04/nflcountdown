@@ -13,7 +13,7 @@ import {
 import './tailwind.css'
 import { useEffect } from 'react'
 import { cn } from './lib/utils'
-import { analytics as mixpanel } from './lib/analytics'
+import mixpanel from 'mixpanel-browser'
 
 import {
 	DeferredInstallPromptContext,
@@ -137,7 +137,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	const GTAG_ID = process.env.GTAG_ID
 	const AHREFS_KEY = process.env.AHREFS_KEY
 	const MIXPANEL_TOKEN = process.env.MIXPANEL_TOKEN
-	const MIXPANEL_TOKEN_LEGACY = process.env.MIXPANEL_TOKEN_LEGACY
 
 	// Saved paths live here so the save button on any page knows its state.
 	// Anonymous requests (no session cookie) skip the db entirely.
@@ -148,7 +147,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		GTAG_ID,
 		AHREFS_KEY,
 		MIXPANEL_TOKEN,
-		MIXPANEL_TOKEN_LEGACY,
 		user,
 		savedPaths,
 	})
@@ -158,8 +156,7 @@ export const teamGradientClass = 'bg-fixed bg-gradient-to-b from-[var(--color-pr
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	const loaderData = useLoaderData<typeof loader>() ?? {} // empty object in case we're in an error page
-	const { GTAG_ID, AHREFS_KEY, MIXPANEL_TOKEN, MIXPANEL_TOKEN_LEGACY, user } =
-		loaderData
+	const { GTAG_ID, AHREFS_KEY, MIXPANEL_TOKEN, user } = loaderData
 
 	// Ties this device's anonymous history to the account, so server-side
 	// auth/save events (keyed by user id) land on the same Mixpanel user
@@ -266,7 +263,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 		>
 				<script
 					dangerouslySetInnerHTML={{
-						__html: `window.mixpanelToken = '${MIXPANEL_TOKEN}'; window.mixpanelTokenLegacy = '${MIXPANEL_TOKEN_LEGACY || ''}'`,
+						__html: `window.mixpanelToken = '${MIXPANEL_TOKEN}'`,
 					}}
 				></script>
 				<DeferredInstallPromptContext.Provider value={deferredPrompt}>

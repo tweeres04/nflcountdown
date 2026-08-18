@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import IosShareIcon from './IosShareIcon'
 import { Button } from './ui/button'
 import { cn } from '~/lib/utils'
-import { analytics as mixpanel } from '~/lib/analytics'
+import mixpanel from 'mixpanel-browser'
 
 interface BeforeInstallPromptEvent extends Event {
 	prompt: () => void

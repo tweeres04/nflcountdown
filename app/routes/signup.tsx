@@ -15,7 +15,7 @@ import {
 import GoogleIcon from '~/components/GoogleIcon'
 import { Button } from '~/components/ui/button'
 import { setProfileEmail, trackFromServer } from '~/lib/analytics.server'
-import { analytics as mixpanel } from '~/lib/analytics'
+import mixpanel from 'mixpanel-browser'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import Footer from '~/components/footer'

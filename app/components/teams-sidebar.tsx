@@ -25,7 +25,7 @@ import { getLeagueDisplayName } from '~/lib/schema-helpers'
 import { LEAGUES, teamLogo } from '~/lib/leagues'
 import { cn } from '~/lib/utils'
 import TeamSearch from '~/components/team-search'
-import { analytics as mixpanel } from '~/lib/analytics'
+import mixpanel from 'mixpanel-browser'
 
 // Decorative league/team logo (the adjacent text is the accessible label).
 // fallbackSrc covers teams whose logo doesn't exist yet (e.g. WWC nations

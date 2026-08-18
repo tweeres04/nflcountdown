@@ -33,7 +33,7 @@ import {
 } from './ui/dialog'
 import { Calendar, Eye, ThumbsDown, ThumbsUp, Ticket } from 'lucide-react'
 import { Await, Link, useFetcher } from '@remix-run/react'
-import { analytics as mixpanel } from '~/lib/analytics'
+import mixpanel from 'mixpanel-browser'
 import {
 	Breadcrumb,
 	BreadcrumbList,

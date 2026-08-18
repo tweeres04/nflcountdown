@@ -10,7 +10,7 @@ import {
 import { LEAGUES, teamLogo } from '~/lib/leagues'
 import type { TeamsByLeague } from '~/lib/getTeams'
 import { getLeagueDisplayName, getLeagueFullName } from '~/lib/schema-helpers'
-import { analytics as mixpanel } from '~/lib/analytics'
+import mixpanel from 'mixpanel-browser'
 
 // Decorative logo; the item text is the accessible label.
 // fallbackSrc covers teams whose logo doesn't exist yet (e.g. WWC nations

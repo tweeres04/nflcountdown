@@ -1,7 +1,7 @@
 import { useFetcher, useLocation, useRouteLoaderData } from '@remix-run/react'
 import { Bookmark, BookmarkCheck } from 'lucide-react'
 import { Button } from './ui/button'
-import { analytics as mixpanel } from '~/lib/analytics'
+import mixpanel from 'mixpanel-browser'
 
 // The root loader returns a plain Response on redirect paths, which breaks
 // useRouteLoaderData<typeof loader> inference — so type just what we need
