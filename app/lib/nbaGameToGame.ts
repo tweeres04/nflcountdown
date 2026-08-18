@@ -71,5 +71,6 @@ export function nbaGameToGame(game: any, viewingTeamAbbrev?: string): Game {
 		awayTeam: nbaTeamToTeam(game.awayTeam),
 		startTimeTbd: false,
 		broadcast,
+		neutralSite: game.isNeutral ?? null,
 	}
 }
