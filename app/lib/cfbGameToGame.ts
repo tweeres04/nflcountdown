@@ -9,6 +9,9 @@ export function cfbTeamToTeam({
 	color,
 	alternateColor,
 }: CfbTeamApi): Team {
+	// Keyed by ESPN's abbreviation, like every other colors file — so Texas A&M
+	// is "TA&M" here, not "TAM". getCfbSchedule.ts filters on this same key, so
+	// a mismatch silently drops every one of that team's games from the feed.
 	const colorData = cfbColors.find((c) => c.abbreviation === abbreviation)
 
 	if (!colorData) {
@@ -19,6 +22,9 @@ export function cfbTeamToTeam({
 		id: id,
 		nickName: name, // e.g. "Wolverines", "Crimson Tide", "Buckeyes"
 		fullName: displayName,
+		// Drop the "&" for the outward-facing slug: this becomes the URL
+		// (/cfb/tam) and the logo filename (tam.svg). CFB is the only league
+		// with an "&" in an abbreviation.
 		abbreviation: abbreviation.replace('&', ''),
 		primaryColor: colorData?.color_1 || `#${color}` || '#000000',
 		secondaryColor: colorData?.color_2 || `#${alternateColor}` || '#333333',
