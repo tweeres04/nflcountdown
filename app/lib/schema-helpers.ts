@@ -70,6 +70,22 @@ export const SOCCER_LEAGUES = new Set([
 // ("the 2027 Women's World Cup", not "the 2027 Women's World Cup season").
 export const TOURNAMENT_LEAGUES = new Set(['WORLDCUP', 'WWC'])
 
+// What the start of play is called in each sport. A game page counts down to
+// one specific game, so it says "till kickoff" rather than "till the next CFB
+// game". Football and soccer both kick off, so that's the default.
+const START_OF_PLAY: Record<string, string> = {
+	NBA: 'tip-off',
+	WNBA: 'tip-off',
+	CEBL: 'tip-off',
+	NHL: 'puck drop',
+	PWHL: 'puck drop',
+	MLB: 'first pitch',
+}
+
+export function getStartOfPlay(league: string): string {
+	return START_OF_PLAY[league] ?? 'kickoff'
+}
+
 export function getLeagueFullName(league: string): string {
 	switch (league) {
 		case 'NFL':

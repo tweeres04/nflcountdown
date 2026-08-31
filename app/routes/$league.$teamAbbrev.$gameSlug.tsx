@@ -12,7 +12,7 @@ import { getSuggestedGames } from '~/lib/getSuggestedGames'
 import { getAffiliateLinks } from '~/lib/affiliate-service'
 import { redirectIfAbbreviationRenamed } from '~/lib/abbreviation-redirects'
 import { Game } from '~/lib/types'
-import { getLeagueDisplayName } from '~/lib/schema-helpers'
+import { getLeagueDisplayName, getStartOfPlay } from '~/lib/schema-helpers'
 import Footer from '~/components/footer'
 
 export { generateMeta as meta }
@@ -103,6 +103,7 @@ export function ErrorBoundary() {
 
 export default function GameCountdown() {
 	const {
+		LEAGUE,
 		teams,
 		allTeams,
 		team,
@@ -137,6 +138,7 @@ export default function GameCountdown() {
 				breadcrumbItems={breadcrumbItems}
 				suggestedGames={suggestedGames}
 				affiliateLinks={affiliateLinks}
+				countdownSuffix={getStartOfPlay(LEAGUE)}
 			/>
 			<Footer dark />
 		</>
