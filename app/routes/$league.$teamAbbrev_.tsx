@@ -94,7 +94,6 @@ export default function TeamCountdown() {
 			<Countdown
 				pageTitle={`${team.fullName} Countdown`}
 				team={team}
-				teams={teams}
 				allTeams={allTeams}
 				games={games}
 				game={nextGame}

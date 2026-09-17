@@ -124,7 +124,6 @@ export default function GameCountdown() {
 		<>
 			<Countdown
 				team={team}
-				teams={teams}
 				allTeams={allTeams}
 				games={games}
 				game={game}

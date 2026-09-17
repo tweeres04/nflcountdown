@@ -243,7 +243,6 @@ export default function SeasonCountdown() {
 							? `${leagueLabel} Countdown ${seasonYear}`
 							: `${leagueLabel} Season Countdown ${seasonYear}`
 					}
-					teams={teams}
 					allTeams={allTeams}
 					game={seasonGame}
 					isTeamPage={false}

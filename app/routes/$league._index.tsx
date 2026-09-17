@@ -655,7 +655,6 @@ export default function LeagueIndex() {
 			<div className="flex flex-col min-h-screen md:h-auto">
 				<Countdown
 					pageTitle={`${leagueLabel} Countdown`}
-					teams={teams}
 					allTeams={allTeams}
 					game={nextGame}
 					isTeamPage={false}

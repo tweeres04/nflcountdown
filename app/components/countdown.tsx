@@ -168,7 +168,6 @@ function GamePreviewDialog({
 
 interface CountdownProps {
 	team?: Team
-	teams: Team[]
 	allTeams: TeamsByLeague
 	games?: Game[]
 	pageTitle: React.ReactNode
@@ -247,7 +246,6 @@ export function countdownString({
 
 export default function Countdown({
 	team,
-	teams,
 	allTeams,
 	games = [],
 	pageTitle,
