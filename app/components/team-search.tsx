@@ -1,14 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useLocation } from '@remix-run/react'
 import { defaultFilter, useCommandState } from 'cmdk'
 import {
 	Command,
 	CommandEmpty,
+	CommandGroup,
 	CommandInput,
 	CommandItem,
 	CommandList,
 } from '~/components/ui/command'
 import { LEAGUES, teamLogo } from '~/lib/leagues'
-import type { TeamsByLeague } from '~/lib/getTeams'
+import { POPULAR_PAGES } from '~/lib/popular-pages'
+import type { SidebarTeam, TeamsByLeague } from '~/lib/getTeams'
 import { getLeagueDisplayName, getLeagueFullName } from '~/lib/schema-helpers'
 import mixpanel from 'mixpanel-browser'
 
@@ -67,6 +70,11 @@ type Props = {
 	shortcut?: boolean
 	// Runs before the shortcut focuses the input (e.g. open the sidebar).
 	onShortcut?: () => void
+	// Lists the most-visited pages once the input is focused but before
+	// anything is typed: the priority league's own when it has any,
+	// otherwise the site-wide top. The page the visitor is already on is
+	// skipped.
+	showPopular?: boolean
 }
 
 export default function TeamSearch({
@@ -76,8 +84,11 @@ export default function TeamSearch({
 	size = 'default',
 	shortcut = false,
 	onShortcut,
+	showPopular = false,
 }: Props) {
 	const [query, setQuery] = useState('')
+	const [focused, setFocused] = useState(false)
+	const { pathname } = useLocation()
 	const inputRef = useRef<HTMLInputElement>(null)
 	const listRef = useRef<HTMLDivElement>(null)
 
@@ -103,6 +114,12 @@ export default function TeamSearch({
 		})
 		return ranks
 	}, [allTeams, priorityLeague])
+
+	const popularPages = useMemo(() => {
+		const inLeague = POPULAR_PAGES.filter((p) => p.league === priorityLeague)
+		const picks = inLeague.length > 0 ? inLeague : POPULAR_PAGES
+		return picks.filter((p) => p.path !== pathname).slice(0, 5)
+	}, [priorityLeague, pathname])
 
 	const leagueValues = useMemo(
 		() => new Set(LEAGUES.map((l) => getLeagueDisplayName(l).toLowerCase())),
@@ -145,6 +162,111 @@ export default function TeamSearch({
 		return () => document.removeEventListener('keydown', handleKeyDown)
 	}, [shortcut, onShortcut, location])
 
+	function renderLeagueItem(league: string) {
+		const lowercaseLeague = league.toLowerCase()
+		return (
+			<CommandItem
+				key={league}
+				value={getLeagueDisplayName(league)}
+				keywords={[getLeagueFullName(league)]}
+				onSelect={() => {
+					mixpanel.track('select search result', {
+						query,
+						result: getLeagueDisplayName(league),
+						resultType: 'league',
+						league,
+						location,
+					})
+					window.location.assign(`/${lowercaseLeague}`)
+				}}
+				className="gap-3 py-2"
+			>
+				<Logo src={`/logos/${lowercaseLeague}.svg`} />
+				<span className="font-semibold">{getLeagueDisplayName(league)}</span>
+				<span className="text-stone-400">{getLeagueFullName(league)}</span>
+			</CommandItem>
+		)
+	}
+
+	function renderSeasonItem(league: string) {
+		const lowercaseLeague = league.toLowerCase()
+		const label = `${getLeagueDisplayName(league)} season`
+		return (
+			<CommandItem
+				key={`${league}-season`}
+				value={label}
+				onSelect={() => {
+					mixpanel.track('select search result', {
+						query,
+						result: label,
+						resultType: 'season',
+						league,
+						location,
+					})
+					window.location.assign(`/${lowercaseLeague}/season`)
+				}}
+				className="gap-3 py-2"
+			>
+				<Logo src={`/logos/${lowercaseLeague}.svg`} />
+				<span className="font-semibold">{label}</span>
+			</CommandItem>
+		)
+	}
+
+	// A popular page is a league page, its season page, or a team page.
+	function renderPopularItem({
+		league,
+		path,
+	}: {
+		league: string
+		path: string
+	}) {
+		const lowercaseLeague = league.toLowerCase()
+		if (path === `/${lowercaseLeague}`) {
+			return renderLeagueItem(league)
+		}
+		if (path === `/${lowercaseLeague}/season`) {
+			return renderSeasonItem(league)
+		}
+		const abbrev = path.slice(path.lastIndexOf('/') + 1)
+		const team = (allTeams[league] ?? []).find(
+			(t) => t.abbreviation.toLowerCase() === abbrev
+		)
+		return team ? renderTeamItem(league, team) : null
+	}
+
+	function renderTeamItem(league: string, t: SidebarTeam) {
+		const lowercaseLeague = league.toLowerCase()
+		const abbrev = t.abbreviation.toLowerCase()
+		return (
+			<CommandItem
+				key={`${league}-${t.abbreviation}`}
+				value={`${league} ${t.fullName}`}
+				keywords={[t.abbreviation]}
+				onSelect={() => {
+					mixpanel.track('select search result', {
+						query,
+						result: t.fullName,
+						resultType: 'team',
+						league,
+						location,
+					})
+					window.location.assign(`/${lowercaseLeague}/${abbrev}`)
+				}}
+				className="gap-3 py-2"
+			>
+				<Logo
+					src={teamLogo(league, abbrev)}
+					fallbackSrc={`/logos/${lowercaseLeague}.svg`}
+				/>
+				{t.fullName}
+				<span className="ml-auto text-xs text-stone-400">
+					{getLeagueDisplayName(league)}
+				</span>
+			</CommandItem>
+		)
+	}
+
 	return (
 		// The `dark` class opts descendants into the ui components' dark:
 		// variants; it doesn't apply to this element itself, so the root
@@ -158,76 +280,29 @@ export default function TeamSearch({
 				placeholder="Search any team or league…"
 				value={query}
 				onValueChange={setQuery}
+				onFocus={() => setFocused(true)}
+				onBlur={() => setFocused(false)}
 				className={size === 'lg' ? 'h-14 text-lg' : undefined}
 			/>
 			<TrackQuery query={query} location={location} />
 			{/* Only show results while typing; otherwise the full team list
-			    would dump onto the page below the input. */}
+			    would dump onto the page below the input. Before typing, pages
+			    that opt in get a short list of popular teams instead. */}
 			{query ? (
 				<CommandList ref={listRef}>
 					<CommandEmpty>No teams or leagues found.</CommandEmpty>
-					{LEAGUES.map((league) => {
-						const lowercaseLeague = league.toLowerCase()
-						return (
-							<CommandItem
-								key={league}
-								value={getLeagueDisplayName(league)}
-								keywords={[getLeagueFullName(league)]}
-								onSelect={() => {
-									mixpanel.track('select search result', {
-										query,
-										result: getLeagueDisplayName(league),
-										resultType: 'league',
-										league,
-										location,
-									})
-									window.location.assign(`/${lowercaseLeague}`)
-								}}
-								className="gap-3 py-2"
-							>
-								<Logo src={`/logos/${lowercaseLeague}.svg`} />
-								<span className="font-semibold">
-									{getLeagueDisplayName(league)}
-								</span>
-								<span className="text-stone-400">
-									{getLeagueFullName(league)}
-								</span>
-							</CommandItem>
-						)
-					})}
-					{LEAGUES.flatMap((league) => {
-						const lowercaseLeague = league.toLowerCase()
-						return (allTeams[league] ?? []).map((t) => {
-							const abbrev = t.abbreviation.toLowerCase()
-							return (
-								<CommandItem
-									key={`${league}-${t.abbreviation}`}
-									value={`${league} ${t.fullName}`}
-									keywords={[t.abbreviation]}
-									onSelect={() => {
-										mixpanel.track('select search result', {
-											query,
-											result: t.fullName,
-											resultType: 'team',
-											league,
-											location,
-										})
-										window.location.assign(`/${lowercaseLeague}/${abbrev}`)
-									}}
-									className="gap-3 py-2"
-								>
-									<Logo
-										src={teamLogo(league, abbrev)}
-										fallbackSrc={`/logos/${lowercaseLeague}.svg`}
-									/>
-									{t.fullName}
-									<span className="ml-auto text-xs text-stone-400">
-										{getLeagueDisplayName(league)}
-									</span>
-								</CommandItem>
-							)
-						})
-					})}
+					{LEAGUES.map(renderLeagueItem)}
+					{LEAGUES.flatMap((league) =>
+						(allTeams[league] ?? []).map((t) => renderTeamItem(league, t))
+					)}
+				</CommandList>
+			) : showPopular && focused && popularPages.length > 0 ? (
+				// Pressing an item would blur the input and unmount this list
+				// before the click lands; keep focus in the input instead.
+				<CommandList onMouseDown={(e) => e.preventDefault()}>
+					<CommandGroup heading="Popular">
+						{popularPages.map(renderPopularItem)}
+					</CommandGroup>
 				</CommandList>
 			) : null}
 		</Command>

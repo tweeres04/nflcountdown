@@ -592,6 +592,7 @@ export default function Countdown({
 							location={searchLocation}
 							priorityLeague={LEAGUE}
 							shortcut
+							showPopular
 						/>
 					</div>
 				)}
