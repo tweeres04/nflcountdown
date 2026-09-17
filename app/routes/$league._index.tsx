@@ -56,7 +56,6 @@ interface LeagueMeta {
 	seasonTerm: string // e.g. "kickoff", "opening day", "puck drop", "tip-off"
 	titleKeyword: string // e.g. "NFL Kickoff", "MLB Opening Day"
 	crossYear: boolean // true for leagues whose season spans two calendar years (NBA, NHL)
-	teamCount: number // for static FAQ entries
 	seasonLength: string // e.g. "18 weeks", "162 games per team"
 	seasonMonths: string // e.g. "September to February", "October to June"
 	brandColor: string // league primary brand color (hex)
@@ -69,7 +68,6 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		seasonTerm: 'kickoff',
 		titleKeyword: 'NFL Kickoff',
 		crossYear: false,
-		teamCount: 32,
 		seasonLength: '18 weeks',
 		seasonMonths: 'September to January',
 		brandColor: '#013369',
@@ -80,7 +78,6 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		seasonTerm: 'opening day',
 		titleKeyword: 'MLB Opening Day',
 		crossYear: false,
-		teamCount: 30,
 		seasonLength: '162 games per team',
 		seasonMonths: 'March to October',
 		brandColor: '#002D72',
@@ -91,7 +88,6 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		seasonTerm: 'tip-off',
 		titleKeyword: 'NBA Season',
 		crossYear: true,
-		teamCount: 30,
 		seasonLength: '82 games per team',
 		seasonMonths: 'October to June',
 		brandColor: '#1D428A',
@@ -102,7 +98,6 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		seasonTerm: 'puck drop',
 		titleKeyword: 'NHL Season',
 		crossYear: true,
-		teamCount: 32,
 		seasonLength: '82 games per team',
 		seasonMonths: 'October to June',
 		brandColor: '#000000',
@@ -113,7 +108,6 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		seasonTerm: 'tip-off',
 		titleKeyword: 'WNBA Season',
 		crossYear: false,
-		teamCount: 13,
 		seasonLength: '40 games per team',
 		seasonMonths: 'May to September',
 		brandColor: '#FF6A00',
@@ -124,7 +118,6 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		seasonTerm: 'kickoff',
 		titleKeyword: 'MLS Season',
 		crossYear: false,
-		teamCount: 30,
 		seasonLength: '34 games per team',
 		seasonMonths: 'February to November',
 		brandColor: '#292929',
@@ -135,7 +128,6 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		seasonTerm: 'kickoff',
 		titleKeyword: 'CPL Season',
 		crossYear: false,
-		teamCount: 8,
 		seasonLength: '28 games per team',
 		seasonMonths: 'April to October',
 		brandColor: '#6D2077',
@@ -146,7 +138,6 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		seasonTerm: 'kickoff',
 		titleKeyword: 'CFL Season',
 		crossYear: false,
-		teamCount: 9,
 		seasonLength: '18 games per team',
 		seasonMonths: 'June to November',
 		brandColor: '#C42127',
@@ -157,7 +148,6 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		seasonTerm: 'kickoff',
 		titleKeyword: 'NSL Season',
 		crossYear: false,
-		teamCount: 6,
 		seasonLength: '25 games per team',
 		seasonMonths: 'April to November',
 		brandColor: '#00654A',
@@ -168,7 +158,6 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		seasonTerm: 'tip-off',
 		titleKeyword: 'CEBL Season',
 		crossYear: false,
-		teamCount: 10,
 		seasonLength: '24 games per team',
 		seasonMonths: 'May to August',
 		brandColor: '#1A1A1A',
@@ -179,7 +168,6 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		seasonTerm: 'kickoff',
 		titleKeyword: 'NWSL Season',
 		crossYear: false,
-		teamCount: 16,
 		seasonLength: '30 games per team',
 		seasonMonths: 'March to November',
 		brandColor: '#003087',
@@ -190,7 +178,6 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		seasonTerm: 'puck drop',
 		titleKeyword: 'PWHL Season',
 		crossYear: true,
-		teamCount: 8,
 		seasonLength: '30 games per team',
 		seasonMonths: 'January to April',
 		brandColor: '#350282',
@@ -201,7 +188,6 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		seasonTerm: 'kickoff',
 		titleKeyword: 'College Football Season',
 		crossYear: false,
-		teamCount: 68,
 		seasonLength: '12-15 games per team',
 		seasonMonths: 'August to January',
 		brandColor: '#1a1a1a',
@@ -212,7 +198,6 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		seasonTerm: 'kickoff',
 		titleKeyword: 'World Cup',
 		crossYear: false,
-		teamCount: 48,
 		seasonLength: '104 matches',
 		seasonMonths: 'June to July',
 		brandColor: '#326295', // FIFA corporate blue
@@ -223,7 +208,6 @@ const LEAGUE_META: Record<string, LeagueMeta> = {
 		seasonTerm: 'kickoff',
 		titleKeyword: "Women's World Cup",
 		crossYear: false,
-		teamCount: 32,
 		seasonLength: '64 matches',
 		seasonMonths: 'June to July',
 		brandColor: '#006341', // dark green from the Brasil 2027 palette
@@ -304,13 +288,7 @@ function buildLeagueFaqs(
 						meta?.seasonTerm ?? 'kickoff'
 				  } is on ${seasonStartFormatted}.`,
 		},
-		// Q3+Q4: static evergreen entries
-		{
-			question: `How many teams are in the ${leagueLabel}?`,
-			answer: `The ${meta?.fullName ?? leagueLabel} has ${
-				meta?.teamCount ?? ''
-			} teams.`,
-		},
+		// Q3: static evergreen entry
 		{
 			question: `How long is the ${eventNoun}?`,
 			answer: isTournament
