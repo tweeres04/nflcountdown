@@ -23,6 +23,7 @@ import GameList from './game-list'
 import YouMightLike from './you-might-like'
 import Matchup from './matchup'
 import Logo from './logo'
+import { teamLogo } from '~/lib/leagues'
 import { addHours, isPast, isWithinInterval } from 'date-fns'
 import countdown from '../external/countdown'
 import Markdown from 'react-markdown'
@@ -317,17 +318,25 @@ export default function Countdown({
 		game?.awayTeam && game?.homeTeam ? (
 			!team ? (
 				// League page: show both teams
-				<div suppressHydrationWarning>
-					<Matchup game={game} league={LEAGUE} className="justify-center" />
-				</div>
+				<Matchup game={game} league={LEAGUE} centered />
 			) : opposingTeam ? (
 				// Team page: "vs" when hosting, "at" when visiting
-				<div className="text-sm" suppressHydrationWarning>
-					{matchupPreposition(game, team.abbreviation)}{' '}
+				<div
+					className="flex items-center justify-center gap-2 text-sm"
+					suppressHydrationWarning
+				>
+					<span className="text-white/60">
+						{matchupPreposition(game, team.abbreviation)}
+					</span>
 					<Link
 						to={`/${LEAGUE.toLowerCase()}/${opposingTeam.abbreviation.toLowerCase()}`}
-						className="content-link"
+						className="content-link flex items-center gap-1"
 					>
+						<Logo
+							src={teamLogo(LEAGUE, opposingTeam.abbreviation.toLowerCase())}
+							fallbackSrc={`/logos/${LEAGUE.toLowerCase()}.svg`}
+							className="size-6"
+						/>
 						{opposingTeam.fullName}
 					</Link>
 				</div>

@@ -8,16 +8,20 @@ interface YouMightLikeProps {
 	title?: string
 }
 
-export default function YouMightLike({ games, league, title = 'You might like' }: YouMightLikeProps) {
+export default function YouMightLike({
+	games,
+	league,
+	title = 'You might like',
+}: YouMightLikeProps) {
 	// Don't render if no games found (already filtered server-side)
 	if (games.length === 0) return null
 
 	return (
 		<div id="upcoming-games" className="mt-10 lg:max-w-[500px] mx-auto">
 			<h3 className="text-xl mb-4">{title}</h3>
-			<div className="space-y-3">
+			<div className="space-y-5">
 				{games.map((game) => (
-					<div key={game.id} className="space-y-1">
+					<div key={game.id}>
 						<Matchup game={game} league={league} />
 						{/* pl-7 = logo (24px) + gap (4px): lines up with the home team name */}
 						<MiniCountdown gameTime={game.time!} className="pl-7" />
