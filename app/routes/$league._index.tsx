@@ -583,7 +583,7 @@ export async function loader({ params: { league } }: LoaderFunctionArgs) {
 	teams = orderBy(teams, 'fullName')
 
 	const [upcomingGames, seasonResult, allTeams] = await Promise.all([
-		getSuggestedGames(LEAGUE, undefined, undefined, 5),
+		getSuggestedGames(LEAGUE, undefined, undefined, 6),
 		getSeasonStartDate(LEAGUE),
 		getAllTeamsByLeague(),
 	])
