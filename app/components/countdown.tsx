@@ -176,10 +176,9 @@ interface CountdownProps {
 	breadcrumbItems?: BreadcrumbItemType[]
 	suggestedGames?: Game[]
 	affiliateLinks?: Promise<AffiliateLinks | null>
-	teamPickerTeams?: Team[]
 	leagueBrandColor?: string
 	countdownSuffix?: string
-	// Renders the team/league search above the team picker; the value is the
+	// Renders the team/league search below upcoming games; the value is the
 	// analytics location (league and season pages).
 	searchLocation?: 'league' | 'season'
 	// Visible FAQ section at the bottom of the page; must stay identical to
@@ -256,7 +255,6 @@ export default function Countdown({
 	breadcrumbItems,
 	suggestedGames = [],
 	affiliateLinks,
-	teamPickerTeams,
 	leagueBrandColor,
 	countdownSuffix,
 	searchLocation,
@@ -578,55 +576,24 @@ export default function Countdown({
 					<FeedbackButton />
 				</div>
 
-				{teamPickerTeams && teamPickerTeams.length > 0 && (
-					<div className="mt-10 space-y-3">
-						<h2 className="text-xl">Pick your team. Get your countdown.</h2>
-						{searchLocation && (
-							<TeamSearch
-								allTeams={allTeams}
-								location={searchLocation}
-								priorityLeague={LEAGUE}
-								shortcut
-							/>
-						)}
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-							{teamPickerTeams.map((t) => (
-								<Link
-									key={t.abbreviation}
-									to={`/${LEAGUE.toLowerCase()}/${t.abbreviation.toLowerCase()}`}
-									className="flex items-center gap-4 py-2 content-link group"
-									onClick={() =>
-										mixpanel.track('click team from season page', {
-											team: t.fullName,
-										})
-									}
-								>
-									<img
-										src={`/logos/${
-											LEAGUE === 'NFL' ? '' : `${LEAGUE.toLowerCase()}/`
-										}${t.abbreviation.toLowerCase()}.svg`}
-										alt={`${t.fullName} logo`}
-										onError={(e) => {
-											e.currentTarget.onerror = null
-											e.currentTarget.src = `/logos/${LEAGUE.toLowerCase()}.svg`
-										}}
-										className="h-10 w-10 object-contain flex-shrink-0"
-									/>
-									<div className="text-base font-semibold text-white">
-										{t.fullName}
-									</div>
-								</Link>
-							))}
-						</div>
-					</div>
-				)}
-
 				{suggestedGames.length > 0 && (
 					<YouMightLike
 						games={suggestedGames}
 						league={LEAGUE}
 						title={!team ? 'Upcoming games' : undefined}
 					/>
+				)}
+
+				{searchLocation && (
+					<div className="mt-10 space-y-3">
+						<h2 className="text-xl">Pick your team. Get your countdown.</h2>
+						<TeamSearch
+							allTeams={allTeams}
+							location={searchLocation}
+							priorityLeague={LEAGUE}
+							shortcut
+						/>
+					</div>
 				)}
 
 				{faqs && faqs.length > 0 && (

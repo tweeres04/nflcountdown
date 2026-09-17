@@ -660,7 +660,6 @@ export default function LeagueIndex() {
 					game={nextGame}
 					isTeamPage={false}
 					breadcrumbItems={breadcrumbItems}
-					teamPickerTeams={teams}
 					suggestedGames={upcomingGames.slice(1)}
 					leagueBrandColor={leagueMeta?.brandColor}
 					searchLocation="league"

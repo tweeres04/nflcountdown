@@ -248,7 +248,6 @@ export default function SeasonCountdown() {
 					game={seasonGame}
 					isTeamPage={false}
 					breadcrumbItems={breadcrumbItems}
-					teamPickerTeams={teams}
 					leagueBrandColor={meta?.brandColor}
 					countdownSuffix={`the ${seasonYearLong} ${eventNoun}`}
 					searchLocation="season"
