@@ -242,7 +242,6 @@ export default function TeamSearch({
 			<CommandItem
 				key={`${league}-${t.abbreviation}`}
 				value={`${league} ${t.fullName}`}
-				keywords={[t.abbreviation]}
 				onSelect={() => {
 					mixpanel.track('select search result', {
 						query,
