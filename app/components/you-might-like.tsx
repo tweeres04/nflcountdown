@@ -1,6 +1,6 @@
-import { Link } from '@remix-run/react'
 import { Game } from '~/lib/types'
 import MiniCountdown from './mini-countdown'
+import Matchup from './matchup'
 
 interface YouMightLikeProps {
 	games: Game[] // Pre-filtered games from server
@@ -9,8 +9,6 @@ interface YouMightLikeProps {
 }
 
 export default function YouMightLike({ games, league, title = 'You might like' }: YouMightLikeProps) {
-	const lowercaseLeague = league.toLowerCase()
-
 	// Don't render if no games found (already filtered server-side)
 	if (games.length === 0) return null
 
@@ -18,31 +16,13 @@ export default function YouMightLike({ games, league, title = 'You might like' }
 		<div id="upcoming-games" className="mt-10 lg:max-w-[500px] mx-auto">
 			<h3 className="text-xl mb-4">{title}</h3>
 			<div className="space-y-3">
-				{games.map((game) => {
-					const homeAbbrev = game.homeTeam!.abbreviation.toLowerCase()
-					const awayAbbrev = game.awayTeam!.abbreviation.toLowerCase()
-
-					return (
-						<div key={game.id} className="space-y-1">
-							<div className="text-sm">
-								<Link
-									to={`/${lowercaseLeague}/${homeAbbrev}`}
-									className="content-link"
-								>
-									{game.homeTeam!.fullName}
-								</Link>
-								{' vs '}
-								<Link
-									to={`/${lowercaseLeague}/${awayAbbrev}`}
-									className="content-link"
-								>
-									{game.awayTeam!.fullName}
-								</Link>
-							</div>
-							<MiniCountdown gameTime={game.time!} />
-						</div>
-					)
-				})}
+				{games.map((game) => (
+					<div key={game.id} className="space-y-1">
+						<Matchup game={game} league={league} />
+						{/* pl-7 = logo (24px) + gap (4px): lines up with the home team name */}
+						<MiniCountdown gameTime={game.time!} className="pl-7" />
+					</div>
+				))}
 			</div>
 		</div>
 	)

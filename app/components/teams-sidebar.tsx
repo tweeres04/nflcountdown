@@ -26,28 +26,7 @@ import { LEAGUES, teamLogo } from '~/lib/leagues'
 import { cn } from '~/lib/utils'
 import TeamSearch from '~/components/team-search'
 import mixpanel from 'mixpanel-browser'
-
-// Decorative league/team logo (the adjacent text is the accessible label).
-// fallbackSrc covers teams whose logo doesn't exist yet (e.g. WWC nations
-// before their flags are added) — swap to the league logo instead of
-// showing a broken image.
-function Logo({ src, fallbackSrc }: { src: string; fallbackSrc?: string }) {
-	return (
-		<img
-			src={src}
-			alt=""
-			className="size-5 shrink-0 object-contain"
-			onError={
-				fallbackSrc
-					? (e) => {
-							e.currentTarget.onerror = null
-							e.currentTarget.src = fallbackSrc
-					  }
-					: undefined
-			}
-		/>
-	)
-}
+import Logo from './logo'
 
 // Button that opens the nav sidebar.
 export function TeamsSidebarTrigger() {
@@ -121,7 +100,10 @@ export default function TeamsSidebar({
 										<SidebarMenuItem key={league}>
 											<SidebarMenuButton asChild isActive={isActiveLeague}>
 												<a href={`/${lowercaseLeague}`}>
-													<Logo src={`/logos/${lowercaseLeague}.svg`} />
+													<Logo
+														src={`/logos/${lowercaseLeague}.svg`}
+														className="size-5"
+													/>
 													{leagueName}
 												</a>
 											</SidebarMenuButton>
@@ -150,7 +132,10 @@ export default function TeamsSidebar({
 											>
 												<SidebarMenuButton asChild className="w-auto">
 													<a href={`/${lowercaseLeague}`}>
-														<Logo src={`/logos/${lowercaseLeague}.svg`} />
+														<Logo
+															src={`/logos/${lowercaseLeague}.svg`}
+															className="size-5"
+														/>
 														{leagueName}
 													</a>
 												</SidebarMenuButton>
@@ -183,6 +168,7 @@ export default function TeamsSidebar({
 																>
 																	<a href={`/${lowercaseLeague}/${abbrev}`}>
 																		<Logo
+																			className="size-5"
 																			src={teamLogo(league, abbrev)}
 																			fallbackSrc={`/logos/${lowercaseLeague}.svg`}
 																		/>

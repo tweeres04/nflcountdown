@@ -21,6 +21,8 @@ import { LeagueContext } from '~/lib/league-context'
 import { matchupPreposition } from '~/lib/matchupPreposition'
 import GameList from './game-list'
 import YouMightLike from './you-might-like'
+import Matchup from './matchup'
+import Logo from './logo'
 import { addHours, isPast, isWithinInterval } from 'date-fns'
 import countdown from '../external/countdown'
 import Markdown from 'react-markdown'
@@ -316,21 +318,9 @@ export default function Countdown({
 	const gameMatchupInfo =
 		game?.awayTeam && game?.homeTeam ? (
 			!team ? (
-				// League page: show both teams, home team first to match "vs"
-				<div className="text-sm" suppressHydrationWarning>
-					<Link
-						to={`/${LEAGUE.toLowerCase()}/${game.homeTeam.abbreviation.toLowerCase()}`}
-						className="content-link"
-					>
-						{game.homeTeam.fullName}
-					</Link>
-					{' vs '}
-					<Link
-						to={`/${LEAGUE.toLowerCase()}/${game.awayTeam.abbreviation.toLowerCase()}`}
-						className="content-link"
-					>
-						{game.awayTeam.fullName}
-					</Link>
+				// League page: show both teams
+				<div suppressHydrationWarning>
+					<Matchup game={game} league={LEAGUE} className="justify-center" />
 				</div>
 			) : opposingTeam ? (
 				// Team page: "vs" when hosting, "at" when visiting
@@ -399,14 +389,9 @@ export default function Countdown({
 						/>
 					</div>
 				) : (
-					<img
+					<Logo
 						src={logo}
-						// Teams whose logo doesn't exist yet (e.g. WWC nations before
-						// their flags are added) fall back to the league logo
-						onError={(e) => {
-							e.currentTarget.onerror = null
-							e.currentTarget.src = `/logos/${LEAGUE.toLowerCase()}.svg`
-						}}
+						fallbackSrc={`/logos/${LEAGUE.toLowerCase()}.svg`}
 						className={cn(
 							'mx-auto object-contain',
 							LEAGUE === 'NHL' ||

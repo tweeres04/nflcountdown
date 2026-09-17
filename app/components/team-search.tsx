@@ -14,28 +14,7 @@ import { POPULAR_PAGES } from '~/lib/popular-pages'
 import type { SidebarTeam, TeamsByLeague } from '~/lib/getTeams'
 import { getLeagueDisplayName, getLeagueFullName } from '~/lib/schema-helpers'
 import mixpanel from 'mixpanel-browser'
-
-// Decorative logo; the item text is the accessible label.
-// fallbackSrc covers teams whose logo doesn't exist yet (e.g. WWC nations
-// before their flags are added) — swap to the league logo instead of
-// showing a broken image.
-function Logo({ src, fallbackSrc }: { src: string; fallbackSrc?: string }) {
-	return (
-		<img
-			src={src}
-			alt=""
-			className="size-6 shrink-0 object-contain"
-			onError={
-				fallbackSrc
-					? (e) => {
-							e.currentTarget.onerror = null
-							e.currentTarget.src = fallbackSrc
-					  }
-					: undefined
-			}
-		/>
-	)
-}
+import Logo from './logo'
 
 // Tracks settled queries: fires once the query stops changing for a second.
 // Lives inside <Command> so useCommandState can read the result count,
@@ -181,7 +160,7 @@ export default function TeamSearch({
 				}}
 				className="gap-3 py-2"
 			>
-				<Logo src={`/logos/${lowercaseLeague}.svg`} />
+				<Logo src={`/logos/${lowercaseLeague}.svg`} className="size-6" />
 				<span className="font-semibold">{getLeagueDisplayName(league)}</span>
 				<span className="text-stone-400">{getLeagueFullName(league)}</span>
 			</CommandItem>
@@ -207,7 +186,7 @@ export default function TeamSearch({
 				}}
 				className="gap-3 py-2"
 			>
-				<Logo src={`/logos/${lowercaseLeague}.svg`} />
+				<Logo src={`/logos/${lowercaseLeague}.svg`} className="size-6" />
 				<span className="font-semibold">{label}</span>
 			</CommandItem>
 		)
@@ -257,6 +236,7 @@ export default function TeamSearch({
 				<Logo
 					src={teamLogo(league, abbrev)}
 					fallbackSrc={`/logos/${lowercaseLeague}.svg`}
+					className="size-6"
 				/>
 				{t.fullName}
 				<span className="ml-auto text-xs text-stone-400">

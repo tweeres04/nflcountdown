@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { cn } from '~/lib/utils'
 import {
 	add,
 	differenceInDays,
@@ -8,6 +9,7 @@ import {
 
 interface MiniCountdownProps {
 	gameTime: string
+	className?: string
 }
 
 const GAME_DURATION_MS = 3 * 60 * 60 * 1000
@@ -63,7 +65,10 @@ export function miniCountdownString(now: Date, gameDate: Date) {
 	return `in ${shown.map((u) => `${u.value}${u.label}`).join(' ')}`
 }
 
-export default function MiniCountdown({ gameTime }: MiniCountdownProps) {
+export default function MiniCountdown({
+	gameTime,
+	className,
+}: MiniCountdownProps) {
 	const [timeString, setTimeString] = useState<string>('')
 
 	useEffect(() => {
@@ -77,5 +82,5 @@ export default function MiniCountdown({ gameTime }: MiniCountdownProps) {
 		return () => clearInterval(interval)
 	}, [gameTime])
 
-	return <div className="text-sm">{timeString}</div>
+	return <div className={cn('text-sm', className)}>{timeString}</div>
 }
