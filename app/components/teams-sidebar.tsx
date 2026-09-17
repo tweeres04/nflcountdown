@@ -79,6 +79,7 @@ export default function TeamsSidebar({
 					location="sidebar"
 					shortcut={searchShortcut}
 					onShortcut={() => setOpen(true)}
+					showPopular
 				/>
 			</SidebarHeader>
 			<SidebarContent>

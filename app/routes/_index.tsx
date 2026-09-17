@@ -125,6 +125,7 @@ export default function Index() {
 								location="homepage"
 								size="lg"
 								shortcut
+								showPopular
 							/>
 							{savedPages.length > 0 && (
 								<div className="space-y-3">
