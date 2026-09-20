@@ -87,12 +87,20 @@ export async function getSavedPagesData(
 	return results
 		.filter((r): r is SavedPageData => r !== null)
 		.sort((a, b) => {
-			// Soonest game first; pages with no upcoming game last. Stable
-			// sort keeps ties in saved order (the createdAt query order).
-			if (a.gameTime === null) return b.gameTime === null ? 0 : 1
-			if (b.gameTime === null) return -1
+			// Soonest game first within a group. Stable sort keeps ties in saved
+			// order (the createdAt query order).
+			const groupDifference = savedPageSortGroup(a) - savedPageSortGroup(b)
+			if (groupDifference !== 0 || a.gameTime === null || b.gameTime === null)
+				return groupDifference
 			return new Date(a.gameTime).getTime() - new Date(b.gameTime).getTime()
 		})
+}
+
+// Live and upcoming games first, then pages with no upcoming game, then
+// completed games.
+function savedPageSortGroup(page: SavedPageData) {
+	if (page.gameTime === null) return 1
+	return isFuture(addHours(page.gameTime, 3)) ? 0 : 2
 }
 
 async function resolveSavedPage(path: string): Promise<SavedPageData> {
