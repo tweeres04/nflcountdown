@@ -66,6 +66,12 @@ export const SOCCER_LEAGUES = new Set([
 	'WWC',
 ])
 
+// We go off the schedule rather than live game state, so a game counts as in
+// progress for a guessed span after its scheduled start.
+export function gameDurationHours(LEAGUE: string) {
+	return SOCCER_LEAGUES.has(LEAGUE) ? 2 : 3
+}
+
 // Tournaments, not recurring seasons — copy drops the word "season"
 // ("the 2027 Women's World Cup", not "the 2027 Women's World Cup season").
 export const TOURNAMENT_LEAGUES = new Set(['WORLDCUP', 'WWC'])

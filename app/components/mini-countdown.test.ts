@@ -6,7 +6,8 @@ import { miniCountdownString } from './mini-countdown'
 // decomposition round-trips no matter what timezone the tests run in.
 const NOW = new Date('2026-08-31T12:00:00Z')
 
-const at = (duration: Duration) => miniCountdownString(NOW, add(NOW, duration))
+const at = (duration: Duration, league = 'NFL') =>
+	miniCountdownString(NOW, add(NOW, duration), league)
 
 describe('miniCountdownString', () => {
 	it('shows three units when all three are non-zero', () => {
@@ -48,6 +49,12 @@ describe('miniCountdownString', () => {
 	it('is completed once the game window has passed', () => {
 		expect(at({ hours: -4 })).toBe('Completed')
 	})
+
+	it('gives soccer a two hour window', () => {
+		expect(at({ hours: -1 }, 'MLS')).toBe('Live!')
+		expect(at({ hours: -2, minutes: -30 }, 'MLS')).toBe('Completed')
+		expect(at({ hours: -2, minutes: -30 })).toBe('Live!')
+	})
 })
 
 // The cases above build each target by adding the units they assert, which
@@ -58,12 +65,16 @@ describe('miniCountdownString calendar decomposition', () => {
 	const d = (y: number, m: number, day: number) => new Date(y, m, day, 12)
 
 	it('counts a month from the 31st to the end of a shorter month', () => {
-		expect(miniCountdownString(d(2026, 7, 31), d(2026, 8, 30))).toBe('in 1mo')
-		expect(miniCountdownString(d(2026, 7, 31), d(2026, 9, 1))).toBe('in 1mo 1d')
+		expect(miniCountdownString(d(2026, 7, 31), d(2026, 8, 30), 'NFL')).toBe(
+			'in 1mo'
+		)
+		expect(miniCountdownString(d(2026, 7, 31), d(2026, 9, 1), 'NFL')).toBe(
+			'in 1mo 1d'
+		)
 	})
 
 	it('breaks a long span into months and days', () => {
-		expect(miniCountdownString(d(2026, 7, 31), d(2026, 9, 21))).toBe(
+		expect(miniCountdownString(d(2026, 7, 31), d(2026, 9, 21), 'NFL')).toBe(
 			'in 1mo 21d'
 		)
 	})
@@ -71,11 +82,17 @@ describe('miniCountdownString calendar decomposition', () => {
 	// differenceInYears won't count a year from Feb 29 until Mar 1, so deriving
 	// years separately from months rendered these as "12mo" and "1y 12mo".
 	it('never leaves twelve months sitting outside a year', () => {
-		expect(miniCountdownString(d(2028, 1, 29), d(2029, 1, 28))).toBe('in 1y')
-		expect(miniCountdownString(d(2028, 1, 29), d(2030, 1, 28))).toBe('in 2y')
+		expect(miniCountdownString(d(2028, 1, 29), d(2029, 1, 28), 'NFL')).toBe(
+			'in 1y'
+		)
+		expect(miniCountdownString(d(2028, 1, 29), d(2030, 1, 28), 'NFL')).toBe(
+			'in 2y'
+		)
 	})
 
 	it('counts a full year between the same date', () => {
-		expect(miniCountdownString(d(2027, 2, 1), d(2028, 2, 1))).toBe('in 1y')
+		expect(miniCountdownString(d(2027, 2, 1), d(2028, 2, 1), 'NFL')).toBe(
+			'in 1y'
+		)
 	})
 })

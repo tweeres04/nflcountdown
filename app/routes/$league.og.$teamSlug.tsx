@@ -4,6 +4,7 @@ import { getTeamAndGames } from '~/lib/getTeamAndGames'
 import { addHours, isFuture } from 'date-fns'
 import type { Game } from '~/lib/types'
 import { countdownString } from '~/components/countdown'
+import { gameDurationHours } from '~/lib/schema-helpers'
 
 export async function loader({
 	params: { league, teamSlug },
@@ -12,7 +13,8 @@ export async function loader({
 
 	// Find the next upcoming game
 	const game = games.filter(
-		(g: Game) => g.time && isFuture(addHours(new Date(g.time), 3))
+		(g: Game) =>
+			g.time && isFuture(addHours(new Date(g.time), gameDurationHours(LEAGUE)))
 	)[0]
 
 	const countdownString_ = countdownString({

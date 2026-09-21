@@ -46,7 +46,11 @@ import {
 	BreadcrumbSeparator,
 } from './ui/breadcrumb'
 import type { BreadcrumbItem as BreadcrumbItemType } from '~/lib/schema-helpers'
-import { getLeagueDisplayName, SOCCER_LEAGUES } from '~/lib/schema-helpers'
+import {
+	gameDurationHours,
+	getLeagueDisplayName,
+	SOCCER_LEAGUES,
+} from '~/lib/schema-helpers'
 import type { AffiliateLinks } from '~/lib/affiliate-service'
 
 // Simple inline loading skeleton for Dialog
@@ -233,11 +237,11 @@ export function countdownString({
 			: `the next ${getLeagueDisplayName(LEAGUE)} game`)
 
 	const countdownString = game?.time
-		? isPast(addHours(game.time, 3))
+		? isPast(addHours(game.time, gameDurationHours(LEAGUE)))
 			? 'Game completed'
 			: isWithinInterval(new Date(), {
 					start: game.time,
-					end: addHours(game.time, 3),
+					end: addHours(game.time, gameDurationHours(LEAGUE)),
 			  })
 			? 'Game in progress!'
 			: `${countdown(new Date(game.time), null, units).toString()} till ${suffix}`

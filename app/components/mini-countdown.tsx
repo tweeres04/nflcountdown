@@ -6,13 +6,13 @@ import {
 	differenceInMilliseconds,
 	differenceInMonths,
 } from 'date-fns'
+import { gameDurationHours } from '~/lib/schema-helpers'
 
 interface MiniCountdownProps {
 	gameTime: string
+	league: string
 	className?: string
 }
-
-const GAME_DURATION_MS = 3 * 60 * 60 * 1000
 
 /**
  * Compact countdown: "in 2h 15m" up close, "in 3y 9mo 11d" for a World Cup.
@@ -20,11 +20,12 @@ const GAME_DURATION_MS = 3 * 60 * 60 * 1000
  * Shows the three most significant units starting from the largest non-zero
  * one, then drops any zero among them — "in 9mo 23d", not "in 9mo 23d 0h".
  */
-export function miniCountdownString(now: Date, gameDate: Date) {
+export function miniCountdownString(now: Date, gameDate: Date, league: string) {
 	const diff = differenceInMilliseconds(gameDate, now)
 
 	if (diff <= 0) {
-		return Math.abs(diff) < GAME_DURATION_MS ? 'Live!' : 'Completed'
+		const gameDurationMs = gameDurationHours(league) * 60 * 60 * 1000
+		return Math.abs(diff) < gameDurationMs ? 'Live!' : 'Completed'
 	}
 
 	// Months and years vary in length, so peel each unit off the clock in turn
@@ -67,20 +68,21 @@ export function miniCountdownString(now: Date, gameDate: Date) {
 
 export default function MiniCountdown({
 	gameTime,
+	league,
 	className,
 }: MiniCountdownProps) {
 	const [timeString, setTimeString] = useState<string>('')
 
 	useEffect(() => {
 		const updateCountdown = () => {
-			setTimeString(miniCountdownString(new Date(), new Date(gameTime)))
+			setTimeString(miniCountdownString(new Date(), new Date(gameTime), league))
 		}
 
 		updateCountdown()
 		const interval = setInterval(updateCountdown, 30000) // Update every 30 seconds
 
 		return () => clearInterval(interval)
-	}, [gameTime])
+	}, [gameTime, league])
 
 	return <div className={cn('text-sm', className)}>{timeString}</div>
 }

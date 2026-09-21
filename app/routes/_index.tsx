@@ -147,7 +147,10 @@ export default function Index() {
 														{page.title}
 													</div>
 													{page.gameTime ? (
-														<MiniCountdown gameTime={page.gameTime} />
+														<MiniCountdown
+															gameTime={page.gameTime}
+															league={page.league}
+														/>
 													) : (
 														<div className="text-sm text-white/60">
 															No upcoming games

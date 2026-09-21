@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { getLastChangeTimes, IN_PROGRESS_MS } from './sitemap-lastmod'
+import { getLastChangeTimes } from './sitemap-lastmod'
 import type { Game, Team } from './types'
 
 const sea: Team = {
@@ -22,15 +22,19 @@ const lafc: Team = {
 
 const NOW = Date.parse('2026-05-27T21:00:00Z')
 
+// Soccer games count as in progress for 2 hours — see gameDurationHours
+const IN_PROGRESS_MS = 2 * 60 * 60 * 1000
+
 function game(time: string | null, homeTeam: Team | null, awayTeam: Team | null): Game {
 	return { id: `g-${time}`, time, homeTeam, awayTeam, startTimeTbd: null }
 }
 
 describe('getLastChangeTimes', () => {
-	it('records the roll-over (start + 3h) for a fully completed game', () => {
-		// Kickoff 3.5h before now -> rolled over 0.5h ago
+	it('records the roll-over (start + 2h) for a fully completed game', () => {
+		// Kickoff 3.5h before now -> rolled over 1.5h ago
 		const start = NOW - 3.5 * 60 * 60 * 1000
 		const { byTeam, leagueMax } = getLastChangeTimes(
+			'MLS',
 			[game(new Date(start).toISOString(), sea, lafc)],
 			NOW
 		)
@@ -43,6 +47,7 @@ describe('getLastChangeTimes', () => {
 	it('credits both home and away teams', () => {
 		const start = NOW - 4 * 60 * 60 * 1000
 		const { byTeam } = getLastChangeTimes(
+			'MLS',
 			[game(new Date(start).toISOString(), sea, lafc)],
 			NOW
 		)
@@ -51,9 +56,22 @@ describe('getLastChangeTimes', () => {
 	})
 
 	it('excludes an in-progress game (started, not yet rolled over)', () => {
-		// Kickoff 1h before now -> still "in progress", rolls over in 2h
+		// Kickoff 1h before now -> still "in progress", rolls over in 1h
 		const start = NOW - 1 * 60 * 60 * 1000
 		const { byTeam, leagueMax } = getLastChangeTimes(
+			'MLS',
+			[game(new Date(start).toISOString(), sea, lafc)],
+			NOW
+		)
+		expect(byTeam.size).toBe(0)
+		expect(leagueMax).toBeNull()
+	})
+
+	it('keeps a non-soccer game in progress for 3 hours', () => {
+		// Kickoff 2.5h before now -> over for soccer, still in progress for the NFL
+		const start = NOW - 2.5 * 60 * 60 * 1000
+		const { byTeam, leagueMax } = getLastChangeTimes(
+			'NFL',
 			[game(new Date(start).toISOString(), sea, lafc)],
 			NOW
 		)
@@ -64,6 +82,7 @@ describe('getLastChangeTimes', () => {
 	it('excludes a future game', () => {
 		const start = NOW + 24 * 60 * 60 * 1000
 		const { byTeam, leagueMax } = getLastChangeTimes(
+			'MLS',
 			[game(new Date(start).toISOString(), sea, lafc)],
 			NOW
 		)
@@ -75,6 +94,7 @@ describe('getLastChangeTimes', () => {
 		const older = NOW - 10 * 24 * 60 * 60 * 1000
 		const recent = NOW - 5 * 60 * 60 * 1000
 		const { byTeam } = getLastChangeTimes(
+			'MLS',
 			[
 				game(new Date(older).toISOString(), sea, lafc),
 				game(new Date(recent).toISOString(), lafc, sea),
@@ -88,6 +108,7 @@ describe('getLastChangeTimes', () => {
 	it('skips games with no time and null teams', () => {
 		const start = NOW - 4 * 60 * 60 * 1000
 		const { byTeam, leagueMax } = getLastChangeTimes(
+			'MLS',
 			[
 				game(null, sea, lafc),
 				game(new Date(start).toISOString(), sea, null),
@@ -101,7 +122,7 @@ describe('getLastChangeTimes', () => {
 	})
 
 	it('returns null leagueMax when no games have rolled over', () => {
-		const { byTeam, leagueMax } = getLastChangeTimes([], NOW)
+		const { byTeam, leagueMax } = getLastChangeTimes('MLS', [], NOW)
 		expect(byTeam.size).toBe(0)
 		expect(leagueMax).toBeNull()
 	})

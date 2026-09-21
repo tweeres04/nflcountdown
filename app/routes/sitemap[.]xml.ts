@@ -174,6 +174,7 @@ export async function loader() {
 			  ).map(nflTeamToTeam)
 
 		const { byTeam, leagueMax } = getLastChangeTimes(
+			LEAGUE,
 			await getAllGames(LEAGUE),
 			now
 		)

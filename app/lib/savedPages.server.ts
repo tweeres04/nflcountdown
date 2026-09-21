@@ -8,7 +8,7 @@ import { getSuggestedGames } from './getSuggestedGames'
 import { getSeasonStartDate } from './getSeasonStartDate'
 import { getGameSlug } from './getGameSlug'
 import { matchupPreposition } from './matchupPreposition'
-import { getLeagueDisplayName } from './schema-helpers'
+import { gameDurationHours, getLeagueDisplayName } from './schema-helpers'
 import { Game } from './types'
 
 interface ParsedPagePath {
@@ -66,6 +66,8 @@ export async function unsavePage(userId: number, path: string) {
 
 export interface SavedPageData {
 	path: string
+	// Uppercase, like LEAGUE elsewhere
+	league: string
 	title: string
 	logo: string
 	gameTime: string | null
@@ -100,7 +102,8 @@ export async function getSavedPagesData(
 // completed games.
 function savedPageSortGroup(page: SavedPageData) {
 	if (page.gameTime === null) return 1
-	return isFuture(addHours(page.gameTime, 3)) ? 0 : 2
+	const gameEnd = addHours(page.gameTime, gameDurationHours(page.league))
+	return isFuture(gameEnd) ? 0 : 2
 }
 
 async function resolveSavedPage(path: string): Promise<SavedPageData> {
@@ -114,6 +117,7 @@ async function resolveSavedPage(path: string): Promise<SavedPageData> {
 			const { date } = await getSeasonStartDate(LEAGUE)
 			return {
 				path,
+				league: LEAGUE,
 				title: `${leagueLabel} season`,
 				logo: `/logos/${parsed.league}.png`,
 				gameTime: date.toISOString(),
@@ -126,6 +130,7 @@ async function resolveSavedPage(path: string): Promise<SavedPageData> {
 		])
 		return {
 			path,
+			league: LEAGUE,
 			title: leagueLabel,
 			logo: `/logos/${parsed.league}.png`,
 			gameTime: upcomingGames[0]?.time ?? seasonResult.date.toISOString(),
@@ -147,6 +152,7 @@ async function resolveSavedPage(path: string): Promise<SavedPageData> {
 					: game.homeTeam
 			return {
 				path,
+				league: LEAGUE,
 				title: `${team.fullName} ${matchupPreposition(
 					game,
 					team.abbreviation
@@ -159,10 +165,12 @@ async function resolveSavedPage(path: string): Promise<SavedPageData> {
 	}
 
 	const nextGame = games.find(
-		(g: Game) => g.time && isFuture(addHours(g.time, 3))
+		(g: Game) =>
+			g.time && isFuture(addHours(g.time, gameDurationHours(LEAGUE)))
 	)
 	return {
 		path,
+		league: LEAGUE,
 		title: team.fullName,
 		logo,
 		gameTime: nextGame?.time ?? null,

@@ -1,5 +1,16 @@
 import { describe, it, expect } from 'vitest'
-import { generateLeagueSportsEventSchema } from './schema-helpers'
+import {
+	gameDurationHours,
+	generateLeagueSportsEventSchema,
+} from './schema-helpers'
+
+describe('gameDurationHours', () => {
+	it('guesses 2 hours for soccer and 3 for everything else', () => {
+		expect(gameDurationHours('MLS')).toBe(2)
+		expect(gameDurationHours('WORLDCUP')).toBe(2)
+		expect(gameDurationHours('NFL')).toBe(3)
+	})
+})
 
 describe('generateLeagueSportsEventSchema', () => {
 	it('builds a season-level SportsEvent with the league full name and sport', () => {

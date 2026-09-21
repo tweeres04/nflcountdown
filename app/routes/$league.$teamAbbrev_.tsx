@@ -11,7 +11,7 @@ import { getSuggestedGames } from '~/lib/getSuggestedGames'
 import { getAffiliateLinks } from '~/lib/affiliate-service'
 import { redirectIfAbbreviationRenamed } from '~/lib/abbreviation-redirects'
 import { Game } from '~/lib/types'
-import { getLeagueDisplayName } from '~/lib/schema-helpers'
+import { gameDurationHours, getLeagueDisplayName } from '~/lib/schema-helpers'
 import Footer from '~/components/footer'
 
 export { generateMeta as meta }
@@ -27,7 +27,7 @@ export async function loader({
 	])
 
 	const nextGame = games.find(
-		(g: Game) => g.time && isFuture(addHours(g.time, 3))
+		(g: Game) => g.time && isFuture(addHours(g.time, gameDurationHours(LEAGUE)))
 	)
 
 	const canShowPreview =

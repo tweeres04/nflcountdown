@@ -24,7 +24,11 @@ export default function YouMightLike({
 					<div key={game.id}>
 						<Matchup game={game} league={league} />
 						{/* pl-7 = logo (24px) + gap (4px): lines up with the home team name */}
-						<MiniCountdown gameTime={game.time!} className="pl-7" />
+						<MiniCountdown
+							gameTime={game.time!}
+							league={league}
+							className="pl-7"
+						/>
 					</div>
 				))}
 			</div>
