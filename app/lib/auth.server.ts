@@ -1,6 +1,7 @@
 import argon2 from 'argon2'
 import { eq } from 'drizzle-orm'
 import { db } from './db.server'
+import { notifyNewAccount } from './email.server'
 import { users } from './schema.server'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -46,6 +47,7 @@ export async function createUser(email: string, password: string) {
 		.insert(users)
 		.values({ email, password: hashedPassword })
 		.returning({ id: users.id })
+	notifyNewAccount(email, 'email')
 	return user
 }
 

@@ -26,3 +26,17 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string) {
 		'o:tag': ['teamcountdown_password_reset'],
 	})
 }
+
+// Heads-up to Tyler whenever someone signs up. Not awaited by callers so a
+// Mailgun hiccup never blocks or fails a signup.
+export function notifyNewAccount(email: string, method: 'email' | 'Google') {
+	mg.messages
+		.create('mg.teamcountdown.com', {
+			from: 'Team Countdown <noreply@teamcountdown.com>',
+			to: 'tweeres04@gmail.com',
+			subject: `New Team Countdown account: ${email}`,
+			text: `${email} just created an account with ${method}.`,
+			'o:tag': ['teamcountdown_new_account'],
+		})
+		.catch((error) => console.error('New account email failed', error))
+}

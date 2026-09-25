@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm'
 import { db } from './db.server'
 import { users } from './schema.server'
 import { normalizeEmail } from './auth.server'
+import { notifyNewAccount } from './email.server'
 
 // Short-lived CSRF state for the OAuth round trip; also carries a pending
 // save path through the redirect dance
@@ -90,5 +91,6 @@ export async function findOrCreateGoogleUser(email: string) {
 		.insert(users)
 		.values({ email })
 		.returning({ id: users.id })
+	notifyNewAccount(email, 'Google')
 	return { id: user.id, created: true }
 }
