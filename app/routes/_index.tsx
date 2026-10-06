@@ -4,7 +4,10 @@ import {
 	type MetaFunction,
 } from '@remix-run/node'
 import { Link, useLoaderData } from '@remix-run/react'
+import { useMemo } from 'react'
+import { addHours } from 'date-fns'
 import {
+	gameDurationHours,
 	generateOrganizationSchema,
 	generateWebSiteSchema,
 } from '~/lib/schema-helpers'
@@ -20,6 +23,7 @@ import {
 	type SavedPageData,
 } from '~/lib/savedPages.server'
 import { getUser } from '~/lib/session.server'
+import { useReloadOnReturnAfterGameEnds } from '~/hooks/use-reload-on-return-after-game-ends'
 
 export const meta: MetaFunction = () => {
 	const title = `Countdown to your team's next game - Team Countdown`
@@ -73,6 +77,21 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Index() {
 	const { allTeams, savedPages } = useLoaderData<typeof loader>()
+
+	// Worked out when the data loads, so saved game pages that were already
+	// completed are left alone.
+	const nextSavedGameEnd = useMemo(() => {
+		const now = Date.now()
+		const upcomingGameEnds = savedPages
+			.flatMap((page) =>
+				page.gameTime
+					? addHours(page.gameTime, gameDurationHours(page.league)).getTime()
+					: []
+			)
+			.filter((gameEnd) => gameEnd > now)
+		return upcomingGameEnds.length > 0 ? Math.min(...upcomingGameEnds) : null
+	}, [savedPages])
+	useReloadOnReturnAfterGameEnds(nextSavedGameEnd)
 
 	const leagues = [
 		{ code: 'nfl', name: 'NFL', fullName: 'National Football League' },

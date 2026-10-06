@@ -35,7 +35,7 @@ import {
 	DialogTrigger,
 } from './ui/dialog'
 import { Calendar, Eye, ThumbsDown, ThumbsUp, Ticket } from 'lucide-react'
-import { Await, Link, useFetcher, useRevalidator } from '@remix-run/react'
+import { Await, Link, useFetcher } from '@remix-run/react'
 import mixpanel from 'mixpanel-browser'
 import {
 	Breadcrumb,
@@ -52,6 +52,7 @@ import {
 	SOCCER_LEAGUES,
 } from '~/lib/schema-helpers'
 import type { AffiliateLinks } from '~/lib/affiliate-service'
+import { useReloadOnReturnAfterGameEnds } from '~/hooks/use-reload-on-return-after-game-ends'
 
 // Simple inline loading skeleton for Dialog
 const GamePreviewLoading = () => (
@@ -291,13 +292,13 @@ export default function Countdown({
 	const UNSHAREABLE = ['Game completed', 'No upcoming games', 'Game time TBD']
 	const canShare = !UNSHAREABLE.includes(shareTitle)
 
-	// A team page left open (or resumed from the home screen) past the end of
-	// the game would say "Game completed" until a refresh, so load the next game.
-	const { revalidate } = useRevalidator()
-	const nextGameCompleted = isTeamPage && countdownString_ === 'Game completed'
-	useEffect(() => {
-		if (nextGameCompleted) revalidate()
-	}, [nextGameCompleted, revalidate])
+	// Team pages show the team's next game, so they move on once it ends. Game
+	// pages stay on their game.
+	useReloadOnReturnAfterGameEnds(
+		isTeamPage && game?.time
+			? addHours(game.time, gameDurationHours(LEAGUE)).getTime()
+			: null
+	)
 
 	const [showFullSchedule, setShowFullSchedule] = useState(false)
 	const lowercaseAbbreviation = team?.abbreviation?.toLowerCase()
