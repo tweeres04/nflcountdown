@@ -35,7 +35,7 @@ import {
 	DialogTrigger,
 } from './ui/dialog'
 import { Calendar, Eye, ThumbsDown, ThumbsUp, Ticket } from 'lucide-react'
-import { Await, Link, useFetcher } from '@remix-run/react'
+import { Await, Link, useFetcher, useRevalidator } from '@remix-run/react'
 import mixpanel from 'mixpanel-browser'
 import {
 	Breadcrumb,
@@ -290,6 +290,14 @@ export default function Countdown({
 	})
 	const UNSHAREABLE = ['Game completed', 'No upcoming games', 'Game time TBD']
 	const canShare = !UNSHAREABLE.includes(shareTitle)
+
+	// A team page left open (or resumed from the home screen) past the end of
+	// the game would say "Game completed" until a refresh, so load the next game.
+	const { revalidate } = useRevalidator()
+	const nextGameCompleted = isTeamPage && countdownString_ === 'Game completed'
+	useEffect(() => {
+		if (nextGameCompleted) revalidate()
+	}, [nextGameCompleted, revalidate])
 
 	const [showFullSchedule, setShowFullSchedule] = useState(false)
 	const lowercaseAbbreviation = team?.abbreviation?.toLowerCase()
